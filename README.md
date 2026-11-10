@@ -25,9 +25,9 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 
 ## Estado atual
 
-- `docs/prd.md` e `docs/tdd.md` são **rascunhos** com status honesto: nada foi validado por entrevista. As decisões marcadas como **Proposta** precisam da sua confirmação.
-- O handoff PRD → TDD está bloqueado até o PRD ser validado.
-- Nenhum código, commit ou PR foi criado.
+- `docs/prd.md` está **validado para TDD** (2026-11-10); `docs/tdd.md` é um rascunho com decisões propostas que precisa ser validado pela skill.
+- O handoff PRD → TDD está liberado; a próxima etapa é `/generate-tdd Use docs/prd.md como base validada`.
+- Nenhum código foi criado e nenhum PR foi aberto.
 
 ## Passo a passo
 
