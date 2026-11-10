@@ -14,8 +14,8 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 │   ├── commands/                   # comandos: /generate-prd, /generate-tdd, /opsx-*
 │   └── skills/                     # skills: generate-prd, generate-tdd, openspec-*
 ├── docs/
-│   ├── prd.md                      # requisitos de produto (Rascunho)
-│   ├── tdd.md                      # design técnico (Rascunho, decisões propostas)
+│   ├── prd.md                      # requisitos de produto (Validado para TDD)
+│   ├── tdd.md                      # design técnico (Validado para SDD)
 │   └── prd-desafios.md             # evoluções v1.1 e v2 (Rascunho)
 └── openspec/
     ├── config.yaml                 # contexto e regras do projeto para o OpenSpec
@@ -25,9 +25,10 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 
 ## Estado atual
 
-- `docs/prd.md` e `docs/tdd.md` são **rascunhos** com status honesto: nada foi validado por entrevista. As decisões marcadas como **Proposta** precisam da sua confirmação.
-- O handoff PRD → TDD está bloqueado até o PRD ser validado.
-- Nenhum código, commit ou PR foi criado.
+- `docs/prd.md` está **validado para TDD** (2026-11-10), com o handoff PRD → TDD concluído.
+- `docs/tdd.md` está **validado para SDD** (2026-11-10), com as decisões `DT-01` a `DT-23` confirmadas e o handoff ao SDD liberado.
+- A próxima etapa é o SDD com o OpenSpec, começando pela fase F0 do roadmap.
+- Nenhum código de aplicação foi criado ainda.
 
 ## Passo a passo
 
