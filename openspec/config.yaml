@@ -1,0 +1,39 @@
+schema: spec-driven
+
+# Contexto do projeto: apenas restrições que o agente não consegue inferir lendo o código.
+context: |
+  Todos os artefatos (proposal, specs, design, tasks) devem ser escritos em português do Brasil.
+  A fonte de verdade de produto é docs/prd.md (IDs RF-*, RNF-*, RN-*, CA-*) e a de design técnico
+  é docs/tdd.md (IDs DT-*, fases F0-F6). Toda spec e tarefa deve citar os IDs que atende.
+  O produto é multi-tenant: cada organização (cooperativa, associação ou prefeitura) é um tenant
+  isolado por OrganizacaoId. Cidadãos são contas globais, sem organização, e só enxergam as
+  próprias solicitações. Nenhuma spec pode permitir leitura ou escrita entre organizações.
+  Dados pessoais de cidadãos (nome, telefone, endereço de retirada) nunca aparecem em logs,
+  mensagens de erro, exemplos ou testes com dados reais.
+  Quantidades de resíduos nunca são somadas entre unidades diferentes (kg, L, un); não há conversão.
+  Registros de volume coletado são imutáveis; correções são feitas por ajuste rastreável.
+  O código da aplicação fica em app/; a raiz guarda documentação e governança.
+
+# Regras por artefato (opcional).
+rules:
+  proposal:
+    - Declarar explicitamente o que está fora do escopo da mudança.
+    - Referenciar os IDs de requisitos do PRD (RF-*, RNF-*) e as decisões do TDD (DT-*) atendidos.
+  specs:
+    - Escrever cenários verificáveis (dado/quando/então) alinhados aos critérios CA-* do PRD.
+    - Incluir cenários de falha e de isolamento entre organizações sempre que houver acesso a dados.
+  design:
+    - Não contradizer as decisões DT-* do TDD; divergências exigem atualização do TDD antes.
+  tasks:
+    - Dividir em tarefas pequenas e verificáveis, com teste automatizado associado a cada tarefa.
+    - Respeitar a ordem de fases do roadmap do TDD (F0 a F6).
+
+# Orientações por operação (opcional).
+operations:
+  apply:
+    guidance:
+      - Implementar somente o que está nas tarefas aprovadas e dentro de app/.
+      - Rodar os testes afetados antes de marcar uma tarefa como concluída.
+  archive:
+    guidance:
+      - Resumir o resultado do arquivamento e as pendências antes de finalizar.
