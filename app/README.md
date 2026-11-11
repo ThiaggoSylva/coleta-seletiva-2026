@@ -35,6 +35,7 @@ Este diretório contém a aplicação da plataforma. A matriz abaixo foi verific
 | Microsoft.NET.Test.Sdk | 18.11.1 | Executor de testes; compatível com MSTest 4.5.2 |
 | Moq | 4.21.0 | Dublês de teste de aplicação; ativo `net6.0` compatível com `net10.0` |
 | Testcontainers.MsSql | 4.16.0 | Possui ativo `net10.0`; SQL Server real nos testes de integração |
+| System.Security.Cryptography.Pkcs | 10.0.15 | Pinagem transitiva de segurança; o SqlClient do EF Core fixa 9.0.11, afetado por CVE-2026-84008 e CVE-2026-70162 |
 | SQL Server | 2022 Developer | Imagem `mcr.microsoft.com/mssql/server:2022-latest`, com `MSSQL_PID=Developer` |
 
 ### Frontend
@@ -60,6 +61,10 @@ Este diretório contém a aplicação da plataforma. A matriz abaixo foi verific
   Como o SDK disponível é o .NET 10, a aplicação fixa os pacotes Microsoft em
   **10.0.12**, incluindo EF Core, Identity, JWT, OpenAPI e MVC Testing.
 - **Zone.js:** não será instalado; a SPA é zoneless, conforme DT-01.
+- **Pkcs transitivo:** o `Microsoft.Data.SqlClient` 6.1.6, usado pelo EF Core 10,
+  fixa `System.Security.Cryptography.Pkcs` 9.0.11, que possui vulnerabilidades
+  conhecidas. A aplicação fixa a versão corrigida **10.0.15** por pinagem
+  transitiva central e mantém o SqlClient 6.1.6.
 - **Versões flutuantes:** `global.json`, `Directory.Packages.props`,
   `package.json`/`package-lock.json` e os lockfiles .NET fixarão as versões
   efetivamente usadas. Atualizações exigirão uma mudança explícita.
