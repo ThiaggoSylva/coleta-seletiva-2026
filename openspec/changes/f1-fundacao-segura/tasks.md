@@ -2,7 +2,7 @@
 
 ## 1. Pré-requisitos e estrutura da aplicação
 
-- [ ] 1.1 Verificar nas fontes oficiais as versões estáveis de .NET, Angular, Node, TypeScript, Tailwind, EF Core, ASP.NET Core Identity, SQL Server 2022 Developer, FluentResults, FluentValidation, Serilog, MSTest, Moq, Testcontainers, Vitest e Playwright; registrar a matriz e as fontes em `app/README.md` e confirmar compatibilidade entre as escolhas (RF-01–05; RNF-01; DT-01–04, DT-17–22).
+- [x] 1.1 Verificar nas fontes oficiais as versões estáveis de .NET, Angular, Node, TypeScript, Tailwind, EF Core, ASP.NET Core Identity, SQL Server 2022 Developer, FluentResults, FluentValidation, Serilog, MSTest, Moq, Testcontainers, Vitest e Playwright; registrar a matriz e as fontes em `app/README.md` e confirmar compatibilidade entre as escolhas (RF-01–05; RNF-01; DT-01–04, DT-17–22).
 - [ ] 1.2 Criar `app/backend` com a solução `.slnx`, projetos Domain/Application/Infrastructure/Api e projetos de teste, `global.json` e `Directory.Packages.props`, mantendo as dependências na direção definida no design; verificar com `dotnet build` e com um teste que falhe se Application referenciar Infrastructure ou Api.
 - [ ] 1.3 Criar `app/frontend` com Angular standalone/zoneless, Tailwind, Vitest e estrutura de features; verificar com `npm ci`, `npm run build` e `npm test -- --run`.
 - [ ] 1.4 Criar `app/infra/compose.yaml` para SQL Server 2022 Developer, com volume, healthcheck, porta restrita ao host e senha por variável de ambiente; verificar com `docker compose config` e com a subida do serviço até o healthcheck. Se Docker não estiver disponível, registrar o bloqueio sem instalar nada sem autorização (RF-01; RNF-03; DT-19, DT-20).
