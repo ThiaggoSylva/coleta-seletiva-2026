@@ -1,0 +1,248 @@
+name: CI
+
+# Somente integração contínua: não há job de deploy (DT-21).
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: "true"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+  NODE_VERSION: "24.21.0"
+
+jobs:
+  backend:
+    name: Backend (build e testes unitários)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: app/backend/global.json
+          cache: true
+          cache-dependency-path: app/backend/**/packages.lock.json
+
+      - name: Restaurar com lockfiles
+        working-directory: app/backend
+        run: dotnet restore ColetaSeletiva.slnx --locked-mode
+
+      - name: Verificar formatação
+        working-directory: app/backend
+        run: dotnet format ColetaSeletiva.slnx --verify-no-changes --no-restore
+
+      - name: Compilar
+        working-directory: app/backend
+        run: dotnet build ColetaSeletiva.slnx --no-restore --configuration Release
+
+      - name: Testes unitários do domínio
+        working-directory: app/backend
+        run: >-
+          dotnet test tests/ColetaSeletiva.Domain.Tests/ColetaSeletiva.Domain.Tests.csproj
+          --no-build --no-restore --configuration Release
+
+      - name: Testes unitários da aplicação
+        working-directory: app/backend
+        run: >-
+          dotnet test tests/ColetaSeletiva.Application.Tests/ColetaSeletiva.Application.Tests.csproj
+          --no-build --no-restore --configuration Release
+
+  integration:
+    name: Integração (SQL real e Testcontainers)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: app/backend/global.json
+          cache: true
+          cache-dependency-path: app/backend/**/packages.lock.json
+
+      - name: Verificar Docker
+        run: docker info >/dev/null
+
+      - name: Restaurar com lockfiles
+        working-directory: app/backend
+        run: dotnet restore ColetaSeletiva.slnx --locked-mode
+
+      - name: Compilar
+        working-directory: app/backend
+        run: dotnet build ColetaSeletiva.slnx --no-restore --configuration Release
+
+      - name: Testes de integração
+        working-directory: app/backend
+        env:
+          TESTCONTAINERS_RYUK_DISABLED: "false"
+        run: >-
+          dotnet test tests/ColetaSeletiva.IntegrationTests/ColetaSeletiva.IntegrationTests.csproj
+          --no-build --no-restore --configuration Release
+
+  frontend:
+    name: Frontend (build, formatação e testes)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: app/frontend/package-lock.json
+
+      - name: Instalar dependências
+        working-directory: app/frontend
+        run: npm ci
+
+      - name: Verificar formatação
+        working-directory: app/frontend
+        run: npm run format:check
+
+      - name: Compilar
+        working-directory: app/frontend
+        run: npm run build
+
+      - name: Testes unitários
+        working-directory: app/frontend
+        run: npm test
+
+  detect-e2e:
+    name: Detectar suíte E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      enabled: ${{ steps.check.outputs.enabled }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Verificar app/e2e/package.json
+        id: check
+        run: |
+          if [ -f app/e2e/package.json ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Suíte E2E ainda não criada; job será habilitado quando app/e2e existir."
+          fi
+
+  e2e:
+    name: E2E (Playwright)
+    needs: detect-e2e
+    if: needs.detect-e2e.outputs.enabled == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: app/backend/global.json
+          cache: true
+          cache-dependency-path: app/backend/**/packages.lock.json
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            app/frontend/package-lock.json
+            app/e2e/package-lock.json
+
+      - name: Verificar Docker
+        run: docker info >/dev/null
+
+      - name: Gerar credenciais efêmeras
+        run: |
+          PASSWORD="$(openssl rand -base64 32)"
+          SIGNING_KEY="$(openssl rand -base64 48)"
+          echo "::add-mask::$PASSWORD"
+          echo "::add-mask::$SIGNING_KEY"
+          {
+            echo "MSSQL_SA_PASSWORD=$PASSWORD"
+            echo "Jwt__SigningKey=$SIGNING_KEY"
+            echo "ConnectionStrings__ColetaSeletiva=Server=127.0.0.1,1433;Database=ColetaSeletiva;User Id=sa;Password=$PASSWORD;Encrypt=True;TrustServerCertificate=True;"
+          } >> "$GITHUB_ENV"
+
+      - name: Subir SQL Server
+        run: docker compose --project-directory app/infra up -d --wait --wait-timeout 240
+
+      - name: Aplicar migrations
+        run: bash app/scripts/apply-migrations.sh
+
+      - name: Instalar dependências E2E
+        working-directory: app/e2e
+        run: npm ci
+
+      - name: Instalar Chromium do Playwright
+        working-directory: app/e2e
+        run: npx playwright install --with-deps chromium
+
+      # O Playwright sobe a API e a SPA na mesma origem via webServer/proxy.
+      - name: Executar fluxos E2E
+        working-directory: app/e2e
+        run: npm test
+
+      - name: Remover infraestrutura
+        if: always()
+        run: docker compose --project-directory app/infra down -v
+
+  security:
+    name: Vulnerabilidades e segredos
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout com histórico completo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: app/backend/global.json
+          cache: true
+          cache-dependency-path: app/backend/**/packages.lock.json
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: app/frontend/package-lock.json
+
+      - name: Restaurar backend
+        working-directory: app/backend
+        run: dotnet restore ColetaSeletiva.slnx --locked-mode
+
+      - name: Instalar dependências do frontend
+        working-directory: app/frontend
+        run: npm ci
+
+      - name: Verificar vulnerabilidades
+        run: bash app/scripts/check-vulnerabilities.sh
+
+      - name: Verificar segredos
+        run: bash app/scripts/check-secrets.sh

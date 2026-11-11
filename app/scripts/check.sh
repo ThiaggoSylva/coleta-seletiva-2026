@@ -24,6 +24,10 @@ npm run format:check
 npm run build
 npm test
 
+echo "== Segurança =="
+bash "$SCRIPT_DIR/check-vulnerabilities.sh"
+bash "$SCRIPT_DIR/check-secrets.sh"
+
 echo "== Infraestrutura =="
 load_local_env
 if [[ -n "${MSSQL_SA_PASSWORD:-}" ]]; then

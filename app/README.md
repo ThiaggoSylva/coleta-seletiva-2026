@@ -117,6 +117,23 @@ dotnet package search Moq --take 3 --format json
 Os metadados de `targetFramework` foram conferidos nos arquivos `.nuspec` dos
 pacotes no NuGet. Nenhuma versão foi presumida sem consulta.
 
+## Integração contínua
+
+O workflow `.github/workflows/ci.yml` roda em pull requests para a `main` e em
+pushes na `main`, sem job de deploy:
+
+- **backend:** restore por lockfiles, `dotnet format`, build Release e testes
+  unitários;
+- **integração:** testes com SQL real e Testcontainers;
+- **frontend:** `npm ci`, formatação, build e testes Vitest;
+- **segurança:** vulnerabilidades NuGet/npm e varredura de segredos com
+  gitleaks;
+- **E2E:** o job é habilitado automaticamente quando `app/e2e/package.json`
+  existir, o que ocorre na tarefa 7.2 da mudança `f1-fundacao-segura`.
+
+O comando local equivalente é `bash app/scripts/check.sh`. A execução real do
+workflow fica para o PR da mudança, quando a suíte E2E já estiver criada.
+
 ## Segredos e dados
 
 - Nenhuma senha, chave, token ou dado pessoal real pertence a este diretório.
