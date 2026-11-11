@@ -12,7 +12,7 @@
 
 ## 2. Modelo de dados, Identity e migrations
 
-- [ ] 2.1 Implementar as entidades `Organizacao`, `Usuario`, `RefreshToken` e `Auditoria`, o `DbContext` derivado de `IdentityDbContext`, os índices únicos e as `rowversion`; verificar com teste de modelo que os tipos, tamanhos, nulabilidade e índices correspondem ao design (RF-01, RF-05; RNF-01; DT-04, DT-07).
+- [x] 2.1 Implementar as entidades `Organizacao`, `Usuario`, `RefreshToken` e `Auditoria`, o `DbContext` derivado de `IdentityDbContext`, os índices únicos e as `rowversion`; verificar com teste de modelo que os tipos, tamanhos, nulabilidade e índices correspondem ao design (RF-01, RF-05; RNF-01; DT-04, DT-07).
 - [ ] 2.2 Configurar papéis Administrador, Operador e Cidadão, normalização de usuário/e-mail e seed apenas de papéis; verificar com teste de integração que os papéis existem e que usuário/e-mail duplicados são rejeitados (RF-01, RF-04; RNF-01; DT-04, DT-05).
 - [ ] 2.3 Criar a migration inicial e aplicá-la em banco limpo; verificar com `dotnet ef database update`, inspeção das tabelas/índices e teste de que um novo banco recebe o schema completo (DT-04, DT-07, DT-19).
 - [ ] 2.4 Implementar `ITenantContext` a partir das claims, filtros globais de leitura, guarda de escrita no `SaveChanges` e FKs compostas; verificar com testes de integração A/B para leitura, criação, alteração e exclusão lógica com IDs conhecidos (RF-03; RNF-01, RNF-03; CA-01, CA-02; DT-06, DT-07).
