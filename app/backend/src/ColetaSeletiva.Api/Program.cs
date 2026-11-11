@@ -1,4 +1,8 @@
+using ColetaSeletiva.Api.Configuration;
+
 var builder = WebApplication.CreateBuilder(args);
+
+StartupConfiguration.Validate(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();

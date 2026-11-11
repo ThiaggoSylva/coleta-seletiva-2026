@@ -7,7 +7,7 @@
 - [x] 1.3 Criar `app/frontend` com Angular standalone/zoneless, Tailwind, Vitest e estrutura de features; verificar com `npm ci`, `npm run build` e `npm test -- --run`.
 - [x] 1.4 Criar `app/infra/compose.yaml` para SQL Server 2022 Developer, com volume, healthcheck, porta restrita ao host e senha por variável de ambiente; verificar com `docker compose config` e com a subida do serviço até o healthcheck. Se Docker não estiver disponível, registrar o bloqueio sem instalar nada sem autorização (RF-01; RNF-03; DT-19, DT-20).
 - [x] 1.5 Criar `app/scripts` para preparar o banco, aplicar migrations e executar as verificações locais; verificar que cada script é idempotente e que o script de banco funciona em um volume limpo (RF-01; RNF-03; DT-19, DT-20).
-- [ ] 1.6 Configurar user-secrets, placeholders de ambiente e validação de configuração na inicialização; verificar que a API falha cedo sem connection string ou chave JWT e que nenhum segredo real está versionado (RNF-01; DT-22).
+- [x] 1.6 Configurar user-secrets, placeholders de ambiente e validação de configuração na inicialização; verificar que a API falha cedo sem connection string ou chave JWT e que nenhum segredo real está versionado (RNF-01; DT-22).
 - [ ] 1.7 Criar o workflow `.github/workflows/ci.yml` com restore por lockfiles, lint/formatação, build .NET e Angular, testes unitários, integração com Testcontainers/SQL real, E2E e verificação de vulnerabilidades e segredos; verificar a sintaxe com `actionlint` ou equivalente e executar os mesmos comandos localmente, deixando a execução real para o PR da mudança, sem job de deploy (DT-17, DT-21).
 
 ## 2. Modelo de dados, Identity e migrations

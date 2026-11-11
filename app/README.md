@@ -123,3 +123,7 @@ pacotes no NuGet. Nenhuma versão foi presumida sem consulta.
 - Connection strings e chaves JWT virão de user-secrets no desenvolvimento e de
   variáveis de ambiente/segredos na CI.
 - Exemplos versionados conterão apenas placeholders.
+- A API valida connection string, `Jwt:Issuer`, `Jwt:Audience` e
+  `Jwt:SigningKey` na inicialização e falha antes de ouvir se algum valor
+  obrigatório estiver ausente ou inseguro. O guia está em
+  `app/backend/README.md`.
