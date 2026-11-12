@@ -1,5 +1,7 @@
+using ColetaSeletiva.Application.Seguranca;
 using ColetaSeletiva.Infrastructure.Identidade;
 using ColetaSeletiva.Infrastructure.Persistencia;
+using ColetaSeletiva.Infrastructure.Tenancy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,10 @@ public static class InfrastructureServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
+
+        services.AddScoped<TenantContext>();
+        services.AddScoped<ITenantContext>(provedor =>
+            provedor.GetRequiredService<TenantContext>());
 
         services.AddDbContext<ColetaSeletivaDbContext>(options =>
             options.UseSqlServer(connectionString));

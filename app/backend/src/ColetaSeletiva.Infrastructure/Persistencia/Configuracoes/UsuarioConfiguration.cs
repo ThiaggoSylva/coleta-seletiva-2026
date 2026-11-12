@@ -34,8 +34,8 @@ internal sealed class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
         builder
             .HasIndex(usuario => new { usuario.OrganizacaoId, usuario.Id })
             .IsUnique()
-            .HasFilter("[OrganizacaoId] IS NOT NULL")
-            .HasDatabaseName("UX_Usuario_OrganizacaoId_Id");
+            .HasFilter(null)
+            .HasDatabaseName("UX_Usuario_OrganizacaoId_Id_Composta");
         builder
             .HasIndex(usuario => usuario.OrganizacaoId)
             .HasDatabaseName("IX_Usuario_OrganizacaoId");

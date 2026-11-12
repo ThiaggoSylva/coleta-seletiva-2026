@@ -1,6 +1,7 @@
 using ColetaSeletiva.Domain.Entidades;
 using ColetaSeletiva.Infrastructure.Identidade;
 using ColetaSeletiva.Infrastructure.Persistencia;
+using ColetaSeletiva.Infrastructure.Tenancy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -89,7 +90,8 @@ public sealed class ColetaSeletivaDbContextModelTests
             nameof(Usuario.OrganizacaoId),
             nameof(Usuario.Id));
         Assert.IsTrue(indiceOrganizacao.IsUnique);
-        Assert.AreEqual("[OrganizacaoId] IS NOT NULL", indiceOrganizacao.GetFilter());
+        Assert.AreEqual("UX_Usuario_OrganizacaoId_Id_Composta", indiceOrganizacao.GetDatabaseName());
+        Assert.IsNull(indiceOrganizacao.GetFilter());
 
         var chaveEstrangeira = entidade
             .GetForeignKeys()
@@ -185,7 +187,7 @@ public sealed class ColetaSeletivaDbContextModelTests
             .UseSqlServer("Server=localhost;Database=ColetaSeletivaModelo;Integrated Security=True;")
             .Options;
 
-        using var contexto = new ColetaSeletivaDbContext(options);
+        using var contexto = new ColetaSeletivaDbContext(options, new TenantContext());
         return contexto.Model;
     }
 

@@ -61,9 +61,9 @@ public sealed class MigrationsTests
             Assert.IsTrue(indiceUsuario.Unico);
             Assert.AreEqual("([NormalizedUserName] IS NOT NULL)", indiceUsuario.Filtro);
 
-            var indiceOrganizacao = indices.Single(indice => indice.Nome == "UX_Usuario_OrganizacaoId_Id");
+            var indiceOrganizacao = indices.Single(indice => indice.Nome == "UX_Usuario_OrganizacaoId_Id_Composta");
             Assert.IsTrue(indiceOrganizacao.Unico);
-            Assert.AreEqual("([OrganizacaoId] IS NOT NULL)", indiceOrganizacao.Filtro);
+            Assert.IsNull(indiceOrganizacao.Filtro);
 
             var indiceRefresh = indices.Single(indice => indice.Nome == "UX_RefreshToken_Hash");
             Assert.IsTrue(indiceRefresh.Unico);
@@ -73,11 +73,16 @@ public sealed class MigrationsTests
             CollectionAssert.Contains(colunasRowVersion, "AspNetUsers.RowVersion");
 
             var exclusoes = await ConsultarExclusoesDeChavesEstrangeirasAsync(contexto);
-            Assert.AreEqual(4, exclusoes.Count, "Chaves estrangeiras da F1 não encontradas.");
+            Assert.AreEqual(5, exclusoes.Count, "Chaves estrangeiras da F1 não encontradas.");
             foreach (var exclusao in exclusoes)
             {
                 Assert.AreEqual("NO_ACTION", exclusao, $"FK com cascata indevida: {exclusao}.");
             }
+
+            var colunasFkComposta = await ConsultarColunasFkCompostaAsync(contexto);
+            CollectionAssert.AreEquivalent(
+                new[] { "OrganizacaoId", "AtorUsuarioId" },
+                colunasFkComposta);
 
             var gerenciadorPapeis = escopo.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
             await PapelSeeder.GarantirPapeisAsync(gerenciadorPapeis);
@@ -127,9 +132,27 @@ public sealed class MigrationsTests
                 'FK_AspNetUsers_Organizacao_OrganizacaoId',
                 'FK_RefreshToken_AspNetUsers_UsuarioId',
                 'FK_Auditoria_AspNetUsers_AtorUsuarioId',
+                'FK_Auditoria_AspNetUsers_OrganizacaoId_AtorUsuarioId',
                 'FK_Auditoria_Organizacao_OrganizacaoId'
             )
             ORDER BY chaves.name;
+            """);
+    }
+
+    private static async Task<List<string>> ConsultarColunasFkCompostaAsync(
+        ColetaSeletivaDbContext contexto)
+    {
+        return await ConsultarListaAsync(
+            contexto,
+            """
+            SELECT colunas.name
+            FROM sys.foreign_key_columns AS colunasFk
+            JOIN sys.columns AS colunas
+                ON colunas.object_id = colunasFk.parent_object_id
+               AND colunas.column_id = colunasFk.parent_column_id
+            WHERE colunasFk.constraint_object_id =
+                OBJECT_ID(N'[dbo].[FK_Auditoria_AspNetUsers_OrganizacaoId_AtorUsuarioId]')
+            ORDER BY colunasFk.constraint_column_id;
             """);
     }
 

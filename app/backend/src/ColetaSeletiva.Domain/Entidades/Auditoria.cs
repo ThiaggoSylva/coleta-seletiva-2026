@@ -1,6 +1,6 @@
 namespace ColetaSeletiva.Domain.Entidades;
 
-public sealed class Auditoria
+public sealed class Auditoria : IEntidadeDaOrganizacao
 {
     public const int AcaoMaxLength = 100;
     public const int EntidadeMaxLength = 100;

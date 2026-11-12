@@ -1,4 +1,5 @@
 using ColetaSeletiva.Api.Configuration;
+using ColetaSeletiva.Api.Seguranca;
 using ColetaSeletiva.Infrastructure;
 using ColetaSeletiva.Infrastructure.Identidade;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +17,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseMiddleware<TenantContextMiddleware>();
 
 await using (var escopo = app.Services.CreateAsyncScope())
 {

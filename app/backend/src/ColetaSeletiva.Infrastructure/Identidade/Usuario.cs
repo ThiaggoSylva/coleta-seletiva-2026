@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ColetaSeletiva.Infrastructure.Identidade;
 
-public sealed class Usuario : IdentityUser<Guid>
+public sealed class Usuario : IdentityUser<Guid>, IEntidadeDaOrganizacao
 {
     public const int NomeMaxLength = 150;
     public const int TelefoneMaxLength = 20;

@@ -71,7 +71,7 @@ app/
 | `Auditoria` | `Id`, `OrganizacaoId` anulável, `AtorUsuarioId` anulável, `Acao`, `Entidade`, `EntidadeId`, `CorrelacaoId`, `OcorridoEmUtc`, nomes dos campos alterados; sem valores pessoais |
 
 - `IdentityDbContext<Usuario, IdentityRole<Guid>, Guid>` abriga identidade e negócio no mesmo `DbContext`, permitindo transação única no registro (`DT-04`, `DT-07`).
-- Índices únicos filtrados garantem usuário e e-mail normalizados globalmente e `(OrganizacaoId, Id)` para entidades organizacionais; o filtro é necessário porque `OrganizacaoId` é nulo para Cidadão.
+- Índices únicos garantem usuário e e-mail normalizados globalmente; o filtro `IS NOT NULL` nesses índices só exclui linhas sem normalização. `(OrganizacaoId, Id)` é único **sem filtro**, pois o SQL Server não permite FK referenciar índice filtrado; a unicidade permanece válida para Cidadão porque `Id` já distingue as linhas mesmo com `OrganizacaoId` nulo.
 - FKs compostas `(OrganizacaoId, Id)` são usadas nas entidades organizacionais; `RefreshToken` e `Usuario` de Cidadão usam o vínculo por usuário e o escopo de dono. Sem cascade físico.
 - `OrganizacaoId` nunca é aceito do cliente. A criação de organização, administrador, papéis e auditoria ocorre em uma única transação.
 - A migration inicial cria as tabelas do Identity, `Organizacao`, `RefreshToken` e `Auditoria`, além dos índices e FKs. O seed contém apenas papéis e catálogos globais; nenhuma senha ou dado pessoal real.

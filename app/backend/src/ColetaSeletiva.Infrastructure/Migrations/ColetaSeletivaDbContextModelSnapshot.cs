@@ -247,8 +247,7 @@ namespace ColetaSeletiva.Infrastructure.Migrations
 
                     b.HasIndex("OrganizacaoId", "Id")
                         .IsUnique()
-                        .HasDatabaseName("UX_Usuario_OrganizacaoId_Id")
-                        .HasFilter("[OrganizacaoId] IS NOT NULL");
+                        .HasDatabaseName("UX_Usuario_OrganizacaoId_Id_Composta");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
