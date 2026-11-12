@@ -66,6 +66,7 @@ public sealed class RegistrarOrganizacaoHandler
                 Nome: usuario,
                 Usuario: usuario,
                 Email: entrada.Email.Trim(),
+                Telefone: null,
                 Senha: entrada.Senha,
                 OrganizacaoId: organizacao.Id,
                 TrocaSenhaPendente: false);
@@ -86,7 +87,7 @@ public sealed class RegistrarOrganizacaoHandler
                     OrganizacaoId: organizacao.Id,
                     AtorUsuarioId: criacao.Value,
                     Acao: AcoesAuditadas.OrganizacaoRegistrada,
-                    Entidade: nameof(Organizacao),
+                    Entidade: EntidadesAuditadas.Organizacao,
                     EntidadeId: organizacao.Id,
                     CorrelacaoId: correlacaoId,
                     OcorridoEmUtc: agora),

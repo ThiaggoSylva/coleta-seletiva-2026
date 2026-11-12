@@ -1,5 +1,4 @@
 using ColetaSeletiva.Application.Acesso;
-using ColetaSeletiva.Application.Erros;
 using ColetaSeletiva.Infrastructure.Identidade;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
@@ -31,6 +30,7 @@ internal sealed class CadastroDeContas : ICadastroDeContas
             UserName = conta.Usuario,
             Email = conta.Email,
             Nome = conta.Nome,
+            Telefone = conta.Telefone,
             OrganizacaoId = conta.OrganizacaoId,
             Ativo = true,
             TrocaSenhaPendente = conta.TrocaSenhaPendente,
@@ -41,38 +41,15 @@ internal sealed class CadastroDeContas : ICadastroDeContas
         var criacao = await _usuarios.CreateAsync(usuario, conta.Senha);
         if (!criacao.Succeeded)
         {
-            return Result.Fail<Guid>(criacao.Errors.Select(MapearErro));
+            return Result.Fail<Guid>(MapeamentoDeErrosIdentity.MapearVarios(criacao.Errors.ToList()));
         }
 
         var atribuicao = await _usuarios.AddToRoleAsync(usuario, papel);
         if (!atribuicao.Succeeded)
         {
-            return Result.Fail<Guid>(atribuicao.Errors.Select(MapearErro));
+            return Result.Fail<Guid>(MapeamentoDeErrosIdentity.MapearVarios(atribuicao.Errors.ToList()));
         }
 
         return Result.Ok(usuario.Id);
-    }
-
-    private static IError MapearErro(IdentityError erro)
-    {
-        return erro.Code switch
-        {
-            "DuplicateUserName" => new ErroDeConflito(
-                CodigosDeErro.UsuarioEmUso,
-                "O usuário informado já está em uso."),
-            "DuplicateEmail" => new ErroDeConflito(
-                CodigosDeErro.EmailEmUso,
-                "O e-mail informado já está em uso."),
-            "InvalidUserName" => new ErroDeValidacao(
-                "Usuario",
-                "O usuário informado é inválido."),
-            "InvalidEmail" => new ErroDeValidacao(
-                "Email",
-                "O e-mail informado é inválido."),
-            _ when erro.Code.StartsWith("Password", StringComparison.Ordinal) => new ErroDeValidacao(
-                "Senha",
-                "A senha não atende à política de segurança."),
-            _ => new ErroInterno("Não foi possível criar a conta."),
-        };
     }
 }

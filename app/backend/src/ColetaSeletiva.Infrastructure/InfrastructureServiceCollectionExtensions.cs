@@ -1,4 +1,5 @@
 using ColetaSeletiva.Application.Acesso;
+using ColetaSeletiva.Application.Acesso.PerfilDoCidadao;
 using ColetaSeletiva.Application.Auditoria;
 using ColetaSeletiva.Application.Persistencia;
 using ColetaSeletiva.Application.Seguranca;
@@ -29,6 +30,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IUnidadeDeTrabalho, UnidadeDeTrabalho>();
         services.AddScoped<IRegistroDeOrganizacoes, RegistroDeOrganizacoes>();
         services.AddScoped<ICadastroDeContas, CadastroDeContas>();
+        services.AddScoped<IPerfilDeCidadao, PerfilDeCidadao>();
         services.AddScoped<IRegistroDeAuditoria, RegistroDeAuditoria>();
 
         services.AddDbContext<ColetaSeletivaDbContext>(options =>

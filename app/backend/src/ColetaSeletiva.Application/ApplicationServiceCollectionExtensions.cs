@@ -1,3 +1,5 @@
+using ColetaSeletiva.Application.Acesso.PerfilDoCidadao;
+using ColetaSeletiva.Application.Acesso.RegistroDeCidadao;
 using ColetaSeletiva.Application.Acesso.RegistroDeOrganizacao;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +14,9 @@ public static class ApplicationServiceCollectionExtensions
 
         services.AddValidatorsFromAssembly(typeof(ApplicationServiceCollectionExtensions).Assembly);
         services.AddScoped<RegistrarOrganizacaoHandler>();
+        services.AddScoped<RegistrarCidadaoHandler>();
+        services.AddScoped<ObterPerfilDoCidadaoHandler>();
+        services.AddScoped<AtualizarPerfilDoCidadaoHandler>();
         services.AddSingleton<TimeProvider>(TimeProvider.System);
 
         return services;

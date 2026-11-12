@@ -1,12 +1,13 @@
 using ColetaSeletiva.Domain.Entidades;
+using ColetaSeletiva.Domain.Identidade;
 using Microsoft.AspNetCore.Identity;
 
 namespace ColetaSeletiva.Infrastructure.Identidade;
 
 public sealed class Usuario : IdentityUser<Guid>, IEntidadeDaOrganizacao
 {
-    public const int NomeMaxLength = 150;
-    public const int TelefoneMaxLength = 20;
+    public const int NomeMaxLength = LimitesDeConta.NomeMaxLength;
+    public const int TelefoneMaxLength = LimitesDeConta.TelefoneMaxLength;
 
     public Usuario()
     {

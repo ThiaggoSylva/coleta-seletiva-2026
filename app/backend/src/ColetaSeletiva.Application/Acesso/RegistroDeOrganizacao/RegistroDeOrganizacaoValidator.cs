@@ -1,12 +1,13 @@
 using ColetaSeletiva.Domain.Entidades;
+using ColetaSeletiva.Domain.Identidade;
 using FluentValidation;
 
 namespace ColetaSeletiva.Application.Acesso.RegistroDeOrganizacao;
 
 public sealed class RegistroDeOrganizacaoValidator : AbstractValidator<RegistroDeOrganizacaoEntrada>
 {
-    public const int UsuarioMaxLength = 256;
-    public const int EmailMaxLength = 256;
+    public const int UsuarioMaxLength = LimitesDeConta.UsuarioMaxLength;
+    public const int EmailMaxLength = LimitesDeConta.EmailMaxLength;
 
     public RegistroDeOrganizacaoValidator()
     {

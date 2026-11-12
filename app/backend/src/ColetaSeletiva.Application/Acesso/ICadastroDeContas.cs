@@ -6,6 +6,7 @@ public sealed record ContaNova(
     string Nome,
     string Usuario,
     string Email,
+    string? Telefone,
     string Senha,
     Guid? OrganizacaoId,
     bool TrocaSenhaPendente);

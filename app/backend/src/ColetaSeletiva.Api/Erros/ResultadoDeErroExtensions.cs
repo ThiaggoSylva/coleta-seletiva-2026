@@ -52,6 +52,36 @@ internal static class ResultadoDeErroExtensions
             return new ConflictObjectResult(problema);
         }
 
+        var naoAutenticado = erros.OfType<ErroNaoAutenticado>().FirstOrDefault();
+        if (naoAutenticado is not null)
+        {
+            return CriarProblema(
+                StatusCodes.Status401Unauthorized,
+                CodigosDeErro.NaoAutenticado,
+                naoAutenticado.Message,
+                traceId);
+        }
+
+        var acessoNegado = erros.OfType<ErroDeAcessoNegado>().FirstOrDefault();
+        if (acessoNegado is not null)
+        {
+            return CriarProblema(
+                StatusCodes.Status403Forbidden,
+                CodigosDeErro.AcessoNegado,
+                acessoNegado.Message,
+                traceId);
+        }
+
+        var naoEncontrado = erros.OfType<ErroNaoEncontrado>().FirstOrDefault();
+        if (naoEncontrado is not null)
+        {
+            return CriarProblema(
+                StatusCodes.Status404NotFound,
+                CodigosDeErro.NaoEncontrado,
+                naoEncontrado.Message,
+                traceId);
+        }
+
         var interno = new ProblemDetails
         {
             Status = StatusCodes.Status500InternalServerError,
@@ -64,6 +94,27 @@ internal static class ResultadoDeErroExtensions
         return new ObjectResult(interno)
         {
             StatusCode = StatusCodes.Status500InternalServerError,
+        };
+    }
+
+    private static ObjectResult CriarProblema(
+        int status,
+        string codigo,
+        string titulo,
+        string traceId)
+    {
+        var problema = new ProblemDetails
+        {
+            Status = status,
+            Title = titulo,
+        };
+
+        problema.Extensions["code"] = codigo;
+        problema.Extensions["traceId"] = traceId;
+
+        return new ObjectResult(problema)
+        {
+            StatusCode = status,
         };
     }
 
