@@ -18,19 +18,25 @@ public sealed class AuthController : ControllerBase
     private readonly IniciarSessaoHandler _iniciarSessao;
     private readonly RenovarSessaoHandler _renovarSessao;
     private readonly EncerrarSessaoHandler _encerrarSessao;
+    private readonly AlterarSenhaHandler _alterarSenha;
+    private readonly ObterContaAtualHandler _obterContaAtual;
 
     public AuthController(
         RegistrarOrganizacaoHandler registrarOrganizacao,
         RegistrarCidadaoHandler registrarCidadao,
         IniciarSessaoHandler iniciarSessao,
         RenovarSessaoHandler renovarSessao,
-        EncerrarSessaoHandler encerrarSessao)
+        EncerrarSessaoHandler encerrarSessao,
+        AlterarSenhaHandler alterarSenha,
+        ObterContaAtualHandler obterContaAtual)
     {
         _registrarOrganizacao = registrarOrganizacao;
         _registrarCidadao = registrarCidadao;
         _iniciarSessao = iniciarSessao;
         _renovarSessao = renovarSessao;
         _encerrarSessao = encerrarSessao;
+        _alterarSenha = alterarSenha;
+        _obterContaAtual = obterContaAtual;
     }
 
     [HttpPost("registro-organizacao")]
@@ -109,6 +115,50 @@ public sealed class AuthController : ControllerBase
         return Ok(MapearSessao(sessao));
     }
 
+    [HttpGet("me")]
+    [Authorize]
+    [ProducesResponseType<ContaDaSessaoResposta>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ObterContaAtual(CancellationToken cancellationToken)
+    {
+        Response.Headers.CacheControl = "no-store";
+
+        var resultado = await _obterContaAtual.ExecutarAsync(cancellationToken);
+
+        return resultado.IsSuccess
+            ? Ok(MapearConta(resultado.Value))
+            : this.ParaProblemDetails(resultado.Errors);
+    }
+
+    [HttpPost("alterar-senha")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> AlterarSenha(
+        AlterarSenhaEntrada entrada,
+        CancellationToken cancellationToken)
+    {
+        Response.Headers.CacheControl = "no-store";
+
+        var resultado = await _alterarSenha.ExecutarAsync(
+            entrada,
+            ObterCorrelacaoId(),
+            cancellationToken);
+
+        if (resultado.IsFailed)
+        {
+            return this.ParaProblemDetails(resultado.Errors);
+        }
+
+        LimparCookieDeRefresh();
+        return NoContent();
+    }
+
     [HttpPost("refresh")]
     [AllowAnonymous]
     [ValidarOrigemDoCookie]
@@ -163,13 +213,18 @@ public sealed class AuthController : ControllerBase
         return new SessaoResposta(
             TokenDeAcesso: sessao.TokenDeAcesso,
             ExpiraEmUtc: sessao.ExpiraEmUtc,
-            Usuario: new ContaDaSessaoResposta(
-                Id: sessao.Conta.Id,
-                Nome: sessao.Conta.Nome,
-                Email: sessao.Conta.Email,
-                Papel: sessao.Conta.Papel,
-                OrganizacaoId: sessao.Conta.OrganizacaoId,
-                TrocaSenhaPendente: sessao.Conta.TrocaSenhaPendente));
+            Usuario: MapearConta(sessao.Conta));
+    }
+
+    private static ContaDaSessaoResposta MapearConta(ContaAutenticada conta)
+    {
+        return new ContaDaSessaoResposta(
+            Id: conta.Id,
+            Nome: conta.Nome,
+            Email: conta.Email,
+            Papel: conta.Papel,
+            OrganizacaoId: conta.OrganizacaoId,
+            TrocaSenhaPendente: conta.TrocaSenhaPendente);
     }
 
     private string? ObterRefreshDoCookie()

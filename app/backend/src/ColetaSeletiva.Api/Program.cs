@@ -56,6 +56,7 @@ var app = builder.Build();
 
 app.UseRouting();
 app.UseAuthentication();
+app.UseMiddleware<PrimeiroAcessoMiddleware>();
 app.UseMiddleware<TenantContextMiddleware>();
 app.UseAuthorization();
 

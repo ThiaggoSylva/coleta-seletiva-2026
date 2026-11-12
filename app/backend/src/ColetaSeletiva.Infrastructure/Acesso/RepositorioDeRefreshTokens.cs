@@ -71,4 +71,19 @@ internal sealed class RepositorioDeRefreshTokens : IRepositorioDeRefreshTokens
                     revogadoEmUtc),
                 cancellationToken);
     }
+
+    public async Task RevogarTodasAsync(
+        Guid usuarioId,
+        DateTimeOffset revogadoEmUtc,
+        CancellationToken cancellationToken = default)
+    {
+        await _contexto.RefreshTokens
+            .Where(token => token.UsuarioId == usuarioId
+                && token.RevogadoEmUtc == null)
+            .ExecuteUpdateAsync(
+                atualizacao => atualizacao.SetProperty(
+                    token => token.RevogadoEmUtc,
+                    revogadoEmUtc),
+                cancellationToken);
+    }
 }

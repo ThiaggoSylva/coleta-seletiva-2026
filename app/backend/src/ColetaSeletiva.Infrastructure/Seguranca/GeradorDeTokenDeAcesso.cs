@@ -40,6 +40,11 @@ internal sealed class GeradorDeTokenDeAcesso : IGeradorDeTokenDeAcesso
             claims[ClaimsColetaSeletiva.OrganizacaoId] = organizacaoId.ToString();
         }
 
+        if (conta.TrocaSenhaPendente)
+        {
+            claims[ClaimsColetaSeletiva.TrocaSenhaPendente] = "true";
+        }
+
         var descritor = new SecurityTokenDescriptor
         {
             Issuer = _configuracao.Issuer,

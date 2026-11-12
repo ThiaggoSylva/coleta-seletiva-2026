@@ -35,6 +35,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IPerfilDeCidadao, PerfilDeCidadao>();
         services.AddScoped<IRegistroDeAuditoria, RegistroDeAuditoria>();
         services.AddScoped<IAutenticacaoDeContas, AutenticacaoDeContas>();
+        services.AddScoped<IAlteracaoDeSenha, AlteracaoDeSenha>();
         services.AddScoped<IRepositorioDeRefreshTokens, RepositorioDeRefreshTokens>();
         services.AddSingleton<IGeradorDeTokenDeAcesso, GeradorDeTokenDeAcesso>();
 

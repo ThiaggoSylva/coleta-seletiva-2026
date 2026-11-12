@@ -8,9 +8,12 @@ using ColetaSeletiva.Application;
 using ColetaSeletiva.Application.Acesso.RegistroDeCidadao;
 using ColetaSeletiva.Application.Acesso.RegistroDeOrganizacao;
 using ColetaSeletiva.Domain.Entidades;
+using ColetaSeletiva.Domain.Identidade;
 using ColetaSeletiva.Infrastructure;
+using ColetaSeletiva.Infrastructure.Identidade;
 using ColetaSeletiva.Infrastructure.Persistencia;
 using ColetaSeletiva.IntegrationTests.Infrastructure;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,12 +25,14 @@ public sealed class SessaoApiTests
 {
     private const string NomeBanco = "ColetaSeletivaSessaoApiTests";
     private const string Senha = "SenhaForte!123";
+    private const string NovaSenha = "NovaSenhaForte!456";
 
     private static ApiDeTeste _fabrica = null!;
     private static ServiceProvider _provedor = null!;
     private static string _adminUsuario = null!;
     private static string _adminEmail = null!;
     private static string _cidadaoEmail = null!;
+    private static Guid _organizacaoId;
 
     [ClassInitialize]
     public static void Inicializar(TestContext _)
@@ -222,6 +227,173 @@ public sealed class SessaoApiTests
         Assert.AreEqual(HttpStatusCode.Unauthorized, renovacao.StatusCode);
     }
 
+    [TestMethod]
+    public async Task Primeiro_acesso_bloqueia_rotas_ate_a_troca_de_senha()
+    {
+        var sufixo = Guid.NewGuid().ToString("N");
+        var operador = await CriarOperadorPendenteAsync(sufixo);
+        using var cliente = _fabrica.CreateClient();
+
+        var login = await EntrarAsync(cliente, operador, Senha);
+        Assert.AreEqual(HttpStatusCode.OK, login.StatusCode);
+
+        using var corpoLogin = JsonDocument.Parse(await login.Content.ReadAsStringAsync());
+        var usuario = corpoLogin.RootElement.GetProperty("usuario");
+        Assert.IsTrue(usuario.GetProperty("trocaSenhaPendente").GetBoolean());
+        var token = corpoLogin.RootElement.GetProperty("tokenDeAcesso").GetString()!;
+        var refresh = ExtrairRefresh(ObterCookieDeRefresh(login));
+        Assert.IsNotNull(refresh);
+
+        var contaAtual = await cliente.SendAsync(
+            CriarRequisicaoAutenticada(HttpMethod.Get, "/api/v1/auth/me", token));
+        Assert.AreEqual(HttpStatusCode.OK, contaAtual.StatusCode);
+        using (var corpoConta = JsonDocument.Parse(await contaAtual.Content.ReadAsStringAsync()))
+        {
+            Assert.IsTrue(corpoConta.RootElement.GetProperty("trocaSenhaPendente").GetBoolean());
+        }
+
+        var rotaBloqueada = await cliente.SendAsync(
+            CriarRequisicaoAutenticada(HttpMethod.Get, "/health", token));
+        Assert.AreEqual(HttpStatusCode.Forbidden, rotaBloqueada.StatusCode);
+        using (var corpoBloqueio = JsonDocument.Parse(await rotaBloqueada.Content.ReadAsStringAsync()))
+        {
+            Assert.AreEqual(
+                "acesso_negado",
+                corpoBloqueio.RootElement.GetProperty("code").GetString());
+        }
+
+        var alteracao = await EnviarAlteracaoDeSenhaAsync(cliente, token, Senha, NovaSenha);
+        Assert.AreEqual(HttpStatusCode.NoContent, alteracao.StatusCode);
+
+        var cookieDeLimpeza = ObterCookieDeRefresh(alteracao);
+        Assert.IsNotNull(cookieDeLimpeza);
+        Assert.IsNull(ExtrairRefresh(cookieDeLimpeza));
+
+        var renovacao = await EnviarRefreshAsync(
+            cliente,
+            refresh,
+            origem: "http://localhost",
+            solicitadoCom: ConstantesDeSessao.ValorSolicitadoCom);
+        Assert.AreEqual(HttpStatusCode.Unauthorized, renovacao.StatusCode);
+
+        var novoLogin = await EntrarAsync(cliente, operador, NovaSenha);
+        Assert.AreEqual(HttpStatusCode.OK, novoLogin.StatusCode);
+
+        using var corpoNovoLogin = JsonDocument.Parse(await novoLogin.Content.ReadAsStringAsync());
+        Assert.IsFalse(
+            corpoNovoLogin.RootElement
+                .GetProperty("usuario")
+                .GetProperty("trocaSenhaPendente")
+                .GetBoolean());
+        var novoToken = corpoNovoLogin.RootElement.GetProperty("tokenDeAcesso").GetString()!;
+
+        var liberado = await cliente.SendAsync(
+            CriarRequisicaoAutenticada(HttpMethod.Get, "/health", novoToken));
+        Assert.AreEqual(HttpStatusCode.OK, liberado.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task Troca_de_senha_invalida_mantem_a_pendencia_e_a_sessao()
+    {
+        var sufixo = Guid.NewGuid().ToString("N");
+        var operador = await CriarOperadorPendenteAsync(sufixo);
+        using var cliente = _fabrica.CreateClient();
+        var login = await EntrarAsync(cliente, operador, Senha);
+        var token = await LerTokenAsync(login);
+
+        var senhaAtualIncorreta = await EnviarAlteracaoDeSenhaAsync(
+            cliente,
+            token,
+            "SenhaErrada!999",
+            NovaSenha);
+        Assert.AreEqual(HttpStatusCode.BadRequest, senhaAtualIncorreta.StatusCode);
+        var errosSenhaAtual = await LerErrosDeValidacaoAsync(senhaAtualIncorreta);
+        Assert.IsTrue(errosSenhaAtual.ContainsKey("SenhaAtual"));
+        StringAssert.Contains(errosSenhaAtual["SenhaAtual"].Single(), "incorreta");
+
+        var senhaFraca = await EnviarAlteracaoDeSenhaAsync(cliente, token, Senha, "curta");
+        Assert.AreEqual(HttpStatusCode.BadRequest, senhaFraca.StatusCode);
+        var errosNovaSenha = await LerErrosDeValidacaoAsync(senhaFraca);
+        Assert.IsTrue(errosNovaSenha.ContainsKey("NovaSenha"));
+        Assert.IsTrue(
+            errosNovaSenha["NovaSenha"].Any(erro => erro.Contains("12", StringComparison.Ordinal)));
+
+        var contaAtual = await cliente.SendAsync(
+            CriarRequisicaoAutenticada(HttpMethod.Get, "/api/v1/auth/me", token));
+        Assert.AreEqual(HttpStatusCode.OK, contaAtual.StatusCode);
+        using (var corpo = JsonDocument.Parse(await contaAtual.Content.ReadAsStringAsync()))
+        {
+            Assert.IsTrue(corpo.RootElement.GetProperty("trocaSenhaPendente").GetBoolean());
+        }
+
+        var loginComSenhaOriginal = await EntrarAsync(cliente, operador, Senha);
+        Assert.AreEqual(HttpStatusCode.OK, loginComSenhaOriginal.StatusCode);
+    }
+
+    private static async Task<string> CriarOperadorPendenteAsync(string sufixo)
+    {
+        await using var escopo = _fabrica.Services.CreateAsyncScope();
+        var gerenciador = escopo.ServiceProvider.GetRequiredService<UserManager<Usuario>>();
+        var agora = DateTimeOffset.UtcNow;
+        var usuario = $"operador.{sufixo}";
+        var conta = new Usuario
+        {
+            UserName = usuario,
+            Email = $"{usuario}@example.org",
+            Nome = $"Operador {sufixo}",
+            OrganizacaoId = _organizacaoId,
+            Ativo = true,
+            TrocaSenhaPendente = true,
+            CriadoEmUtc = agora,
+            AtualizadoEmUtc = agora,
+        };
+
+        var criacao = await gerenciador.CreateAsync(conta, Senha);
+        Assert.IsTrue(criacao.Succeeded, Descrever(criacao));
+
+        var atribuicao = await gerenciador.AddToRoleAsync(conta, Papeis.Operador);
+        Assert.IsTrue(atribuicao.Succeeded, Descrever(atribuicao));
+
+        return usuario;
+    }
+
+    private static async Task<HttpResponseMessage> EnviarAlteracaoDeSenhaAsync(
+        HttpClient cliente,
+        string token,
+        string senhaAtual,
+        string novaSenha)
+    {
+        var requisicao = CriarRequisicaoAutenticada(
+            HttpMethod.Post,
+            "/api/v1/auth/alterar-senha",
+            token);
+        requisicao.Content = JsonContent.Create(new { senhaAtual, novaSenha });
+
+        return await cliente.SendAsync(requisicao);
+    }
+
+    private static async Task<Dictionary<string, string[]>> LerErrosDeValidacaoAsync(
+        HttpResponseMessage resposta)
+    {
+        using var corpo = JsonDocument.Parse(await resposta.Content.ReadAsStringAsync());
+        var erros = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var propriedade in corpo.RootElement.GetProperty("errors").EnumerateObject())
+        {
+            erros[propriedade.Name] = propriedade.Value
+                .EnumerateArray()
+                .Select(item => item.GetString() ?? string.Empty)
+                .ToArray();
+        }
+
+        return erros;
+    }
+
+    private static string Descrever(IdentityResult resultado)
+    {
+        return string.Join("; ", resultado.Errors.Select(erro => $"{erro.Code}: {erro.Description}"));
+    }
+
     private static async Task<HttpResponseMessage> EntrarAsync(
         HttpClient cliente,
         string identificador,
@@ -390,6 +562,7 @@ public sealed class SessaoApiTests
         Assert.IsTrue(
             organizacao.IsSuccess,
             string.Join("; ", organizacao.Errors.Select(erro => erro.Message)));
+        _organizacaoId = organizacao.Value.OrganizacaoId;
 
         var cidadao = await registrarCidadao.ExecutarAsync(
             new RegistroDeCidadaoEntrada(

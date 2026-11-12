@@ -11,6 +11,7 @@ using ColetaSeletiva.Infrastructure;
 using ColetaSeletiva.Infrastructure.Identidade;
 using ColetaSeletiva.Infrastructure.Persistencia;
 using ColetaSeletiva.Infrastructure.Seguranca;
+using ColetaSeletiva.Infrastructure.Tenancy;
 using ColetaSeletiva.IntegrationTests.Infrastructure;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
@@ -27,6 +28,7 @@ public sealed class SessaoTests
 {
     private const string NomeBanco = "ColetaSeletivaSessaoTests";
     private const string SenhaValida = "SenhaForte!123";
+    private const string NovaSenhaValida = "NovaSenhaForte!456";
     private const string Emissor = "coleta-seletiva-testes";
     private const string Publico = "coleta-seletiva-testes-web";
     private const string Chave = "chave-de-testes-com-pelo-menos-32-bytes!!";
@@ -260,6 +262,176 @@ public sealed class SessaoTests
         Assert.IsInstanceOfType<ErroNaoAutenticado>(renovacao.Errors.Single());
     }
 
+    [TestMethod]
+    public async Task Troca_de_senha_pendente_revoga_todas_as_sessoes_e_exige_novo_login()
+    {
+        var sufixo = Guid.NewGuid().ToString("N");
+        var organizacao = await RegistrarOrganizacaoAsync(sufixo);
+        var operador = await CriarUsuarioAsync(
+            usuario: $"operador.{sufixo}",
+            email: $"operador.{sufixo}@example.org",
+            organizacaoId: organizacao.OrganizacaoId,
+            papel: Papeis.Operador,
+            trocaSenhaPendente: true);
+
+        var primeiraSessao = await IniciarAsync(operador.UserName!);
+        var segundaSessao = await IniciarAsync(operador.Email!);
+        Assert.IsTrue(primeiraSessao.IsSuccess, Descrever(primeiraSessao));
+        Assert.IsTrue(segundaSessao.IsSuccess, Descrever(segundaSessao));
+        Assert.IsTrue(primeiraSessao.Value.Conta.TrocaSenhaPendente);
+
+        var jwtPendente = await LerTokenValidadoAsync(primeiraSessao.Value.TokenDeAcesso);
+        Assert.AreEqual(
+            "true",
+            jwtPendente.GetClaim(ClaimsColetaSeletiva.TrocaSenhaPendente).Value);
+
+        var refreshPrimeira = await ObterRefreshAsync(primeiraSessao.Value.RefreshToken);
+        var refreshSegunda = await ObterRefreshAsync(segundaSessao.Value.RefreshToken);
+        Assert.AreNotEqual(refreshPrimeira.FamiliaId, refreshSegunda.FamiliaId);
+
+        var alteracao = await AlterarSenhaAsync(
+            operador.Id,
+            organizacao.OrganizacaoId,
+            ehCidadao: false,
+            new AlterarSenhaEntrada(SenhaValida, NovaSenhaValida));
+
+        Assert.IsTrue(alteracao.IsSuccess, Descrever(alteracao));
+
+        var usuarioAtualizado = await ObterUsuarioAsync(operador.Id);
+        Assert.IsFalse(usuarioAtualizado.TrocaSenhaPendente);
+        await using (var escopo = _provedor.CreateAsyncScope())
+        {
+            var gerenciador = escopo.ServiceProvider.GetRequiredService<UserManager<Usuario>>();
+            Assert.IsTrue(
+                await gerenciador.CheckPasswordAsync(usuarioAtualizado, NovaSenhaValida));
+        }
+
+        var tokensDoUsuario = await ObterTokensDoUsuarioAsync(operador.Id);
+        Assert.AreEqual(2, tokensDoUsuario.Count);
+        Assert.IsTrue(tokensDoUsuario.All(token => token.RevogadoEmUtc is not null));
+
+        var renovacao = await RenovarAsync(primeiraSessao.Value.RefreshToken);
+        Assert.IsTrue(renovacao.IsFailed);
+
+        var loginComSenhaAntiga = await IniciarAsync(operador.UserName!);
+        Assert.IsTrue(loginComSenhaAntiga.IsFailed);
+        Assert.AreEqual(
+            MensagensDeSessao.CredenciaisInvalidas,
+            loginComSenhaAntiga.Errors.OfType<ErroNaoAutenticado>().Single().Message);
+
+        var loginComSenhaNova = await IniciarAsync(operador.UserName!, NovaSenhaValida);
+        Assert.IsTrue(loginComSenhaNova.IsSuccess, Descrever(loginComSenhaNova));
+        Assert.IsFalse(loginComSenhaNova.Value.Conta.TrocaSenhaPendente);
+
+        var jwtNovo = await LerTokenValidadoAsync(loginComSenhaNova.Value.TokenDeAcesso);
+        Assert.IsFalse(
+            jwtNovo.TryGetClaim(ClaimsColetaSeletiva.TrocaSenhaPendente, out _));
+
+        await using var escopoAuditoria = _provedor.CreateAsyncScope();
+        var contexto = escopoAuditoria.ServiceProvider
+            .GetRequiredService<ColetaSeletivaDbContext>();
+        var auditorias = await contexto.Auditorias
+            .AsNoTracking()
+            .Where(auditoria => auditoria.EntidadeId == operador.Id
+                && auditoria.Acao == AcoesAuditadas.SenhaAlterada)
+            .ToListAsync();
+
+        Assert.AreEqual(1, auditorias.Count);
+        Assert.AreEqual(organizacao.OrganizacaoId, auditorias[0].OrganizacaoId);
+        Assert.AreEqual(operador.Id, auditorias[0].AtorUsuarioId);
+        Assert.AreEqual(EntidadesAuditadas.Usuario, auditorias[0].Entidade);
+        Assert.AreEqual(CorrelacaoId, auditorias[0].CorrelacaoId);
+    }
+
+    [TestMethod]
+    public async Task Troca_de_senha_rejeita_senha_atual_incorreta_e_nova_senha_fora_da_politica()
+    {
+        var sufixo = Guid.NewGuid().ToString("N");
+        var organizacao = await RegistrarOrganizacaoAsync(sufixo);
+        var operador = await CriarUsuarioAsync(
+            usuario: $"operador.{sufixo}",
+            email: $"operador.{sufixo}@example.org",
+            organizacaoId: organizacao.OrganizacaoId,
+            papel: Papeis.Operador,
+            trocaSenhaPendente: true);
+
+        var sessao = await IniciarAsync(operador.UserName!);
+        Assert.IsTrue(sessao.IsSuccess, Descrever(sessao));
+
+        var senhaIncorreta = await AlterarSenhaAsync(
+            operador.Id,
+            organizacao.OrganizacaoId,
+            ehCidadao: false,
+            new AlterarSenhaEntrada("SenhaErrada!999", NovaSenhaValida));
+
+        Assert.IsTrue(senhaIncorreta.IsFailed);
+        var erroSenhaAtual = senhaIncorreta.Errors.OfType<ErroDeValidacao>().Single();
+        Assert.AreEqual(nameof(AlterarSenhaEntrada.SenhaAtual), erroSenhaAtual.Campo);
+        Assert.AreEqual("A senha atual informada está incorreta.", erroSenhaAtual.Message);
+
+        var senhaFraca = await AlterarSenhaAsync(
+            operador.Id,
+            organizacao.OrganizacaoId,
+            ehCidadao: false,
+            new AlterarSenhaEntrada(SenhaValida, "curta"));
+
+        Assert.IsTrue(senhaFraca.IsFailed);
+        var errosPolitica = senhaFraca.Errors.OfType<ErroDeValidacao>().ToList();
+        Assert.IsTrue(errosPolitica.Count > 0);
+        Assert.IsTrue(errosPolitica.All(erro => erro.Campo == "NovaSenha"));
+        Assert.IsTrue(errosPolitica.Any(erro => erro.Message.Contains("12", StringComparison.Ordinal)));
+
+        var usuario = await ObterUsuarioAsync(operador.Id);
+        Assert.IsTrue(usuario.TrocaSenhaPendente);
+
+        var loginComSenhaOriginal = await IniciarAsync(operador.UserName!);
+        Assert.IsTrue(loginComSenhaOriginal.IsSuccess, Descrever(loginComSenhaOriginal));
+
+        var refresh = await ObterRefreshAsync(sessao.Value.RefreshToken);
+        Assert.IsNull(refresh.RevogadoEmUtc);
+
+        await using var escopo = _provedor.CreateAsyncScope();
+        var contexto = escopo.ServiceProvider.GetRequiredService<ColetaSeletivaDbContext>();
+        Assert.IsFalse(
+            await contexto.Auditorias.AnyAsync(auditoria =>
+                auditoria.EntidadeId == operador.Id
+                && auditoria.Acao == AcoesAuditadas.SenhaAlterada));
+    }
+
+    private static async Task<Result> AlterarSenhaAsync(
+        Guid usuarioId,
+        Guid? organizacaoId,
+        bool ehCidadao,
+        AlterarSenhaEntrada entrada)
+    {
+        await using var escopo = _provedor.CreateAsyncScope();
+        var tenantContext = escopo.ServiceProvider.GetRequiredService<TenantContext>();
+        tenantContext.DefinirEscopo(usuarioId, organizacaoId, ehCidadao);
+
+        var handler = escopo.ServiceProvider.GetRequiredService<AlterarSenhaHandler>();
+        return await handler.ExecutarAsync(entrada, CorrelacaoId);
+    }
+
+    private static async Task<Usuario> ObterUsuarioAsync(Guid usuarioId)
+    {
+        await using var escopo = _provedor.CreateAsyncScope();
+        var gerenciador = escopo.ServiceProvider.GetRequiredService<UserManager<Usuario>>();
+
+        return await gerenciador.FindByIdAsync(usuarioId.ToString())
+            ?? throw new InvalidOperationException("Usuário de teste não encontrado.");
+    }
+
+    private static async Task<List<RefreshToken>> ObterTokensDoUsuarioAsync(Guid usuarioId)
+    {
+        await using var escopo = _provedor.CreateAsyncScope();
+        var contexto = escopo.ServiceProvider.GetRequiredService<ColetaSeletivaDbContext>();
+
+        return await contexto.RefreshTokens
+            .AsNoTracking()
+            .Where(token => token.UsuarioId == usuarioId)
+            .ToListAsync();
+    }
+
     private static async Task<ResultadoDeOrganizacao> RegistrarOrganizacaoAsync(string sufixo)
     {
         var entrada = new RegistroDeOrganizacaoEntrada(
@@ -302,7 +474,8 @@ public sealed class SessaoTests
         string email,
         Guid? organizacaoId,
         string papel,
-        bool ativo = true)
+        bool ativo = true,
+        bool trocaSenhaPendente = false)
     {
         await using var escopo = _provedor.CreateAsyncScope();
         var gerenciador = escopo.ServiceProvider.GetRequiredService<UserManager<Usuario>>();
@@ -315,6 +488,7 @@ public sealed class SessaoTests
             Nome = $"Usuário {usuario}",
             OrganizacaoId = organizacaoId,
             Ativo = ativo,
+            TrocaSenhaPendente = trocaSenhaPendente,
             CriadoEmUtc = agora,
             AtualizadoEmUtc = agora,
         };

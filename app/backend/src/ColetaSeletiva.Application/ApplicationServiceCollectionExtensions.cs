@@ -21,6 +21,8 @@ public static class ApplicationServiceCollectionExtensions
         services.AddScoped<IniciarSessaoHandler>();
         services.AddScoped<RenovarSessaoHandler>();
         services.AddScoped<EncerrarSessaoHandler>();
+        services.AddScoped<AlterarSenhaHandler>();
+        services.AddScoped<ObterContaAtualHandler>();
         services.AddSingleton<TimeProvider>(TimeProvider.System);
 
         return services;

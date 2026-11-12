@@ -57,4 +57,9 @@ public interface IRepositorioDeRefreshTokens
         Guid familiaId,
         DateTimeOffset revogadoEmUtc,
         CancellationToken cancellationToken = default);
+
+    Task RevogarTodasAsync(
+        Guid usuarioId,
+        DateTimeOffset revogadoEmUtc,
+        CancellationToken cancellationToken = default);
 }
