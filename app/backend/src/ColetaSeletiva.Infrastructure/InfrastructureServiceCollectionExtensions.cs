@@ -1,5 +1,6 @@
 using ColetaSeletiva.Application.Acesso;
 using ColetaSeletiva.Application.Acesso.PerfilDoCidadao;
+using ColetaSeletiva.Application.Acesso.Sessao;
 using ColetaSeletiva.Application.Auditoria;
 using ColetaSeletiva.Application.Persistencia;
 using ColetaSeletiva.Application.Seguranca;
@@ -7,6 +8,7 @@ using ColetaSeletiva.Infrastructure.Acesso;
 using ColetaSeletiva.Infrastructure.AuditoriaDeEventos;
 using ColetaSeletiva.Infrastructure.Identidade;
 using ColetaSeletiva.Infrastructure.Persistencia;
+using ColetaSeletiva.Infrastructure.Seguranca;
 using ColetaSeletiva.Infrastructure.Tenancy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +34,9 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<ICadastroDeContas, CadastroDeContas>();
         services.AddScoped<IPerfilDeCidadao, PerfilDeCidadao>();
         services.AddScoped<IRegistroDeAuditoria, RegistroDeAuditoria>();
+        services.AddScoped<IAutenticacaoDeContas, AutenticacaoDeContas>();
+        services.AddScoped<IRepositorioDeRefreshTokens, RepositorioDeRefreshTokens>();
+        services.AddSingleton<IGeradorDeTokenDeAcesso, GeradorDeTokenDeAcesso>();
 
         services.AddDbContext<ColetaSeletivaDbContext>(options =>
             options.UseSqlServer(connectionString));

@@ -72,11 +72,63 @@ public sealed class StartupConfigurationTests
         StringAssert.Contains(excecao.Message, "Jwt:Audience");
     }
 
+    [TestMethod]
+    public void CriarJwtSettings_devolve_os_valores_validados()
+    {
+        var configuracao = StartupConfiguration.CriarJwtSettings(CriarConfiguracao());
+
+        Assert.AreEqual("coleta-seletiva-api", configuracao.Issuer);
+        Assert.AreEqual("coleta-seletiva-web", configuracao.Audience);
+        Assert.AreEqual(ChaveValida, configuracao.SigningKey);
+    }
+
+    [TestMethod]
+    public void CriarConfiguracaoDeSessao_usa_padroes_de_15_minutos_e_7_dias()
+    {
+        var configuracao = StartupConfiguration.CriarConfiguracaoDeSessao(CriarConfiguracao());
+
+        Assert.AreEqual(TimeSpan.FromMinutes(15), configuracao.ValidadeDoTokenDeAcesso);
+        Assert.AreEqual(TimeSpan.FromDays(7), configuracao.ValidadeDoRefresh);
+    }
+
+    [TestMethod]
+    public void CriarConfiguracaoDeSessao_rejeita_duracao_nao_positiva()
+    {
+        var excecao = Assert.ThrowsExactly<InvalidOperationException>(
+            () => StartupConfiguration.CriarConfiguracaoDeSessao(
+                CriarConfiguracao(accessTokenMinutes: "0")));
+
+        StringAssert.Contains(excecao.Message, "Sessao:AccessTokenMinutos");
+    }
+
+    [TestMethod]
+    public void CriarConfiguracaoDeSessao_rejeita_refresh_menor_que_o_token()
+    {
+        var excecao = Assert.ThrowsExactly<InvalidOperationException>(
+            () => StartupConfiguration.CriarConfiguracaoDeSessao(
+                CriarConfiguracao(accessTokenMinutes: "1440", refreshTokenDias: "1")));
+
+        StringAssert.Contains(excecao.Message, "refresh");
+    }
+
+    [TestMethod]
+    public void Validate_rejeita_origem_permitida_invalida()
+    {
+        var excecao = Assert.ThrowsExactly<InvalidOperationException>(
+            () => StartupConfiguration.Validate(
+                CriarConfiguracao(origemPermitida: "localhost:4200")));
+
+        StringAssert.Contains(excecao.Message, "Sessao:OrigemPermitida");
+    }
+
     private static IConfiguration CriarConfiguracao(
         string? connectionString = "Server=localhost;Database=teste;User Id=teste;",
         string? issuer = "coleta-seletiva-api",
         string? audience = "coleta-seletiva-web",
-        string? signingKey = ChaveValida)
+        string? signingKey = ChaveValida,
+        string? accessTokenMinutes = null,
+        string? refreshTokenDias = null,
+        string? origemPermitida = null)
     {
         var valores = new Dictionary<string, string?>
         {
@@ -84,6 +136,9 @@ public sealed class StartupConfigurationTests
             ["Jwt:Issuer"] = issuer,
             ["Jwt:Audience"] = audience,
             ["Jwt:SigningKey"] = signingKey,
+            ["Sessao:AccessTokenMinutos"] = accessTokenMinutes,
+            ["Sessao:RefreshTokenDias"] = refreshTokenDias,
+            ["Sessao:OrigemPermitida"] = origemPermitida,
         };
 
         return new ConfigurationBuilder()

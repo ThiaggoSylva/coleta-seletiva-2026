@@ -243,14 +243,6 @@
         "resolved": "8.19.2",
         "contentHash": "HJbo/lnSfNHUfphPRT910poQc4T2/9+8svFLvzuaYHGAOJ2Tu+oEDqpX0BVP3BJ4OuUM1kylEKyaiX2fCAK3Cw=="
       },
-      "Microsoft.IdentityModel.JsonWebTokens": {
-        "type": "Transitive",
-        "resolved": "8.19.2",
-        "contentHash": "ui3fuBT4fs8kdKfBthI4NzLYIBIneEVS8UrL1JVBzAn80UiKmngBBi0BEByE7n/9c+EElcfFlCMFFTqpkBSLNA==",
-        "dependencies": {
-          "Microsoft.IdentityModel.Tokens": "8.19.2"
-        }
-      },
       "Microsoft.IdentityModel.Logging": {
         "type": "Transitive",
         "resolved": "8.19.2",
@@ -475,7 +467,8 @@
           "ColetaSeletiva.Domain": "[1.0.0, )",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[10.0.12, )",
           "Microsoft.EntityFrameworkCore": "[10.0.12, )",
-          "Microsoft.EntityFrameworkCore.SqlServer": "[10.0.12, )"
+          "Microsoft.EntityFrameworkCore.SqlServer": "[10.0.12, )",
+          "Microsoft.IdentityModel.JsonWebTokens": "[8.19.2, )"
         }
       },
       "FluentResults": {
@@ -526,6 +519,15 @@
         "dependencies": {
           "Microsoft.Data.SqlClient": "6.1.6",
           "Microsoft.EntityFrameworkCore.Relational": "10.0.12"
+        }
+      },
+      "Microsoft.IdentityModel.JsonWebTokens": {
+        "type": "CentralTransitive",
+        "requested": "[8.19.2, )",
+        "resolved": "8.19.2",
+        "contentHash": "ui3fuBT4fs8kdKfBthI4NzLYIBIneEVS8UrL1JVBzAn80UiKmngBBi0BEByE7n/9c+EElcfFlCMFFTqpkBSLNA==",
+        "dependencies": {
+          "Microsoft.IdentityModel.Tokens": "8.19.2"
         }
       },
       "System.Security.Cryptography.Pkcs": {

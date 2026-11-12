@@ -1,6 +1,7 @@
 using ColetaSeletiva.Application.Acesso.PerfilDoCidadao;
 using ColetaSeletiva.Application.Acesso.RegistroDeCidadao;
 using ColetaSeletiva.Application.Acesso.RegistroDeOrganizacao;
+using ColetaSeletiva.Application.Acesso.Sessao;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,6 +18,9 @@ public static class ApplicationServiceCollectionExtensions
         services.AddScoped<RegistrarCidadaoHandler>();
         services.AddScoped<ObterPerfilDoCidadaoHandler>();
         services.AddScoped<AtualizarPerfilDoCidadaoHandler>();
+        services.AddScoped<IniciarSessaoHandler>();
+        services.AddScoped<RenovarSessaoHandler>();
+        services.AddScoped<EncerrarSessaoHandler>();
         services.AddSingleton<TimeProvider>(TimeProvider.System);
 
         return services;

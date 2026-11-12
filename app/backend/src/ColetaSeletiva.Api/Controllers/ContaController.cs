@@ -1,10 +1,12 @@
 using ColetaSeletiva.Api.Erros;
 using ColetaSeletiva.Application.Acesso.PerfilDoCidadao;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ColetaSeletiva.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/v1/conta")]
 public sealed class ContaController : ControllerBase
 {

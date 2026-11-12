@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using ColetaSeletiva.Domain.Identidade;
 using ColetaSeletiva.Infrastructure.Tenancy;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ColetaSeletiva.Api.Seguranca;
 
@@ -21,6 +22,12 @@ public sealed class TenantContextMiddleware
         ArgumentNullException.ThrowIfNull(tenantContext);
 
         tenantContext.Limpar();
+
+        if (httpContext.GetEndpoint()?.Metadata.GetMetadata<IAllowAnonymous>() is not null)
+        {
+            await _next(httpContext);
+            return;
+        }
 
         var usuario = httpContext.User;
         if (usuario.Identity?.IsAuthenticated == true)
