@@ -1,5 +1,7 @@
+using System.Text.Json.Serialization;
 using ColetaSeletiva.Api.Configuration;
 using ColetaSeletiva.Api.Seguranca;
+using ColetaSeletiva.Application;
 using ColetaSeletiva.Infrastructure;
 using ColetaSeletiva.Infrastructure.Identidade;
 using Microsoft.AspNetCore.Identity;
@@ -12,8 +14,12 @@ StartupConfiguration.Validate(builder.Configuration);
 var connectionString = builder.Configuration.GetConnectionString(StartupConfiguration.ConnectionStringName)
     ?? throw new InvalidOperationException("A connection string da aplicação não foi configurada.");
 
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(connectionString);
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddOpenApi();
 
 var app = builder.Build();

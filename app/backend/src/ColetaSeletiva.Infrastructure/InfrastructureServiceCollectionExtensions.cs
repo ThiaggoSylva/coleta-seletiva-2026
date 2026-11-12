@@ -1,4 +1,9 @@
+using ColetaSeletiva.Application.Acesso;
+using ColetaSeletiva.Application.Auditoria;
+using ColetaSeletiva.Application.Persistencia;
 using ColetaSeletiva.Application.Seguranca;
+using ColetaSeletiva.Infrastructure.Acesso;
+using ColetaSeletiva.Infrastructure.AuditoriaDeEventos;
 using ColetaSeletiva.Infrastructure.Identidade;
 using ColetaSeletiva.Infrastructure.Persistencia;
 using ColetaSeletiva.Infrastructure.Tenancy;
@@ -21,6 +26,11 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<ITenantContext>(provedor =>
             provedor.GetRequiredService<TenantContext>());
 
+        services.AddScoped<IUnidadeDeTrabalho, UnidadeDeTrabalho>();
+        services.AddScoped<IRegistroDeOrganizacoes, RegistroDeOrganizacoes>();
+        services.AddScoped<ICadastroDeContas, CadastroDeContas>();
+        services.AddScoped<IRegistroDeAuditoria, RegistroDeAuditoria>();
+
         services.AddDbContext<ColetaSeletivaDbContext>(options =>
             options.UseSqlServer(connectionString));
 
@@ -28,6 +38,12 @@ public static class InfrastructureServiceCollectionExtensions
             .AddIdentityCore<Usuario>(options =>
             {
                 options.User.RequireUniqueEmail = true;
+                options.Password.RequiredLength = 12;
+                options.Password.RequiredUniqueChars = 6;
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
             })
             .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ColetaSeletivaDbContext>();
