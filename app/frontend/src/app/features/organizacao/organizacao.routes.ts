@@ -1,7 +1,15 @@
 import { Routes } from '@angular/router';
+import { autenticadoGuard, papelGuard, primeiroAcessoGuard } from '../../core/auth/auth.guards';
 
-/**
- * Área autenticada da organização, incluindo a gestão de equipe.
- * As telas serão adicionadas nas tarefas de interface da F1.
- */
-export const ORGANIZACAO_ROUTES: Routes = [];
+export const ORGANIZACAO_ROUTES: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'inicio',
+  },
+  {
+    path: 'inicio',
+    canActivate: [autenticadoGuard, primeiroAcessoGuard, papelGuard('Administrador', 'Operador')],
+    loadComponent: () => import('./inicio/inicio.page').then((m) => m.InicioPage),
+  },
+];

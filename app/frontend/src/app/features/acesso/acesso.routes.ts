@@ -1,7 +1,25 @@
 import { Routes } from '@angular/router';
 
-/**
- * Área pública de acesso: registro, login, primeiro acesso e troca de senha.
- * As telas serão adicionadas nas tarefas de interface da F1.
- */
-export const ACESSO_ROUTES: Routes = [];
+export const ACESSO_ROUTES: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'login',
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./login/login.page').then((m) => m.LoginPage),
+  },
+  {
+    path: 'registro-organizacao',
+    loadComponent: () =>
+      import('./registro-organizacao/registro-organizacao.page').then(
+        (m) => m.RegistroOrganizacaoPage,
+      ),
+  },
+  {
+    path: 'registro-cidadao',
+    loadComponent: () =>
+      import('./registro-cidadao/registro-cidadao.page').then((m) => m.RegistroCidadaoPage),
+  },
+];

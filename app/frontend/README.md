@@ -62,4 +62,5 @@ As rotas de cada área são carregadas sob demanda por `app.routes.ts`.
   `HttpOnly`. Nenhum token ou dado pessoal é gravado em `localStorage`.
 - A API é a autoridade de autorização; guards apenas melhoram a navegação.
 - A interface não monta claims nem decide sozinha o escopo da organização.
-- As telas serão implementadas nas tarefas 6.x da mudança `f1-fundacao-segura`.
+- As telas da F1 são entregues incrementalmente nas tarefas 6.x da mudança
+  `f1-fundacao-segura`.

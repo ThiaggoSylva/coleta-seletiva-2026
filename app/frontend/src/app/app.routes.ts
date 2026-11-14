@@ -2,6 +2,11 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'acesso/login',
+  },
+  {
     path: 'acesso',
     loadChildren: () => import('./features/acesso/acesso.routes').then((m) => m.ACESSO_ROUTES),
   },
