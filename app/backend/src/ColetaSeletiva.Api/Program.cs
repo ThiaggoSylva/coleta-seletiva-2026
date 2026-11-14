@@ -4,6 +4,7 @@ using ColetaSeletiva.Api.Configuration;
 using ColetaSeletiva.Api.Erros;
 using ColetaSeletiva.Api.Seguranca;
 using ColetaSeletiva.Application;
+using ColetaSeletiva.Domain.Identidade;
 using ColetaSeletiva.Infrastructure;
 using ColetaSeletiva.Infrastructure.Identidade;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -63,7 +64,12 @@ builder.Services
             ValidAlgorithms = [SecurityAlgorithms.HmacSha256],
         };
     });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(
+        PoliticasDeAcesso.SomenteAdministrador,
+        policy => policy.RequireRole(Papeis.Administrador));
+});
 builder.Services
     .AddControllers()
     .AddJsonOptions(options =>

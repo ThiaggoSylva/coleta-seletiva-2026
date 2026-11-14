@@ -1,3 +1,4 @@
+using ColetaSeletiva.Application.Acesso.Equipe;
 using ColetaSeletiva.Application.Acesso.PerfilDoCidadao;
 using ColetaSeletiva.Application.Acesso.RegistroDeCidadao;
 using ColetaSeletiva.Application.Acesso.RegistroDeOrganizacao;
@@ -23,6 +24,9 @@ public static class ApplicationServiceCollectionExtensions
         services.AddScoped<EncerrarSessaoHandler>();
         services.AddScoped<AlterarSenhaHandler>();
         services.AddScoped<ObterContaAtualHandler>();
+        services.AddScoped<CriarOperadorHandler>();
+        services.AddScoped<ObterOperadorHandler>();
+        services.AddScoped<EditarOperadorHandler>();
         services.AddSingleton<TimeProvider>(TimeProvider.System);
 
         return services;

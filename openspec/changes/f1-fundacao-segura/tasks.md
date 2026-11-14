@@ -27,7 +27,7 @@
 
 ## 4. Gestão de equipe
 
-- [ ] 4.1 Implementar criação e edição de Operadores pelo Administrador, com papel fixo, organização do token e senha inicial com troca pendente; verificar com testes de integração os cenários de CA-02 e a rejeição de duplicidade e de papel/organização divergentes (RF-04; RNF-01; CA-02; DT-05–DT-07, DT-12).
+- [x] 4.1 Implementar criação e edição de Operadores pelo Administrador, com papel fixo, organização do token e senha inicial com troca pendente; verificar com testes de integração os cenários de CA-02 e a rejeição de duplicidade e de papel/organização divergentes (RF-04; RNF-01; CA-02; DT-05–DT-07, DT-12).
 - [ ] 4.2 Implementar inativação lógica de Operador, revogação das sessões e preservação do ator em registros históricos; verificar com testes que a conta inativa não autentica e que as sessões existentes deixam de renovar (RF-04, RF-22; RNF-01; CA-02; DT-06, DT-07).
 - [ ] 4.3 Aplicar policies exclusivas do Administrador e escopo de organização nas rotas de equipe; verificar com testes de contrato 403 para Operador e Cidadão e 404 para Administrador de outra organização (RF-03, RF-04; RNF-01; CA-01, CA-02; DT-06, DT-07).
 
