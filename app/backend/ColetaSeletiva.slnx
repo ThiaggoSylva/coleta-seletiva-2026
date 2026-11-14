@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ColetaSeletiva.Api/ColetaSeletiva.Api.csproj" />
+    <Project Path="src/ColetaSeletiva.Application/ColetaSeletiva.Application.csproj" />
+    <Project Path="src/ColetaSeletiva.Domain/ColetaSeletiva.Domain.csproj" />
+    <Project Path="src/ColetaSeletiva.Infrastructure/ColetaSeletiva.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ColetaSeletiva.Application.Tests/ColetaSeletiva.Application.Tests.csproj" />
+    <Project Path="tests/ColetaSeletiva.Domain.Tests/ColetaSeletiva.Domain.Tests.csproj" />
+    <Project Path="tests/ColetaSeletiva.IntegrationTests/ColetaSeletiva.IntegrationTests.csproj" />
+  </Folder>
+</Solution>

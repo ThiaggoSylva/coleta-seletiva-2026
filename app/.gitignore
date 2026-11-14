@@ -1,0 +1,30 @@
+# Build e artefatos .NET
+**/bin/
+**/obj/
+**/TestResults/
+*.user
+*.suo
+**/.vs/
+
+# Dependências e artefatos do frontend
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+
+# Playwright
+**/playwright-report/
+**/test-results/
+**/blob-report/
+
+# Segredos e configuração local
+**/.env
+**/.env.*
+!**/.env.example
+**/*.pfx
+**/*.snk
+
+# Sistema operacional e editores
+**/.DS_Store
+**/Thumbs.db
+**/.idea/
