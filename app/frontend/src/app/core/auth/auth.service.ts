@@ -72,6 +72,10 @@ export class AuthService {
     return papel !== undefined && papeis.includes(papel);
   }
 
+  atualizarConta(nome: string, email: string): void {
+    this.conta.update((atual) => (atual === null ? null : { ...atual, nome, email }));
+  }
+
   limparSessao(): void {
     this.token.set(null);
     this.conta.set(null);

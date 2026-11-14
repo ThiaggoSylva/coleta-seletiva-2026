@@ -11,6 +11,11 @@
             Área da organização
           </a>
         }
+        @if (auth.possuiPapel('Cidadao') && !auth.trocaSenhaPendente()) {
+          <a routerLink="/cidadao/perfil" class="font-medium text-emerald-700 underline">
+            Meu perfil
+          </a>
+        }
         <a routerLink="/acesso/trocar-senha" class="font-medium text-emerald-700 underline">
           Trocar senha
         </a>

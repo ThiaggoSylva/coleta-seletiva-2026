@@ -41,7 +41,7 @@
 - [x] 6.1 Implementar `AuthService`, interceptor de token, renovação única por refresh e guards de rota; verificar com Vitest que o token não vai para `localStorage`, que o refresh ocorre uma vez e que a falha leva ao login (RF-02; RNF-01; DT-01, DT-05).
 - [x] 6.2 Criar as telas de registro de organização, registro de cidadão e login, com formulários reativos, rótulos, erros por campo e foco preservado; verificar com Vitest e com os fluxos de CA-01 e CA-02 no E2E (RF-01, RF-02, RF-05; CA-01, CA-02; DT-01, DT-02, DT-12).
 - [x] 6.3 Criar as telas de troca de senha e de primeiro acesso do Operador; verificar com Vitest o bloqueio até a troca, a validação da política e a mensagem de erro acessível (RF-02, RF-04; CA-02; DT-01, DT-12).
-- [ ] 6.4 Criar a tela de perfil do cidadão, com edição de nome, telefone e e-mail e tratamento de conflito; verificar com Vitest e E2E que o cidadão não altera papel nem acessa perfil de outro cidadão (RF-05; RNF-01; CA-02; DT-01, DT-06).
+- [x] 6.4 Criar a tela de perfil do cidadão, com edição de nome, telefone e e-mail e tratamento de conflito; verificar com Vitest e E2E que o cidadão não altera papel nem acessa perfil de outro cidadão (RF-05; RNF-01; CA-02; DT-01, DT-06).
 - [ ] 6.5 Criar as telas de listagem, criação, edição e inativação de Operadores, ocultando ações não permitidas ao Operador; verificar com Vitest que a UI esconde a gestão e que a API continua negando o acesso (RF-04; RNF-01; CA-02; DT-01, DT-06).
 
 ## 7. Integração, E2E e verificação final

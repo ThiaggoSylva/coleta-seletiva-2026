@@ -97,6 +97,17 @@ describe('AuthService', () => {
     expect(servico.contaAtual()).toBeNull();
   });
 
+  it('atualiza nome e e-mail da conta em memória', () => {
+    servico.login('ana@example.org', 'SenhaForte!123').subscribe();
+    http.expectOne('/api/v1/auth/login').flush(criarSessao('token-perfil'));
+
+    servico.atualizarConta('Ana Silva', 'ana.silva@example.org');
+
+    expect(servico.contaAtual()?.nome).toBe('Ana Silva');
+    expect(servico.contaAtual()?.email).toBe('ana.silva@example.org');
+    expect(servico.obterToken()).toBe('token-perfil');
+  });
+
   it('limpa a sessão após alterar a senha', () => {
     servico.login('ana@example.org', 'SenhaForte!123').subscribe();
     http.expectOne('/api/v1/auth/login').flush(criarSessao('token-senha'));

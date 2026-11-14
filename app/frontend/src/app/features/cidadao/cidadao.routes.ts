@@ -1,7 +1,15 @@
 import { Routes } from '@angular/router';
+import { autenticadoGuard, papelGuard, primeiroAcessoGuard } from '../../core/auth/auth.guards';
 
-/**
- * Área autenticada do cidadão, incluindo o próprio perfil.
- * As telas serão adicionadas nas tarefas de interface da F1.
- */
-export const CIDADAO_ROUTES: Routes = [];
+export const CIDADAO_ROUTES: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'perfil',
+  },
+  {
+    path: 'perfil',
+    canActivate: [autenticadoGuard, primeiroAcessoGuard, papelGuard('Cidadao')],
+    loadComponent: () => import('./perfil/perfil.page').then((m) => m.PerfilPage),
+  },
+];
