@@ -47,21 +47,27 @@ internal sealed class UnicidadeDeContas
             .ToListAsync(cancellationToken);
 
         var erros = new List<IError>();
+        var usuarioEhEmail = string.Equals(
+            usuarioNormalizado,
+            emailNormalizado,
+            StringComparison.Ordinal);
+        var conflitoDeUsuario = conflitos.Any(conflito => string.Equals(
+            conflito.NormalizedUserName,
+            usuarioNormalizado,
+            StringComparison.Ordinal));
+        var conflitoDeEmail = conflitos.Any(conflito => string.Equals(
+            conflito.NormalizedEmail,
+            emailNormalizado,
+            StringComparison.Ordinal));
 
-        if (conflitos.Any(conflito => string.Equals(
-                conflito.NormalizedUserName,
-                usuarioNormalizado,
-                StringComparison.Ordinal)))
+        if (!usuarioEhEmail && conflitoDeUsuario)
         {
             erros.Add(new ErroDeConflito(
                 CodigosDeErro.UsuarioEmUso,
                 "O usuário informado já está em uso."));
         }
 
-        if (conflitos.Any(conflito => string.Equals(
-                conflito.NormalizedEmail,
-                emailNormalizado,
-                StringComparison.Ordinal)))
+        if (conflitoDeEmail || (usuarioEhEmail && conflitoDeUsuario))
         {
             erros.Add(new ErroDeConflito(
                 CodigosDeErro.EmailEmUso,

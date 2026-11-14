@@ -91,7 +91,7 @@ public sealed class RegistroEPerfilDoCidadaoTests
         var resultado = await RegistrarAsync(segunda);
 
         Assert.IsTrue(resultado.IsFailed);
-        var conflito = resultado.Errors.OfType<ErroDeConflito>().First();
+        var conflito = resultado.Errors.OfType<ErroDeConflito>().Single();
         Assert.AreEqual(CodigosDeErro.EmailEmUso, conflito.Codigo);
 
         await using var escopo = _provedor.CreateAsyncScope();
