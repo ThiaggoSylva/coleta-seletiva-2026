@@ -1,5 +1,6 @@
 using ColetaSeletiva.Application.Acesso;
 using ColetaSeletiva.Application.Acesso.Equipe;
+using ColetaSeletiva.Application.Acesso.Sessao;
 using ColetaSeletiva.Application.Erros;
 using ColetaSeletiva.Domain.Identidade;
 using ColetaSeletiva.Infrastructure.Identidade;
@@ -14,17 +15,20 @@ internal sealed class GerenciamentoDeEquipe : IGerenciamentoDeEquipe
     private readonly UserManager<Usuario> _usuarios;
     private readonly ICadastroDeContas _contas;
     private readonly UnicidadeDeContas _unicidade;
+    private readonly IRepositorioDeRefreshTokens _refreshTokens;
     private readonly TimeProvider _relogio;
 
     public GerenciamentoDeEquipe(
         UserManager<Usuario> usuarios,
         ICadastroDeContas contas,
         UnicidadeDeContas unicidade,
+        IRepositorioDeRefreshTokens refreshTokens,
         TimeProvider relogio)
     {
         _usuarios = usuarios;
         _contas = contas;
         _unicidade = unicidade;
+        _refreshTokens = refreshTokens;
         _relogio = relogio;
     }
 
@@ -84,6 +88,22 @@ internal sealed class GerenciamentoDeEquipe : IGerenciamentoDeEquipe
             : Result.Ok(Mapear(operador));
     }
 
+    public async Task<Result<IReadOnlyList<ContaDaEquipe>>> ListarAsync(
+        Guid organizacaoId,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var operadores = await _usuarios.GetUsersInRoleAsync(Papeis.Operador);
+
+        return Result.Ok<IReadOnlyList<ContaDaEquipe>>(
+            operadores
+                .Where(operador => operador.OrganizacaoId == organizacaoId)
+                .OrderBy(operador => operador.Nome, StringComparer.OrdinalIgnoreCase)
+                .Select(Mapear)
+                .ToList());
+    }
+
     public async Task<Result<ContaDaEquipe>> AtualizarAsync(
         Guid organizacaoId,
         Guid operadorId,
@@ -136,6 +156,40 @@ internal sealed class GerenciamentoDeEquipe : IGerenciamentoDeEquipe
             return Result.Fail<ContaDaEquipe>(
                 MapeamentoDeErrosIdentity.MapearVarios(atualizacao.Errors.ToList()));
         }
+
+        return Result.Ok(Mapear(operador));
+    }
+
+    public async Task<Result<ContaDaEquipe>> InativarAsync(
+        Guid organizacaoId,
+        Guid operadorId,
+        CancellationToken cancellationToken = default)
+    {
+        var operador = await ObterOperadorAsync(
+            organizacaoId,
+            operadorId,
+            cancellationToken);
+
+        if (operador is null)
+        {
+            return Result.Fail<ContaDaEquipe>(OperadorNaoEncontrado());
+        }
+
+        var agora = _relogio.GetUtcNow();
+        operador.Ativo = false;
+        operador.AtualizadoEmUtc = agora;
+
+        var atualizacao = await _usuarios.UpdateAsync(operador);
+        if (!atualizacao.Succeeded)
+        {
+            return Result.Fail<ContaDaEquipe>(
+                MapeamentoDeErrosIdentity.MapearVarios(atualizacao.Errors.ToList()));
+        }
+
+        await _refreshTokens.RevogarTodasAsync(
+            operador.Id,
+            agora,
+            cancellationToken);
 
         return Result.Ok(Mapear(operador));
     }

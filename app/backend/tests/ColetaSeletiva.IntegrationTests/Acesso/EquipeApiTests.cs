@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using ColetaSeletiva.Api.Seguranca;
 using ColetaSeletiva.Application;
 using ColetaSeletiva.Application.Acesso.RegistroDeCidadao;
 using ColetaSeletiva.Application.Acesso.RegistroDeOrganizacao;
@@ -30,6 +31,8 @@ public sealed class EquipeApiTests
     private static ServiceProvider _provedor = null!;
     private static Guid _organizacaoAId;
     private static Guid _organizacaoBId;
+    private static Guid _adminAId;
+    private static Guid _adminBId;
     private static string _adminAUsuario = null!;
     private static string _adminAEmail = null!;
     private static string _adminBUsuario = null!;
@@ -365,6 +368,143 @@ public sealed class EquipeApiTests
         Assert.AreEqual(_organizacaoBId, persistido.OrganizacaoId);
     }
 
+    [TestMethod]
+    public async Task Administrador_lista_somente_operadores_da_propria_organizacao()
+    {
+        using var cliente = _fabrica.CreateClient();
+        var tokenA = await EntrarAsync(cliente, _adminAUsuario);
+        var tokenB = await EntrarAsync(cliente, _adminBUsuario);
+        var sufixo = Guid.NewGuid().ToString("N");
+        var operadorA1 = await CriarOperadorAsync(
+            cliente,
+            tokenA,
+            $"{sufixo}.a1",
+            $"operador.{sufixo}.a1",
+            $"operador.{sufixo}.a1@example.org");
+        var operadorA2 = await CriarOperadorAsync(
+            cliente,
+            tokenA,
+            $"{sufixo}.a2",
+            $"operador.{sufixo}.a2",
+            $"operador.{sufixo}.a2@example.org");
+        var operadorB = await CriarOperadorAsync(
+            cliente,
+            tokenB,
+            $"{sufixo}.b1",
+            $"operador.{sufixo}.b1",
+            $"operador.{sufixo}.b1@example.org");
+
+        var resposta = await cliente.SendAsync(
+            CriarRequisicaoAutenticada(HttpMethod.Get, "/api/v1/equipe", tokenA));
+
+        Assert.AreEqual(HttpStatusCode.OK, resposta.StatusCode);
+        using var corpo = JsonDocument.Parse(await resposta.Content.ReadAsStringAsync());
+        var ids = corpo.RootElement
+            .EnumerateArray()
+            .Select(item => item.GetProperty("id").GetGuid())
+            .ToList();
+
+        Assert.IsTrue(ids.Contains(operadorA1.Id));
+        Assert.IsTrue(ids.Contains(operadorA2.Id));
+        Assert.IsFalse(ids.Contains(operadorB.Id));
+        Assert.IsFalse(ids.Contains(_adminAId));
+        Assert.IsFalse(ids.Contains(_adminBId));
+
+        var consulta = await cliente.SendAsync(
+            CriarRequisicaoAutenticada(
+                HttpMethod.Get,
+                $"/api/v1/equipe/{operadorA1.Id}",
+                tokenA));
+        Assert.AreEqual(HttpStatusCode.OK, consulta.StatusCode);
+        using var corpoConsulta = JsonDocument.Parse(await consulta.Content.ReadAsStringAsync());
+        Assert.AreEqual(operadorA1.Id, corpoConsulta.RootElement.GetProperty("id").GetGuid());
+        Assert.AreEqual(_organizacaoAId, (await ObterUsuarioAsync(operadorA1.Id)).OrganizacaoId);
+    }
+
+    [TestMethod]
+    public async Task Inativacao_revoga_sessoes_impede_novo_login_e_preserva_historico()
+    {
+        using var cliente = _fabrica.CreateClient();
+        var tokenAdmin = await EntrarAsync(cliente, _adminAUsuario);
+        var sufixo = Guid.NewGuid().ToString("N");
+        var operador = await CriarOperadorAsync(
+            cliente,
+            tokenAdmin,
+            sufixo,
+            $"operador.{sufixo}",
+            $"operador.{sufixo}@example.org");
+        var sessao = await EntrarCompletoAsync(cliente, operador.Usuario, SenhaOperador);
+
+        var correlacaoId = Guid.NewGuid();
+        var requisicao = CriarRequisicaoAutenticada(
+            HttpMethod.Delete,
+            $"/api/v1/equipe/{operador.Id}",
+            tokenAdmin);
+        requisicao.Headers.Add("X-Correlation-Id", correlacaoId.ToString());
+
+        var inativacao = await cliente.SendAsync(requisicao);
+
+        Assert.AreEqual(HttpStatusCode.NoContent, inativacao.StatusCode);
+
+        var persistido = await ObterUsuarioAsync(operador.Id);
+        Assert.IsFalse(persistido.Ativo);
+        Assert.AreEqual(_organizacaoAId, persistido.OrganizacaoId);
+
+        var renovacao = await EnviarRefreshAsync(cliente, sessao.Refresh);
+        Assert.AreEqual(HttpStatusCode.Unauthorized, renovacao.StatusCode);
+
+        var novoLogin = await cliente.PostAsJsonAsync(
+            "/api/v1/auth/login",
+            new { identificador = operador.Usuario, senha = SenhaOperador });
+        Assert.AreEqual(HttpStatusCode.Unauthorized, novoLogin.StatusCode);
+
+        var contaAtual = await cliente.SendAsync(
+            CriarRequisicaoAutenticada(HttpMethod.Get, "/api/v1/auth/me", sessao.Token));
+        Assert.AreEqual(HttpStatusCode.Unauthorized, contaAtual.StatusCode);
+
+        var tokens = await ObterRefreshTokensAsync(operador.Id);
+        Assert.IsTrue(tokens.Count > 0);
+        Assert.IsTrue(tokens.All(token => token.RevogadoEmUtc is not null));
+
+        var auditoria = await ObterAuditoriaAsync(
+            AcoesAuditadas.OperadorInativado,
+            operador.Id);
+        Assert.AreEqual(_organizacaoAId, auditoria.OrganizacaoId);
+        Assert.AreEqual(_adminAId, auditoria.AtorUsuarioId);
+        Assert.AreEqual(correlacaoId, auditoria.CorrelacaoId);
+        Assert.AreEqual(EntidadesAuditadas.Usuario, auditoria.Entidade);
+        Assert.AreEqual("ativo", auditoria.CamposAlterados);
+
+        var auditoriasDoOperador = await ObterAuditoriasDoOperadorAsync(operador.Id);
+        Assert.IsTrue(auditoriasDoOperador.Any());
+        Assert.IsTrue(auditoriasDoOperador.Any(item => item.AtorUsuarioId == operador.Id));
+    }
+
+    [TestMethod]
+    public async Task Inativacao_de_operador_de_outra_organizacao_retorna_404()
+    {
+        using var cliente = _fabrica.CreateClient();
+        var tokenA = await EntrarAsync(cliente, _adminAUsuario);
+        var tokenB = await EntrarAsync(cliente, _adminBUsuario);
+        var sufixo = Guid.NewGuid().ToString("N");
+        var operadorB = await CriarOperadorAsync(
+            cliente,
+            tokenB,
+            sufixo,
+            $"operador.b.{sufixo}",
+            $"operador.b.{sufixo}@example.org");
+
+        var resposta = await cliente.SendAsync(
+            CriarRequisicaoAutenticada(
+                HttpMethod.Delete,
+                $"/api/v1/equipe/{operadorB.Id}",
+                tokenA));
+
+        Assert.AreEqual(HttpStatusCode.NotFound, resposta.StatusCode);
+        Assert.AreEqual("nao_encontrado", await LerCodigoAsync(resposta));
+        Assert.IsTrue((await ObterUsuarioAsync(operadorB.Id)).Ativo);
+    }
+
     private static async Task<OperadorCriado> CriarOperadorAsync(
         HttpClient cliente,
         string token,
@@ -440,13 +580,74 @@ public sealed class EquipeApiTests
         string identificador,
         string senha = Senha)
     {
+        var sessao = await EntrarCompletoAsync(cliente, identificador, senha);
+
+        return sessao.Token;
+    }
+
+    private static async Task<SessaoDeLogin> EntrarCompletoAsync(
+        HttpClient cliente,
+        string identificador,
+        string senha = Senha)
+    {
         var resposta = await cliente.PostAsJsonAsync(
             "/api/v1/auth/login",
             new { identificador, senha });
         Assert.AreEqual(HttpStatusCode.OK, resposta.StatusCode);
         using var corpo = JsonDocument.Parse(await resposta.Content.ReadAsStringAsync());
+        var token = corpo.RootElement.GetProperty("tokenDeAcesso").GetString()!;
+        var refresh = ExtrairRefresh(ObterCookieDeRefresh(resposta));
+        Assert.IsNotNull(refresh);
 
-        return corpo.RootElement.GetProperty("tokenDeAcesso").GetString()!;
+        return new SessaoDeLogin(token, refresh!);
+    }
+
+    private static async Task<HttpResponseMessage> EnviarRefreshAsync(
+        HttpClient cliente,
+        string refresh)
+    {
+        var requisicao = new HttpRequestMessage(HttpMethod.Post, "/api/v1/auth/refresh");
+        requisicao.Headers.TryAddWithoutValidation(
+            "Cookie",
+            $"{ConstantesDeSessao.NomeDoCookie}={refresh}");
+        requisicao.Headers.TryAddWithoutValidation(
+            ConstantesDeSessao.CabecalhoDeOrigem,
+            "http://localhost");
+        requisicao.Headers.TryAddWithoutValidation(
+            ConstantesDeSessao.CabecalhoSolicitadoCom,
+            ConstantesDeSessao.ValorSolicitadoCom);
+
+        return await cliente.SendAsync(requisicao);
+    }
+
+    private static string? ObterCookieDeRefresh(HttpResponseMessage resposta)
+    {
+        if (!resposta.Headers.TryGetValues("Set-Cookie", out var valores))
+        {
+            return null;
+        }
+
+        return valores.FirstOrDefault(valor => valor.StartsWith(
+            $"{ConstantesDeSessao.NomeDoCookie}=",
+            StringComparison.Ordinal));
+    }
+
+    private static string? ExtrairRefresh(string? cookie)
+    {
+        if (cookie is null)
+        {
+            return null;
+        }
+
+        var valor = cookie.Split(';', 2)[0];
+        var separador = valor.IndexOf('=', StringComparison.Ordinal);
+        if (separador < 0)
+        {
+            return null;
+        }
+
+        var conteudo = valor[(separador + 1)..];
+        return string.IsNullOrWhiteSpace(conteudo) ? null : conteudo;
     }
 
     private static async Task<string?> LerCodigoAsync(HttpResponseMessage resposta)
@@ -514,6 +715,28 @@ public sealed class EquipeApiTests
                 auditoria.Acao == acao && auditoria.EntidadeId == entidadeId);
     }
 
+    private static async Task<List<Auditoria>> ObterAuditoriasDoOperadorAsync(Guid operadorId)
+    {
+        await using var escopo = _provedor.CreateAsyncScope();
+        var contexto = escopo.ServiceProvider.GetRequiredService<ColetaSeletivaDbContext>();
+
+        return await contexto.Auditorias
+            .AsNoTracking()
+            .Where(auditoria => auditoria.EntidadeId == operadorId)
+            .ToListAsync();
+    }
+
+    private static async Task<List<RefreshToken>> ObterRefreshTokensAsync(Guid usuarioId)
+    {
+        await using var escopo = _provedor.CreateAsyncScope();
+        var contexto = escopo.ServiceProvider.GetRequiredService<ColetaSeletivaDbContext>();
+
+        return await contexto.RefreshTokens
+            .AsNoTracking()
+            .Where(token => token.UsuarioId == usuarioId)
+            .ToListAsync();
+    }
+
     private static async Task InicializarAsync()
     {
         var connectionString = await SqlServerTestDatabase.ObterConnectionStringAsync(NomeBanco);
@@ -564,6 +787,7 @@ public sealed class EquipeApiTests
             organizacaoA.IsSuccess,
             string.Join("; ", organizacaoA.Errors.Select(erro => erro.Message)));
         _organizacaoAId = organizacaoA.Value.OrganizacaoId;
+        _adminAId = organizacaoA.Value.AdministradorId;
 
         var organizacaoB = await registrarOrganizacao.ExecutarAsync(
             new RegistroDeOrganizacaoEntrada(
@@ -577,6 +801,7 @@ public sealed class EquipeApiTests
             organizacaoB.IsSuccess,
             string.Join("; ", organizacaoB.Errors.Select(erro => erro.Message)));
         _organizacaoBId = organizacaoB.Value.OrganizacaoId;
+        _adminBId = organizacaoB.Value.AdministradorId;
 
         var cidadao = await registrarCidadao.ExecutarAsync(
             new RegistroDeCidadaoEntrada(
@@ -614,4 +839,8 @@ public sealed class EquipeApiTests
         string Nome,
         string Usuario,
         string Email);
+
+    private sealed record SessaoDeLogin(
+        string Token,
+        string Refresh);
 }

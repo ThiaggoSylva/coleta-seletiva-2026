@@ -33,9 +33,18 @@ public interface IGerenciamentoDeEquipe
         Guid operadorId,
         CancellationToken cancellationToken = default);
 
+    Task<Result<IReadOnlyList<ContaDaEquipe>>> ListarAsync(
+        Guid organizacaoId,
+        CancellationToken cancellationToken = default);
+
     Task<Result<ContaDaEquipe>> AtualizarAsync(
         Guid organizacaoId,
         Guid operadorId,
         EditarOperadorEntrada entrada,
+        CancellationToken cancellationToken = default);
+
+    Task<Result<ContaDaEquipe>> InativarAsync(
+        Guid organizacaoId,
+        Guid operadorId,
         CancellationToken cancellationToken = default);
 }

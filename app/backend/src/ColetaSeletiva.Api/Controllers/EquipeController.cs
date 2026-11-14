@@ -15,16 +15,22 @@ public sealed class EquipeController : ControllerBase
 
     private readonly CriarOperadorHandler _criarOperador;
     private readonly ObterOperadorHandler _obterOperador;
+    private readonly ListarOperadoresHandler _listarOperadores;
     private readonly EditarOperadorHandler _editarOperador;
+    private readonly InativarOperadorHandler _inativarOperador;
 
     public EquipeController(
         CriarOperadorHandler criarOperador,
         ObterOperadorHandler obterOperador,
-        EditarOperadorHandler editarOperador)
+        ListarOperadoresHandler listarOperadores,
+        EditarOperadorHandler editarOperador,
+        InativarOperadorHandler inativarOperador)
     {
         _criarOperador = criarOperador;
         _obterOperador = obterOperador;
+        _listarOperadores = listarOperadores;
         _editarOperador = editarOperador;
+        _inativarOperador = inativarOperador;
     }
 
     [HttpPost]
@@ -65,6 +71,20 @@ public sealed class EquipeController : ControllerBase
             : this.ParaProblemDetails(resultado.Errors);
     }
 
+    [HttpGet]
+    [ProducesResponseType<IReadOnlyList<ContaDaEquipe>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Listar(CancellationToken cancellationToken)
+    {
+        var resultado = await _listarOperadores.ExecutarAsync(cancellationToken);
+
+        return resultado.IsSuccess
+            ? Ok(resultado.Value)
+            : this.ParaProblemDetails(resultado.Errors);
+    }
+
     [HttpPut("{id:guid}")]
     [ProducesResponseType<ContaDaEquipe>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
@@ -86,6 +106,26 @@ public sealed class EquipeController : ControllerBase
 
         return resultado.IsSuccess
             ? Ok(resultado.Value)
+            : this.ParaProblemDetails(resultado.Errors);
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Inativar(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var resultado = await _inativarOperador.ExecutarAsync(
+            id,
+            ObterCorrelacaoId(),
+            cancellationToken);
+
+        return resultado.IsSuccess
+            ? NoContent()
             : this.ParaProblemDetails(resultado.Errors);
     }
 

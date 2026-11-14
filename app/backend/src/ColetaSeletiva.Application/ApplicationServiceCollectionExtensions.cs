@@ -26,7 +26,9 @@ public static class ApplicationServiceCollectionExtensions
         services.AddScoped<ObterContaAtualHandler>();
         services.AddScoped<CriarOperadorHandler>();
         services.AddScoped<ObterOperadorHandler>();
+        services.AddScoped<ListarOperadoresHandler>();
         services.AddScoped<EditarOperadorHandler>();
+        services.AddScoped<InativarOperadorHandler>();
         services.AddSingleton<TimeProvider>(TimeProvider.System);
 
         return services;
