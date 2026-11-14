@@ -1,4 +1,5 @@
 using ColetaSeletiva.Application.Auditoria;
+using ColetaSeletiva.Application.Erros;
 using ColetaSeletiva.Application.Persistencia;
 using ColetaSeletiva.Application.Seguranca;
 using FluentResults;
@@ -11,6 +12,7 @@ public sealed class InativarOperadorHandler
 
     private readonly ITenantContext _tenantContext;
     private readonly IGerenciamentoDeEquipe _equipe;
+    private readonly IDeteccaoDeAcessoCruzado _deteccao;
     private readonly IRegistroDeAuditoria _auditoria;
     private readonly IUnidadeDeTrabalho _unidadeDeTrabalho;
     private readonly TimeProvider _relogio;
@@ -18,12 +20,14 @@ public sealed class InativarOperadorHandler
     public InativarOperadorHandler(
         ITenantContext tenantContext,
         IGerenciamentoDeEquipe equipe,
+        IDeteccaoDeAcessoCruzado deteccao,
         IRegistroDeAuditoria auditoria,
         IUnidadeDeTrabalho unidadeDeTrabalho,
         TimeProvider relogio)
     {
         _tenantContext = tenantContext;
         _equipe = equipe;
+        _deteccao = deteccao;
         _auditoria = auditoria;
         _unidadeDeTrabalho = unidadeDeTrabalho;
         _relogio = relogio;
@@ -57,6 +61,21 @@ public sealed class InativarOperadorHandler
 
             if (inativacao.IsFailed)
             {
+                if (inativacao.Errors.OfType<ErroNaoEncontrado>().Any()
+                    && await AuditoriaDeAcessoCruzado.RegistrarSeAplicavelAsync(
+                        _deteccao,
+                        _auditoria,
+                        _relogio,
+                        escopo.Value.OrganizacaoId,
+                        escopo.Value.AtorUsuarioId,
+                        operadorId,
+                        correlacaoId,
+                        cancellationToken))
+                {
+                    await transacao.CommitAsync(cancellationToken);
+                    return Result.Fail<ContaDaEquipe>(inativacao.Errors);
+                }
+
                 await transacao.RollbackAsync(cancellationToken);
                 return Result.Fail<ContaDaEquipe>(inativacao.Errors);
             }

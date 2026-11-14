@@ -64,7 +64,10 @@ public sealed class EquipeController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var resultado = await _obterOperador.ExecutarAsync(id, cancellationToken);
+        var resultado = await _obterOperador.ExecutarAsync(
+            id,
+            ObterCorrelacaoId(),
+            cancellationToken);
 
         return resultado.IsSuccess
             ? Ok(resultado.Value)

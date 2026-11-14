@@ -34,7 +34,7 @@
 ## 5. Auditoria
 
 - [x] 5.1 Implementar a porta de auditoria e a gravação transacional dos eventos críticos da F1; verificar com teste de integração que a alteração e a auditoria são confirmadas juntas e que uma falha desfaz ambas (RNF-05; CA-02; DT-08, DT-18).
-- [ ] 5.2 Auditar registro, login, logout, troca de senha, criação/edição/inativação de Operador e negações de acesso cruzado; verificar com testes que o registro contém organização, ator, ação, entidade, correlação e momento, sem senha, token, hash ou dados pessoais (RNF-02, RNF-05; CA-01, CA-02, CA-11; DT-08, DT-18).
+- [x] 5.2 Auditar registro, login, logout, troca de senha, criação/edição/inativação de Operador e negações de acesso cruzado; verificar com testes que o registro contém organização, ator, ação, entidade, correlação e momento, sem senha, token, hash ou dados pessoais (RNF-02, RNF-05; CA-01, CA-02, CA-11; DT-08, DT-18).
 
 ## 6. Frontend da F1
 

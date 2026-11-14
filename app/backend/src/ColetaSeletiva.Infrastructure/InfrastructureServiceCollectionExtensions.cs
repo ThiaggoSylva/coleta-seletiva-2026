@@ -35,6 +35,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<UnicidadeDeContas>();
         services.AddScoped<ICadastroDeContas, CadastroDeContas>();
         services.AddScoped<IGerenciamentoDeEquipe, GerenciamentoDeEquipe>();
+        services.AddScoped<IDeteccaoDeAcessoCruzado, DeteccaoDeAcessoCruzado>();
         services.AddScoped<IPerfilDeCidadao, PerfilDeCidadao>();
         services.AddScoped<IRegistroDeAuditoria, RegistroDeAuditoria>();
         services.AddScoped<IAutenticacaoDeContas, AutenticacaoDeContas>();

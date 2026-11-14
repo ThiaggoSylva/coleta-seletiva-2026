@@ -10,4 +10,5 @@ public static class AcoesAuditadas
     public const string OperadorCriado = "operador.criado";
     public const string OperadorEditado = "operador.editado";
     public const string OperadorInativado = "operador.inativado";
+    public const string AcessoCruzadoNegado = "acesso.cruzado.negado";
 }

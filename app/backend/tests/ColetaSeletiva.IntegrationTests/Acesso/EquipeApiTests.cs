@@ -346,27 +346,55 @@ public sealed class EquipeApiTests
             $"operador.b.{sufixo}@example.org");
         var nomeOriginal = operadorB.Nome;
 
-        var consulta = await cliente.SendAsync(
-            CriarRequisicaoAutenticada(
-                HttpMethod.Get,
-                $"/api/v1/equipe/{operadorB.Id}",
-                tokenAdminA));
+        var correlacaoConsulta = Guid.NewGuid();
+        var requisicaoConsulta = CriarRequisicaoAutenticada(
+            HttpMethod.Get,
+            $"/api/v1/equipe/{operadorB.Id}",
+            tokenAdminA);
+        requisicaoConsulta.Headers.Add("X-Correlation-Id", correlacaoConsulta.ToString());
+        var consulta = await cliente.SendAsync(requisicaoConsulta);
         Assert.AreEqual(HttpStatusCode.NotFound, consulta.StatusCode);
         Assert.AreEqual("nao_encontrado", await LerCodigoAsync(consulta));
 
+        var correlacaoEdicao = Guid.NewGuid();
         var edicao = await EnviarEdicaoAsync(
             cliente,
             tokenAdminA,
             operadorB.Id,
             "Nome forjado",
             $"forjado.{sufixo}",
-            $"forjado.{sufixo}@example.org");
+            $"forjado.{sufixo}@example.org",
+            correlacaoEdicao);
         Assert.AreEqual(HttpStatusCode.NotFound, edicao.StatusCode);
         Assert.AreEqual("nao_encontrado", await LerCodigoAsync(edicao));
+
+        var auditoriaConsulta = await ObterAuditoriaPorCorrelacaoAsync(correlacaoConsulta);
+        AssertarNegacaoCruzada(auditoriaConsulta, correlacaoConsulta, operadorB.Id);
+        var auditoriaEdicao = await ObterAuditoriaPorCorrelacaoAsync(correlacaoEdicao);
+        AssertarNegacaoCruzada(auditoriaEdicao, correlacaoEdicao, operadorB.Id);
 
         var persistido = await ObterUsuarioAsync(operadorB.Id);
         Assert.AreEqual(nomeOriginal, persistido.Nome);
         Assert.AreEqual(_organizacaoBId, persistido.OrganizacaoId);
+    }
+
+    [TestMethod]
+    public async Task Alvo_inexistente_retorna_404_sem_auditar_acesso_cruzado()
+    {
+        using var cliente = _fabrica.CreateClient();
+        var token = await EntrarAsync(cliente, _adminAUsuario);
+        var correlacao = Guid.NewGuid();
+        var requisicao = CriarRequisicaoAutenticada(
+            HttpMethod.Get,
+            $"/api/v1/equipe/{Guid.NewGuid()}",
+            token);
+        requisicao.Headers.Add("X-Correlation-Id", correlacao.ToString());
+
+        var resposta = await cliente.SendAsync(requisicao);
+
+        Assert.AreEqual(HttpStatusCode.NotFound, resposta.StatusCode);
+        Assert.AreEqual("nao_encontrado", await LerCodigoAsync(resposta));
+        Assert.IsFalse(await ExisteAuditoriaPorCorrelacaoAsync(correlacao));
     }
 
     [TestMethod]
@@ -495,15 +523,21 @@ public sealed class EquipeApiTests
             $"operador.b.{sufixo}",
             $"operador.b.{sufixo}@example.org");
 
-        var resposta = await cliente.SendAsync(
-            CriarRequisicaoAutenticada(
-                HttpMethod.Delete,
-                $"/api/v1/equipe/{operadorB.Id}",
-                tokenA));
+        var correlacao = Guid.NewGuid();
+        var requisicao = CriarRequisicaoAutenticada(
+            HttpMethod.Delete,
+            $"/api/v1/equipe/{operadorB.Id}",
+            tokenA);
+        requisicao.Headers.Add("X-Correlation-Id", correlacao.ToString());
+
+        var resposta = await cliente.SendAsync(requisicao);
 
         Assert.AreEqual(HttpStatusCode.NotFound, resposta.StatusCode);
         Assert.AreEqual("nao_encontrado", await LerCodigoAsync(resposta));
         Assert.IsTrue((await ObterUsuarioAsync(operadorB.Id)).Ativo);
+
+        var auditoria = await ObterAuditoriaPorCorrelacaoAsync(correlacao);
+        AssertarNegacaoCruzada(auditoria, correlacao, operadorB.Id);
     }
 
     [TestMethod]
@@ -668,13 +702,19 @@ public sealed class EquipeApiTests
         Guid operadorId,
         string nome,
         string usuario,
-        string email)
+        string email,
+        Guid? correlacaoId = null)
     {
         var requisicao = CriarRequisicaoAutenticada(
             HttpMethod.Put,
             $"/api/v1/equipe/{operadorId}",
             token);
         requisicao.Content = JsonContent.Create(new { nome, usuario, email });
+
+        if (correlacaoId is Guid correlacao)
+        {
+            requisicao.Headers.Add("X-Correlation-Id", correlacao.ToString());
+        }
 
         return await cliente.SendAsync(requisicao);
     }
@@ -839,6 +879,40 @@ public sealed class EquipeApiTests
             .AsNoTracking()
             .Where(auditoria => auditoria.EntidadeId == operadorId)
             .ToListAsync();
+    }
+
+    private static async Task<Auditoria> ObterAuditoriaPorCorrelacaoAsync(Guid correlacaoId)
+    {
+        await using var escopo = _provedor.CreateAsyncScope();
+        var contexto = escopo.ServiceProvider.GetRequiredService<ColetaSeletivaDbContext>();
+
+        return await contexto.Auditorias
+            .AsNoTracking()
+            .SingleAsync(auditoria => auditoria.CorrelacaoId == correlacaoId);
+    }
+
+    private static async Task<bool> ExisteAuditoriaPorCorrelacaoAsync(Guid correlacaoId)
+    {
+        await using var escopo = _provedor.CreateAsyncScope();
+        var contexto = escopo.ServiceProvider.GetRequiredService<ColetaSeletivaDbContext>();
+
+        return await contexto.Auditorias
+            .AsNoTracking()
+            .AnyAsync(auditoria => auditoria.CorrelacaoId == correlacaoId);
+    }
+
+    private static void AssertarNegacaoCruzada(
+        Auditoria auditoria,
+        Guid correlacaoId,
+        Guid alvoId)
+    {
+        Assert.AreEqual(AcoesAuditadas.AcessoCruzadoNegado, auditoria.Acao);
+        Assert.AreEqual(_organizacaoAId, auditoria.OrganizacaoId);
+        Assert.AreEqual(_adminAId, auditoria.AtorUsuarioId);
+        Assert.AreEqual(EntidadesAuditadas.Usuario, auditoria.Entidade);
+        Assert.AreEqual(alvoId, auditoria.EntidadeId);
+        Assert.AreEqual(correlacaoId, auditoria.CorrelacaoId);
+        Assert.IsNull(auditoria.CamposAlterados);
     }
 
     private static async Task<List<RefreshToken>> ObterRefreshTokensAsync(Guid usuarioId)

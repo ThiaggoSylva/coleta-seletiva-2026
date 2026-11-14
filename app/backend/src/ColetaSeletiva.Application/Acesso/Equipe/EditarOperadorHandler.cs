@@ -14,6 +14,7 @@ public sealed class EditarOperadorHandler
     private readonly ITenantContext _tenantContext;
     private readonly IValidator<EditarOperadorEntrada> _validador;
     private readonly IGerenciamentoDeEquipe _equipe;
+    private readonly IDeteccaoDeAcessoCruzado _deteccao;
     private readonly IRegistroDeAuditoria _auditoria;
     private readonly IUnidadeDeTrabalho _unidadeDeTrabalho;
     private readonly TimeProvider _relogio;
@@ -22,6 +23,7 @@ public sealed class EditarOperadorHandler
         ITenantContext tenantContext,
         IValidator<EditarOperadorEntrada> validador,
         IGerenciamentoDeEquipe equipe,
+        IDeteccaoDeAcessoCruzado deteccao,
         IRegistroDeAuditoria auditoria,
         IUnidadeDeTrabalho unidadeDeTrabalho,
         TimeProvider relogio)
@@ -29,6 +31,7 @@ public sealed class EditarOperadorHandler
         _tenantContext = tenantContext;
         _validador = validador;
         _equipe = equipe;
+        _deteccao = deteccao;
         _auditoria = auditoria;
         _unidadeDeTrabalho = unidadeDeTrabalho;
         _relogio = relogio;
@@ -74,6 +77,21 @@ public sealed class EditarOperadorHandler
 
             if (atualizacao.IsFailed)
             {
+                if (atualizacao.Errors.OfType<ErroNaoEncontrado>().Any()
+                    && await AuditoriaDeAcessoCruzado.RegistrarSeAplicavelAsync(
+                        _deteccao,
+                        _auditoria,
+                        _relogio,
+                        escopo.Value.OrganizacaoId,
+                        escopo.Value.AtorUsuarioId,
+                        operadorId,
+                        correlacaoId,
+                        cancellationToken))
+                {
+                    await transacao.CommitAsync(cancellationToken);
+                    return Result.Fail<ContaDaEquipe>(atualizacao.Errors);
+                }
+
                 await transacao.RollbackAsync(cancellationToken);
                 return Result.Fail<ContaDaEquipe>(atualizacao.Errors);
             }
