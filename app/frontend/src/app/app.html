@@ -11,6 +11,11 @@
             Área da organização
           </a>
         }
+        @if (auth.possuiPapel('Administrador') && !auth.trocaSenhaPendente()) {
+          <a routerLink="/organizacao/equipe" class="font-medium text-emerald-700 underline">
+            Equipe
+          </a>
+        }
         @if (auth.possuiPapel('Cidadao') && !auth.trocaSenhaPendente()) {
           <a routerLink="/cidadao/perfil" class="font-medium text-emerald-700 underline">
             Meu perfil
