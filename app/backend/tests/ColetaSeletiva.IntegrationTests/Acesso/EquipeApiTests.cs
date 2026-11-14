@@ -37,6 +37,7 @@ public sealed class EquipeApiTests
     private static string _adminAEmail = null!;
     private static string _adminBUsuario = null!;
     private static string _adminBEmail = null!;
+    private static string _cidadaoEmail = null!;
 
     [ClassInitialize]
     public static void Inicializar(TestContext _)
@@ -505,6 +506,120 @@ public sealed class EquipeApiTests
         Assert.IsTrue((await ObterUsuarioAsync(operadorB.Id)).Ativo);
     }
 
+    [TestMethod]
+    public async Task Operador_e_cidadao_recebem_403_em_todas_as_rotas_de_equipe()
+    {
+        using var cliente = _fabrica.CreateClient();
+        var tokenAdmin = await EntrarAsync(cliente, _adminAUsuario);
+        var sufixo = Guid.NewGuid().ToString("N");
+        var operador = await CriarOperadorAsync(
+            cliente,
+            tokenAdmin,
+            sufixo,
+            $"operador.{sufixo}",
+            $"operador.{sufixo}@example.org");
+        await TornarOperadorSemTrocaPendenteAsync(operador.Id);
+        var tokenOperador = await EntrarAsync(cliente, operador.Usuario, SenhaOperador);
+        var tokenCidadao = await EntrarAsync(cliente, _cidadaoEmail);
+        var totalAntes = await ContarUsuariosAsync();
+        var nomeOriginal = (await ObterUsuarioAsync(operador.Id)).Nome;
+
+        var rotas = new (HttpMethod Metodo, Guid? OperadorId, bool EnviaCorpo)[]
+        {
+            (HttpMethod.Get, null, false),
+            (HttpMethod.Post, null, true),
+            (HttpMethod.Get, operador.Id, false),
+            (HttpMethod.Put, operador.Id, true),
+            (HttpMethod.Delete, operador.Id, false),
+        };
+
+        foreach (var token in new[] { tokenOperador, tokenCidadao })
+        {
+            foreach (var rota in rotas)
+            {
+                var resposta = await cliente.SendAsync(
+                    CriarRequisicaoDaEquipe(
+                        rota.Metodo,
+                        token,
+                        rota.OperadorId,
+                        rota.EnviaCorpo ? CriarCorpoDeOperador(sufixo) : null));
+
+                Assert.AreEqual(
+                    HttpStatusCode.Forbidden,
+                    resposta.StatusCode,
+                    $"{rota.Metodo} {rota.OperadorId} deveria negar o papel.");
+            }
+        }
+
+        foreach (var rota in rotas)
+        {
+            var resposta = await cliente.SendAsync(
+                CriarRequisicaoDaEquipe(
+                    rota.Metodo,
+                    token: null,
+                    rota.OperadorId,
+                    rota.EnviaCorpo ? CriarCorpoDeOperador(sufixo) : null));
+
+            Assert.AreEqual(
+                HttpStatusCode.Unauthorized,
+                resposta.StatusCode,
+                $"{rota.Metodo} {rota.OperadorId} deveria exigir autenticação.");
+        }
+
+        Assert.AreEqual(totalAntes, await ContarUsuariosAsync());
+        Assert.AreEqual(nomeOriginal, (await ObterUsuarioAsync(operador.Id)).Nome);
+        Assert.IsTrue((await ObterUsuarioAsync(operador.Id)).Ativo);
+    }
+
+    private static HttpRequestMessage CriarRequisicaoDaEquipe(
+        HttpMethod metodo,
+        string? token,
+        Guid? operadorId = null,
+        HttpContent? conteudo = null)
+    {
+        var caminho = operadorId is null
+            ? "/api/v1/equipe"
+            : $"/api/v1/equipe/{operadorId}";
+        var requisicao = new HttpRequestMessage(metodo, caminho);
+
+        if (token is not null)
+        {
+            requisicao.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+
+        if (conteudo is not null)
+        {
+            requisicao.Content = conteudo;
+        }
+
+        return requisicao;
+    }
+
+    private static HttpContent CriarCorpoDeOperador(string sufixo)
+    {
+        return JsonContent.Create(new
+        {
+            nome = $"Operador Forjado {sufixo}",
+            usuario = $"forjado.{sufixo}",
+            email = $"forjado.{sufixo}@example.org",
+            senha = SenhaOperador,
+        });
+    }
+
+    private static async Task TornarOperadorSemTrocaPendenteAsync(Guid operadorId)
+    {
+        await using var escopo = _provedor.CreateAsyncScope();
+        var gerenciador = escopo.ServiceProvider.GetRequiredService<UserManager<Usuario>>();
+        var operador = await gerenciador.FindByIdAsync(operadorId.ToString());
+        Assert.IsNotNull(operador);
+        operador.TrocaSenhaPendente = false;
+
+        var resultado = await gerenciador.UpdateAsync(operador);
+        Assert.IsTrue(
+            resultado.Succeeded,
+            string.Join("; ", resultado.Errors.Select(erro => $"{erro.Code}: {erro.Description}")));
+    }
+
     private static async Task<OperadorCriado> CriarOperadorAsync(
         HttpClient cliente,
         string token,
@@ -774,6 +889,7 @@ public sealed class EquipeApiTests
         _adminAEmail = $"admin.a.{sufixo}@example.org";
         _adminBUsuario = $"admin.b.{sufixo}";
         _adminBEmail = $"admin.b.{sufixo}@example.org";
+        _cidadaoEmail = $"cidadao.{sufixo}@example.org";
 
         var organizacaoA = await registrarOrganizacao.ExecutarAsync(
             new RegistroDeOrganizacaoEntrada(
@@ -806,7 +922,7 @@ public sealed class EquipeApiTests
         var cidadao = await registrarCidadao.ExecutarAsync(
             new RegistroDeCidadaoEntrada(
                 Nome: $"Cidadão {sufixo}",
-                Email: $"cidadao.{sufixo}@example.org",
+                Email: _cidadaoEmail,
                 Telefone: "(11) 99999-0000",
                 Senha: Senha),
             Guid.NewGuid());
