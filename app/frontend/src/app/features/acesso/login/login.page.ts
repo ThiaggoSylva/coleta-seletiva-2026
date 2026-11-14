@@ -20,6 +20,12 @@ import { MensagemDeErro } from '../../../shared/mensagem-de-erro';
       <h1 class="text-2xl font-semibold">Entrar</h1>
       <p class="mt-1 text-sm text-slate-600">Acesse sua conta de organização ou de cidadão.</p>
 
+      @if (senhaAlterada()) {
+        <p class="mt-4 rounded-md bg-emerald-50 p-3 text-sm text-emerald-900" role="status">
+          Senha alterada. Entre novamente com a nova senha.
+        </p>
+      }
+
       @if (erroGeral() !== null) {
         <p class="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-800" role="alert">
           {{ erroGeral() }}
@@ -92,6 +98,9 @@ export class LoginPage {
   @ViewChild('identificador') private campIdentificador?: ElementRef<HTMLElement>;
   @ViewChild('senha') private campoSenha?: ElementRef<HTMLElement>;
 
+  protected readonly senhaAlterada = signal(
+    this.rota.snapshot.queryParamMap.get('senhaAlterada') === '1',
+  );
   protected readonly formulario = this.formularioBuilder.group({
     identificador: ['', [Validators.required]],
     senha: ['', [Validators.required]],

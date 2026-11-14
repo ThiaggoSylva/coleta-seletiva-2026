@@ -51,6 +51,23 @@ describe('RegistroOrganizacaoPage', () => {
     expect(pagina.elemento.textContent).toContain('Informe este campo.');
   });
 
+  it('rejeita senha fora da política antes de chamar a API', () => {
+    const pagina = criarPagina();
+    pagina.formulario.setValue({
+      nomeOrganizacao: 'Cooperativa Verde',
+      tipo: 'Cooperativa',
+      usuario: 'verde',
+      email: 'verde@example.org',
+      senha: 'senha123',
+    });
+
+    enviarFormulario(pagina);
+
+    expect(http.match('/api/v1/auth/registro-organizacao').length).toBe(0);
+    expect(document.activeElement).toBe(pagina.elemento.querySelector('#senha'));
+    expect(pagina.elemento.textContent).toContain('12 caracteres');
+  });
+
   it('envia os dados válidos e confirma o cadastro', () => {
     const pagina = criarPagina();
     pagina.formulario.setValue({

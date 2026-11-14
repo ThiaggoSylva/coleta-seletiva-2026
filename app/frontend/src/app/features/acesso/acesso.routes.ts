@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { autenticadoGuard } from '../../core/auth/auth.guards';
 
 export const ACESSO_ROUTES: Routes = [
   {
@@ -21,5 +22,10 @@ export const ACESSO_ROUTES: Routes = [
     path: 'registro-cidadao',
     loadComponent: () =>
       import('./registro-cidadao/registro-cidadao.page').then((m) => m.RegistroCidadaoPage),
+  },
+  {
+    path: 'trocar-senha',
+    canActivate: [autenticadoGuard],
+    loadComponent: () => import('./trocar-senha/trocar-senha.page').then((m) => m.TrocarSenhaPage),
   },
 ];

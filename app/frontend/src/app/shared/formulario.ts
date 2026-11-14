@@ -1,5 +1,6 @@
 import { ElementRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { DESCRICAO_DA_POLITICA_DE_SENHA } from './politica-de-senha';
 
 export type ErrosDoServidor = Record<string, string[]>;
 
@@ -43,6 +44,10 @@ export function mensagensDoCampo(
 
   if (controle.hasError('senhasDiferentes')) {
     return ['As senhas não conferem.'];
+  }
+
+  if (controle.hasError('senhaFraca')) {
+    return [DESCRICAO_DA_POLITICA_DE_SENHA];
   }
 
   return ['Valor inválido.'];

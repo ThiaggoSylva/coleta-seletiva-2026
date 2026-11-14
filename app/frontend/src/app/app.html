@@ -6,11 +6,14 @@
 
     <nav class="flex flex-wrap items-center gap-4 text-sm" aria-label="Navegação principal">
       @if (auth.autenticado()) {
-        @if (auth.possuiPapel('Administrador', 'Operador')) {
+        @if (auth.possuiPapel('Administrador', 'Operador') && !auth.trocaSenhaPendente()) {
           <a routerLink="/organizacao/inicio" class="font-medium text-emerald-700 underline">
             Área da organização
           </a>
         }
+        <a routerLink="/acesso/trocar-senha" class="font-medium text-emerald-700 underline">
+          Trocar senha
+        </a>
         <span class="text-slate-600"> {{ auth.contaAtual()?.nome }} · {{ rotuloDoPapel() }} </span>
         <button
           type="button"

@@ -11,6 +11,7 @@ import {
   mensagensDoCampo,
 } from '../../../shared/formulario';
 import { MensagemDeErro } from '../../../shared/mensagem-de-erro';
+import { DESCRICAO_DA_POLITICA_DE_SENHA, politicaDeSenha } from '../../../shared/politica-de-senha';
 
 @Component({
   selector: 'app-registro-cidadao',
@@ -93,7 +94,7 @@ import { MensagemDeErro } from '../../../shared/mensagem-de-erro';
               [attr.aria-describedby]="mensagens('senha').length > 0 ? 'senha-erro' : 'senha-dica'"
             />
             <p id="senha-dica" class="mt-1 text-xs text-slate-500">
-              Use pelo menos 8 caracteres, com letras, número e símbolo.
+              {{ descricaoDaPolitica }}
             </p>
             <app-mensagem-de-erro id="senha-erro" [mensagens]="mensagens('senha')" />
           </div>
@@ -124,11 +125,12 @@ export class RegistroCidadaoPage {
   @ViewChild('telefone') private campoTelefone?: ElementRef<HTMLElement>;
   @ViewChild('senha') private campoSenha?: ElementRef<HTMLElement>;
 
+  protected readonly descricaoDaPolitica = DESCRICAO_DA_POLITICA_DE_SENHA;
   protected readonly formulario = this.formularioBuilder.group({
     nome: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     telefone: ['', [Validators.required]],
-    senha: ['', [Validators.required, Validators.minLength(8)]],
+    senha: ['', [Validators.required, politicaDeSenha]],
   });
   protected readonly enviando = signal(false);
   protected readonly sucesso = signal(false);

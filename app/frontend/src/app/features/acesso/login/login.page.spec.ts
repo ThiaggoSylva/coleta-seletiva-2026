@@ -130,6 +130,19 @@ describe('LoginPage', () => {
     });
   }
 
+  it('confirma a troca de senha após voltar ao login', () => {
+    const rota = TestBed.inject(ActivatedRoute);
+    vi.spyOn(rota.snapshot.queryParamMap, 'get').mockImplementation((nome) =>
+      nome === 'senhaAlterada' ? '1' : null,
+    );
+
+    const pagina = criarPagina();
+
+    expect(pagina.elemento.textContent).toContain(
+      'Senha alterada. Entre novamente com a nova senha.',
+    );
+  });
+
   it('respeita o returnUrl interno após o login', async () => {
     const rota = TestBed.inject(ActivatedRoute);
     vi.spyOn(rota.snapshot.queryParamMap, 'get').mockImplementation((nome) =>
