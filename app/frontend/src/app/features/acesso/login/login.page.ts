@@ -110,7 +110,7 @@ export class LoginPage {
   protected readonly errosDoServidor = signal<ErrosDoServidor>({});
 
   protected campoInvalido(nome: string): boolean {
-    return campoInvalido(this.formulario, nome);
+    return campoInvalido(this.formulario, nome, this.errosDoServidor());
   }
 
   protected mensagens(nome: string): string[] {

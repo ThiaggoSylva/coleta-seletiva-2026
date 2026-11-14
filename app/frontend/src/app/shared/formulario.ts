@@ -4,7 +4,15 @@ import { DESCRICAO_DA_POLITICA_DE_SENHA } from './politica-de-senha';
 
 export type ErrosDoServidor = Record<string, string[]>;
 
-export function campoInvalido(formulario: FormGroup, nome: string): boolean {
+export function campoInvalido(
+  formulario: FormGroup,
+  nome: string,
+  errosDoServidor: ErrosDoServidor = {},
+): boolean {
+  if ((errosDoServidor[nome] ?? []).length > 0) {
+    return true;
+  }
+
   const controle = formulario.get(nome);
   return controle !== null && controle.invalid && (controle.touched || controle.dirty);
 }
