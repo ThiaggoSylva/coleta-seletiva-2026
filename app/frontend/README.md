@@ -17,12 +17,17 @@ npm ci
 
 ## Desenvolvimento
 
+Com a API em execução em `http://localhost:5012` (veja `app/backend/README.md`):
+
 ```bash
 npm start
 ```
 
-A SPA fica disponível em `http://localhost:4200/` e será servida na mesma origem
-da API por meio do proxy local configurado nas tarefas de infraestrutura.
+A SPA fica disponível em `http://localhost:4200/` e encaminha `/api` para a API
+pelo proxy de `proxy.conf.json`. Para o navegador, SPA e API compartilham a
+mesma origem, o que permite o cookie de refresh `HttpOnly`, `Secure` e
+`SameSite=Strict` com `Path=/api/v1/auth`. Use `http://localhost:4200`, que é a
+origem autorizada no perfil de desenvolvimento da API.
 
 ## Build
 

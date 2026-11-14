@@ -117,6 +117,78 @@ dotnet package search Moq --take 3 --format json
 Os metadados de `targetFramework` foram conferidos nos arquivos `.nuspec` dos
 pacotes no NuGet. Nenhuma versão foi presumida sem consulta.
 
+## Execução local
+
+Pré-requisitos: .NET SDK 10.0.4xx, Node.js e npm compatíveis, Docker em execução
+e Bash (Git Bash/WSL no Windows).
+
+```bash
+# 1. Banco local e migrations
+cp app/infra/.env.example app/infra/.env
+# edite MSSQL_SA_PASSWORD em app/infra/.env
+bash app/scripts/apply-migrations.sh
+
+# 2. Configuração da API (uma vez por ambiente de desenvolvimento)
+cd app/backend
+dotnet user-secrets set "ConnectionStrings:ColetaSeletiva" \
+  "Server=127.0.0.1,1433;Database=ColetaSeletiva;User Id=sa;Password=<senha-local>;Encrypt=True;TrustServerCertificate=True;" \
+  --project src/ColetaSeletiva.Api
+dotnet user-secrets set "Jwt:SigningKey" \
+  "$(node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))")" \
+  --project src/ColetaSeletiva.Api
+
+# 3. API em um terminal
+cd app/backend
+dotnet run --project src/ColetaSeletiva.Api
+
+# 4. SPA em outro terminal
+cd app/frontend
+npm ci
+npm start
+```
+
+Acesse `http://localhost:4200`. O proxy de `app/frontend/proxy.conf.json`
+encaminha `/api` para `http://localhost:5012`; para o navegador, SPA e API usam
+a mesma origem. O cookie de refresh permanece `HttpOnly`, `Secure`, com
+`SameSite=Strict` e `Path=/api/v1/auth`, e a renovação ocorre sem expor o token
+ao JavaScript. O perfil `http` da API usa a origem permitida
+`http://localhost:4200` em `appsettings.Development.json`.
+
+### Testes E2E
+
+Com o banco preparado e as credenciais da API configuradas:
+
+```bash
+cd app/e2e
+npm ci
+npx playwright install chromium
+npm test
+```
+
+O Playwright inicia a API e a SPA em processos próprios, em
+`http://localhost:5012` e `http://localhost:4200`. Não mantenha esses processos
+em execução durante os testes. A suíte usa dados sintéticos únicos e eleva os
+limites de taxa apenas no ambiente de teste; os limites reais continuam
+cobertos pelos testes de integração.
+
+Para comprovar a execução em um banco limpo sem afetar o ambiente de
+desenvolvimento, use um projeto Compose e uma porta isolados:
+
+```bash
+export COMPOSE_PROJECT_NAME=coleta-e2e
+export MSSQL_PORT=14330
+bash app/scripts/apply-migrations.sh
+
+export ConnectionStrings__ColetaSeletiva="Server=127.0.0.1,14330;Database=ColetaSeletiva;User Id=sa;Password=<senha-local>;Encrypt=True;TrustServerCertificate=True;"
+export Jwt__SigningKey="<chave-efemera-com-32-bytes-ou-mais>"
+cd app/e2e
+npm test
+
+# limpeza do ambiente isolado
+cd ../..
+COMPOSE_PROJECT_NAME=coleta-e2e docker compose -f app/infra/compose.yaml down -v
+```
+
 ## Integração contínua
 
 O workflow `.github/workflows/ci.yml` roda em pull requests para a `main` e em
@@ -128,11 +200,12 @@ pushes na `main`, sem job de deploy:
 - **frontend:** `npm ci`, formatação, build e testes Vitest;
 - **segurança:** vulnerabilidades NuGet/npm e varredura de segredos com
   gitleaks;
-- **E2E:** o job é habilitado automaticamente quando `app/e2e/package.json`
-  existir, o que ocorre na tarefa 7.2 da mudança `f1-fundacao-segura`.
+- **E2E:** Playwright sobe API e SPA por proxy, com SQL Server e migrations
+  preparados no job.
 
-O comando local equivalente é `bash app/scripts/check.sh`. A execução real do
-workflow fica para o PR da mudança, quando a suíte E2E já estiver criada.
+O comando local equivalente para backend, frontend e segurança é
+`bash app/scripts/check.sh`; os fluxos E2E são executados à parte com
+`npm test` em `app/e2e`. A execução real do workflow fica para o PR da mudança.
 
 ## Segredos e dados
 
