@@ -6,6 +6,7 @@ using ColetaSeletiva.Application.Acesso.RegistroDeOrganizacao;
 using ColetaSeletiva.Application.Acesso.Sessao;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ColetaSeletiva.Api.Controllers;
 
@@ -41,9 +42,11 @@ public sealed class AuthController : ControllerBase
 
     [HttpPost("registro-organizacao")]
     [AllowAnonymous]
+    [EnableRateLimiting(PoliticasDeLimiteDeTaxa.Cadastro)]
     [ProducesResponseType<RegistroDeOrganizacaoResposta>(StatusCodes.Status201Created)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status429TooManyRequests)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RegistrarOrganizacao(
         RegistroDeOrganizacaoEntrada entrada,
@@ -66,9 +69,11 @@ public sealed class AuthController : ControllerBase
 
     [HttpPost("registro-cidadao")]
     [AllowAnonymous]
+    [EnableRateLimiting(PoliticasDeLimiteDeTaxa.Cadastro)]
     [ProducesResponseType<RegistroDeCidadaoResposta>(StatusCodes.Status201Created)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status429TooManyRequests)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RegistrarCidadao(
         RegistroDeCidadaoEntrada entrada,
@@ -89,9 +94,11 @@ public sealed class AuthController : ControllerBase
 
     [HttpPost("login")]
     [AllowAnonymous]
+    [EnableRateLimiting(PoliticasDeLimiteDeTaxa.Login)]
     [ProducesResponseType<SessaoResposta>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status429TooManyRequests)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login(
         LoginEntrada entrada,
@@ -161,10 +168,12 @@ public sealed class AuthController : ControllerBase
 
     [HttpPost("refresh")]
     [AllowAnonymous]
+    [EnableRateLimiting(PoliticasDeLimiteDeTaxa.Refresh)]
     [ValidarOrigemDoCookie]
     [ProducesResponseType<SessaoResposta>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status429TooManyRequests)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Renovar(CancellationToken cancellationToken)
     {

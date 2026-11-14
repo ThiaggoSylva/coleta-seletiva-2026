@@ -88,7 +88,7 @@ internal static class ResultadoDeErroExtensions
             Title = "Não foi possível concluir a operação.",
         };
 
-        interno.Extensions["code"] = CodigosDeErro.FalhaDeCadastro;
+        interno.Extensions["code"] = CodigosDeErro.ErroInterno;
         interno.Extensions["traceId"] = traceId;
 
         return new ObjectResult(interno)

@@ -63,9 +63,10 @@ public sealed class PrimeiroAcessoMiddleware
         problema.Extensions["traceId"] = httpContext.TraceIdentifier;
 
         httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
-        httpContext.Response.ContentType = "application/problem+json";
         await httpContext.Response.WriteAsJsonAsync(
             problema,
+            options: null,
+            contentType: "application/problem+json",
             httpContext.RequestAborted);
     }
 }

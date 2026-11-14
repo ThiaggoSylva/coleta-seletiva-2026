@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using ColetaSeletiva.Api.Configuration;
+using ColetaSeletiva.Api.Erros;
 using ColetaSeletiva.Api.Seguranca;
 using ColetaSeletiva.Application;
 using ColetaSeletiva.Infrastructure;
@@ -9,17 +10,34 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+builder.Host.UseSerilog(
+    (contexto, configuracao) =>
+    {
+        configuracao
+            .ReadFrom.Configuration(contexto.Configuration)
+            .Enrich.FromLogContext()
+            .WriteTo.Console(new CompactJsonFormatter());
+    },
+    writeToProviders: true);
+
 var jwtSettings = StartupConfiguration.CriarJwtSettings(builder.Configuration);
 var configuracaoDeSessao = StartupConfiguration.CriarConfiguracaoDeSessao(builder.Configuration);
+var limitesDeTaxa = StartupConfiguration.CriarConfiguracaoDeLimitesDeTaxa(builder.Configuration);
 
 var connectionString = builder.Configuration.GetConnectionString(StartupConfiguration.ConnectionStringName)
     ?? throw new InvalidOperationException("A connection string da aplicação não foi configurada.");
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(connectionString);
+builder.Services.AddExceptionHandler<TratadorGlobalDeExcecoes>();
+builder.Services.AddProblemDetails();
+builder.Services.AdicionarLimitadorDeTaxa(limitesDeTaxa);
 builder.Services.AddSingleton(jwtSettings);
 builder.Services.AddSingleton(configuracaoDeSessao);
 builder.Services.AddSingleton(
@@ -54,7 +72,14 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+app.UseExceptionHandler();
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate =
+        "HTTP {RequestMethod} {RequestPath} respondeu {StatusCode} em {Elapsed:0.0000} ms";
+});
 app.UseRouting();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseMiddleware<PrimeiroAcessoMiddleware>();
 app.UseMiddleware<TenantContextMiddleware>();

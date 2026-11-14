@@ -537,7 +537,14 @@ public sealed class SessaoApiTests
             await contexto.Database.MigrateAsync();
         }
 
-        _fabrica = new ApiDeTeste(connectionString);
+        _fabrica = new ApiDeTeste(
+            connectionString,
+            new Dictionary<string, string?>
+            {
+                ["LimitesDeTaxa:Login:PermitLimit"] = "1000",
+                ["LimitesDeTaxa:Refresh:PermitLimit"] = "1000",
+                ["LimitesDeTaxa:Cadastro:PermitLimit"] = "1000",
+            });
         _ = _fabrica.Services;
 
         await using var escopoSemeando = _fabrica.Services.CreateAsyncScope();

@@ -121,6 +121,39 @@ public sealed class StartupConfigurationTests
         StringAssert.Contains(excecao.Message, "Sessao:OrigemPermitida");
     }
 
+    [TestMethod]
+    public void CriarConfiguracaoDeLimitesDeTaxa_usa_padroes_por_rota()
+    {
+        var limites = StartupConfiguration.CriarConfiguracaoDeLimitesDeTaxa(CriarConfiguracao());
+
+        Assert.AreEqual(5, limites.Login.PermitLimit);
+        Assert.AreEqual(30, limites.Refresh.PermitLimit);
+        Assert.AreEqual(5, limites.Cadastro.PermitLimit);
+        Assert.AreEqual(60, limites.Login.WindowSeconds);
+        Assert.AreEqual(60, limites.Refresh.WindowSeconds);
+        Assert.AreEqual(60, limites.Cadastro.WindowSeconds);
+    }
+
+    [TestMethod]
+    public void CriarConfiguracaoDeLimitesDeTaxa_rejeita_limite_nao_positivo()
+    {
+        var excecao = Assert.ThrowsExactly<InvalidOperationException>(
+            () => StartupConfiguration.CriarConfiguracaoDeLimitesDeTaxa(
+                CriarConfiguracao(limiteDeLogin: "0")));
+
+        StringAssert.Contains(excecao.Message, "LimitesDeTaxa:Login:PermitLimit");
+    }
+
+    [TestMethod]
+    public void CriarConfiguracaoDeLimitesDeTaxa_rejeita_janela_nao_positiva()
+    {
+        var excecao = Assert.ThrowsExactly<InvalidOperationException>(
+            () => StartupConfiguration.CriarConfiguracaoDeLimitesDeTaxa(
+                CriarConfiguracao(janelaDeLogin: "0")));
+
+        StringAssert.Contains(excecao.Message, "LimitesDeTaxa:Login:WindowSeconds");
+    }
+
     private static IConfiguration CriarConfiguracao(
         string? connectionString = "Server=localhost;Database=teste;User Id=teste;",
         string? issuer = "coleta-seletiva-api",
@@ -128,7 +161,9 @@ public sealed class StartupConfigurationTests
         string? signingKey = ChaveValida,
         string? accessTokenMinutes = null,
         string? refreshTokenDias = null,
-        string? origemPermitida = null)
+        string? origemPermitida = null,
+        string? limiteDeLogin = null,
+        string? janelaDeLogin = null)
     {
         var valores = new Dictionary<string, string?>
         {
@@ -139,6 +174,8 @@ public sealed class StartupConfigurationTests
             ["Sessao:AccessTokenMinutos"] = accessTokenMinutes,
             ["Sessao:RefreshTokenDias"] = refreshTokenDias,
             ["Sessao:OrigemPermitida"] = origemPermitida,
+            ["LimitesDeTaxa:Login:PermitLimit"] = limiteDeLogin,
+            ["LimitesDeTaxa:Login:WindowSeconds"] = janelaDeLogin,
         };
 
         return new ConfigurationBuilder()

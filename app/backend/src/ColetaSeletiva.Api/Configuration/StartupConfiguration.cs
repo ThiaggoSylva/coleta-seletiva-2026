@@ -14,6 +14,7 @@ public static class StartupConfiguration
     public const int MinimumJwtSigningKeyBytes = 32;
 
     private const string JwtSectionName = "Jwt";
+    private const string LimitesDeTaxaSectionName = "LimitesDeTaxa";
 
     public static void Validate(IConfiguration configuration)
     {
@@ -27,6 +28,7 @@ public static class StartupConfiguration
         RequireValue(jwt, "Audience", "Jwt__Audience");
         ValidateSigningKey(jwt);
         ValidateOrigemPermitida(configuration);
+        _ = CriarConfiguracaoDeLimitesDeTaxa(configuration);
     }
 
     public static JwtSettings CriarJwtSettings(IConfiguration configuration)
@@ -72,6 +74,41 @@ public static class StartupConfiguration
         }
 
         return new ConfiguracaoDeSessao(validadeDoToken, validadeDoRefresh);
+    }
+
+    public static ConfiguracaoDeLimitesDeTaxa CriarConfiguracaoDeLimitesDeTaxa(
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        return new ConfiguracaoDeLimitesDeTaxa(
+            Login: LerLimiteDeTaxa(configuration, "Login", padraoDeTentativas: 5),
+            Refresh: LerLimiteDeTaxa(configuration, "Refresh", padraoDeTentativas: 30),
+            Cadastro: LerLimiteDeTaxa(configuration, "Cadastro", padraoDeTentativas: 5));
+    }
+
+    private static ConfiguracaoDeLimiteDeTaxa LerLimiteDeTaxa(
+        IConfiguration configuration,
+        string rota,
+        int padraoDeTentativas)
+    {
+        var secao = configuration.GetSection($"{LimitesDeTaxaSectionName}:{rota}");
+        var tentativas = secao.GetValue("PermitLimit", padraoDeTentativas);
+        var segundos = secao.GetValue("WindowSeconds", 60);
+
+        if (tentativas <= 0)
+        {
+            throw new InvalidOperationException(
+                $"A configuração 'LimitesDeTaxa:{rota}:PermitLimit' deve ser positiva.");
+        }
+
+        if (segundos <= 0)
+        {
+            throw new InvalidOperationException(
+                $"A configuração 'LimitesDeTaxa:{rota}:WindowSeconds' deve ser positiva.");
+        }
+
+        return new ConfiguracaoDeLimiteDeTaxa(tentativas, segundos);
     }
 
     private static void ValidateConnectionString(IConfiguration configuration)

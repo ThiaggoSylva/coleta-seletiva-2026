@@ -23,7 +23,7 @@
 - [x] 3.2 Implementar o registro e o perfil do cidadão, com e-mail único, papel Cidadão, ausência de organização e edição restrita aos próprios campos; verificar com testes de integração os cenários de CA-02 e a rejeição de e-mail duplicado e de alteração de papel/organização (RF-05; RNF-01, RNF-02; CA-02; DT-06, DT-12).
 - [x] 3.3 Implementar login, emissão de JWT, refresh rotativo, detecção de replay, logout e cookie seguro; verificar com testes de integração e contrato a expiração de 15 minutos, a rotação, a revogação da família e a mensagem genérica para credenciais inválidas (RF-02; RNF-01; CA-01; DT-05).
 - [x] 3.4 Implementar troca da própria senha e a pendência de troca no primeiro acesso de Operador; verificar com testes que a senha atual é exigida, que a política é aplicada e que as demais rotas ficam bloqueadas até a troca (RF-02, RF-04; RNF-01; CA-01, CA-02; DT-05).
-- [ ] 3.5 Implementar rate limiting e tratamento de erros nas rotas de registro, login e refresh, com ProblemDetails sem PII; verificar com testes de 429, mensagens genéricas e logs sem senha, token, e-mail completo ou telefone (RNF-01, RNF-02, RNF-08; CA-01; DT-05, DT-12, DT-18).
+- [x] 3.5 Implementar rate limiting e tratamento de erros nas rotas de registro, login e refresh, com ProblemDetails sem PII; verificar com testes de 429, mensagens genéricas e logs sem senha, token, e-mail completo ou telefone (RNF-01, RNF-02, RNF-08; CA-01; DT-05, DT-12, DT-18).
 
 ## 4. Gestão de equipe
 
