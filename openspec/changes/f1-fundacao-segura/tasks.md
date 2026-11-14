@@ -48,7 +48,7 @@
 
 - [x] 7.1 Montar a suíte de integração com `WebApplicationFactory` e Testcontainers para SQL Server, cobrindo migrations, Identity, refresh/replay, tenant A/B, cidadão X/Y, políticas, rate limiting e auditoria; verificar com `dotnet test` e SQL real (RNF-01–03, RNF-05; CA-01, CA-02; DT-17).
 - [x] 7.2 Montar os fluxos Playwright de registro, login, primeiro acesso, equipe, perfil e negações entre organizações e cidadãos; verificar com `npx playwright test` os cenários de CA-01 e das partes aplicáveis de CA-02 (RF-01–05; RNF-01; CA-01, CA-02; DT-17).
-- [ ] 7.3 Verificar a execução local com SPA e API na mesma origem, cookie de refresh, proxy e banco em contêiner; registrar os comandos no `app/README.md` e comprovar que os comandos funcionam em um ambiente limpo (RNF-01; DT-19, DT-20, DT-22).
+- [x] 7.3 Verificar a execução local com SPA e API na mesma origem, cookie de refresh, proxy e banco em contêiner; registrar os comandos no `app/README.md` e comprovar que os comandos funcionam em um ambiente limpo (RNF-01; DT-19, DT-20, DT-22).
 - [ ] 7.4 Executar a verificação final: `dotnet build`, `dotnet test`, `npm run build`, `npm test -- --run`, `npx playwright test` e `openspec validate --strict`; revisar o diff, confirmar ausência de segredos/PII e verificar que todos os jobs da CI passam no PR (RNF-01–03, RNF-05, RNF-08; CA-01, CA-02; DT-17, DT-21).
 
 ## Workflow follow-up

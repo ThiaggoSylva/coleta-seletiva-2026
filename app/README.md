@@ -186,7 +186,7 @@ npm test
 
 # limpeza do ambiente isolado
 cd ../..
-COMPOSE_PROJECT_NAME=coleta-e2e docker compose -f app/infra/compose.yaml down -v
+docker compose --project-directory app/infra -p coleta-e2e down -v
 ```
 
 ## Integração contínua
