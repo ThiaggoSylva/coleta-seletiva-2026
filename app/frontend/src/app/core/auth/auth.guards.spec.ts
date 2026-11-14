@@ -89,7 +89,7 @@ describe('guards de autenticação', () => {
   });
 
   it('encaminha a troca de senha pendente', () => {
-    configurar({ pendente: true });
+    configurar({ autenticado: true, pendente: true });
 
     const resultado = TestBed.runInInjectionContext(() => primeiroAcessoGuard(ROTA, ESTADO));
 
@@ -100,7 +100,7 @@ describe('guards de autenticação', () => {
   });
 
   it('permite a rota quando o papel é autorizado', () => {
-    configurar({ papeis: ['Administrador'] });
+    configurar({ autenticado: true, papeis: ['Administrador'] });
 
     const resultado = TestBed.runInInjectionContext(() =>
       papelGuard('Administrador')(ROTA, ESTADO),
@@ -110,7 +110,7 @@ describe('guards de autenticação', () => {
   });
 
   it('redireciona o cidadão para o próprio perfil', () => {
-    configurar({ papeis: ['Cidadao'] });
+    configurar({ autenticado: true, papeis: ['Cidadao'] });
 
     const resultado = TestBed.runInInjectionContext(() =>
       papelGuard('Administrador', 'Operador')(ROTA, ESTADO),
@@ -123,7 +123,7 @@ describe('guards de autenticação', () => {
   });
 
   it('redireciona os demais papéis para a área da organização', () => {
-    configurar({ papeis: ['Operador'] });
+    configurar({ autenticado: true, papeis: ['Operador'] });
 
     const resultado = TestBed.runInInjectionContext(() =>
       papelGuard('Administrador')(ROTA, ESTADO),
@@ -132,6 +132,43 @@ describe('guards de autenticação', () => {
     expect(resultado).toEqual({
       commands: ['/organizacao/inicio'],
       extras: undefined,
+    });
+  });
+
+  it('restaura a sessão antes de decidir o papel', async () => {
+    const { auth } = configurar({ autenticado: false, renovou: true, papeis: ['Administrador'] });
+
+    const resultado = await resolver(
+      TestBed.runInInjectionContext(() => papelGuard('Administrador')(ROTA, ESTADO)),
+    );
+
+    expect(resultado).toBe(true);
+    expect(auth.renovarSessao).toHaveBeenCalledTimes(1);
+  });
+
+  it('restaura a sessão antes de encaminhar a troca pendente', async () => {
+    configurar({ autenticado: false, renovou: true, pendente: true });
+
+    const resultado = await resolver(
+      TestBed.runInInjectionContext(() => primeiroAcessoGuard(ROTA, ESTADO)),
+    );
+
+    expect(resultado).toEqual({
+      commands: ['/acesso/trocar-senha'],
+      extras: undefined,
+    });
+  });
+
+  it('leva ao login quando a sessão não pode ser restaurada no guard de papel', async () => {
+    configurar({ autenticado: false, renovou: false });
+
+    const resultado = await resolver(
+      TestBed.runInInjectionContext(() => papelGuard('Administrador')(ROTA, ESTADO)),
+    );
+
+    expect(resultado).toEqual({
+      commands: ['/acesso/login'],
+      extras: { queryParams: { returnUrl: '/organizacao/inicio' } },
     });
   });
 });
