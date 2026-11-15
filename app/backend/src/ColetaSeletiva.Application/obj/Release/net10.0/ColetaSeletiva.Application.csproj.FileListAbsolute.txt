@@ -1,0 +1,16 @@
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\bin\Release\net10.0\ColetaSeletiva.Application.deps.json
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\bin\Release\net10.0\ColetaSeletiva.Application.dll
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\bin\Release\net10.0\ColetaSeletiva.Application.pdb
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\bin\Release\net10.0\ColetaSeletiva.Domain.dll
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\bin\Release\net10.0\ColetaSeletiva.Domain.pdb
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\obj\Release\net10.0\ColetaSeletiva.Application.csproj.AssemblyReference.cache
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\obj\Release\net10.0\ColetaSeletiva.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\obj\Release\net10.0\ColetaSeletiva.Application.AssemblyInfoInputs.cache
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\obj\Release\net10.0\ColetaSeletiva.Application.AssemblyInfo.cs
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\obj\Release\net10.0\ColetaSeletiva.Application.csproj.CoreCompileInputs.cache
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\obj\Release\net10.0\ColetaSeletiva.Application.sourcelink.json
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\obj\Release\net10.0\ColetaSe.14F7D6FA.Up2Date
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\obj\Release\net10.0\ColetaSeletiva.Application.dll
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\obj\Release\net10.0\refint\ColetaSeletiva.Application.dll
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\obj\Release\net10.0\ColetaSeletiva.Application.pdb
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Application\obj\Release\net10.0\ref\ColetaSeletiva.Application.dll

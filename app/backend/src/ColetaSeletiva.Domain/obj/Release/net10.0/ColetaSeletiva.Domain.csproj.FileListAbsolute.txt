@@ -1,0 +1,13 @@
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Domain\bin\Release\net10.0\ColetaSeletiva.Domain.deps.json
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Domain\bin\Release\net10.0\ColetaSeletiva.Domain.dll
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Domain\bin\Release\net10.0\ColetaSeletiva.Domain.pdb
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Domain\obj\Release\net10.0\ColetaSeletiva.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Domain\obj\Release\net10.0\ColetaSeletiva.Domain.AssemblyInfoInputs.cache
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Domain\obj\Release\net10.0\ColetaSeletiva.Domain.AssemblyInfo.cs
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Domain\obj\Release\net10.0\ColetaSeletiva.Domain.csproj.CoreCompileInputs.cache
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Domain\obj\Release\net10.0\ColetaSeletiva.Domain.sourcelink.json
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Domain\obj\Release\net10.0\ColetaSeletiva.Domain.dll
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Domain\obj\Release\net10.0\refint\ColetaSeletiva.Domain.dll
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Domain\obj\Release\net10.0\ColetaSeletiva.Domain.pdb
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Domain\obj\Release\net10.0\ref\ColetaSeletiva.Domain.dll
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\src\ColetaSeletiva.Domain\obj\Release\net10.0\ColetaSeletiva.Domain.csproj.AssemblyReference.cache

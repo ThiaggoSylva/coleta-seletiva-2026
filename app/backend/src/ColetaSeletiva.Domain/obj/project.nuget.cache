@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "BkdBut0RL/8=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\thiag\\Documents\\Academia 2026\\coleta-seletiva-2026\\app\\backend\\src\\ColetaSeletiva.Domain\\ColetaSeletiva.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\thiag\\.nuget\\packages\\nettopologysuite\\2.6.0\\nettopologysuite.2.6.0.nupkg.sha512"
+  ],
+  "logs": []
+}

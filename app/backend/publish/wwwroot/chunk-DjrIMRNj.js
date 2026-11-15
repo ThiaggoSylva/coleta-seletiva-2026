@@ -1,0 +1,1 @@
+import{n as C,r as h,t as A}from"./chunk-JP7ccaur.js";import"./main-7OK5GWBW.js";var p=[{path:``,pathMatch:`full`,redirectTo:`perfil`},{path:`perfil`,canActivate:[h,A,C(`Cidadao`)],loadComponent:()=>import(`./chunk-3gOTaXVY.js`).then(e=>e.PerfilPage)}];export{p as CIDADAO_ROUTES};
