@@ -2,7 +2,23 @@
 
 Plataforma web de coleta seletiva e pontos de descarte, multi-tenant (um tenant por cooperativa, associação ou prefeitura). Projeto de TCC da Academia do Programador, preparado para ser desenvolvido com o **opencode** no fluxo **PRD → TDD → SDD → Pull Request**.
 
-Esta pasta contém apenas documentação e ferramentas de governança. O código da aplicação será criado em `app/`.
+Esta pasta reúne documentação e ferramentas de governança. O código da aplicação fica em `app/`.
+
+## Aplicação publicada
+
+| O que | Endereço |
+| --- | --- |
+| Site (SPA Angular + API na mesma origem) | <https://coleta-seletiva.runasp.net> |
+| Consulta pública de pontos de coleta | <https://coleta-seletiva.runasp.net/pontos> |
+| Entrada de organizações e cidadãos | <https://coleta-seletiva.runasp.net/acesso/login> |
+| API (somente) | <https://coleta-seletiva.runasp.net/api/v1> |
+| Saúde da API | <https://coleta-seletiva.runasp.net/health> |
+| Especificação OpenAPI | <https://coleta-seletiva.runasp.net/openapi/v1.json> |
+
+O site roda no MonsterASP.NET (plano Free, .NET 10) com SQL Server do mesmo provedor.
+O passo a passo de publicação, as variáveis de ambiente e a reversão estão em
+[`docs/deploy-monsterasp.md`](docs/deploy-monsterasp.md). Para executar a aplicação
+localmente, inclusive a API isolada, veja [`app/README.md`](app/README.md).
 
 ## Estrutura
 
@@ -16,7 +32,7 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 ├── docs/
 │   ├── prd.md                      # requisitos de produto (Validado para TDD)
 │   ├── tdd.md                      # design técnico (Validado para SDD)
-│   └── prd-desafios.md             # evoluções v1.1 e v2 (Rascunho)
+│   └── prd-desafios.md             # evoluções v1.1 e v2 (Validado para TDD)
 └── openspec/
     ├── config.yaml                 # contexto e regras do projeto para o OpenSpec
     ├── specs/
@@ -26,15 +42,17 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 ## Estado atual
 
 - `docs/prd.md` está **validado para TDD** (2026-11-10), com o handoff PRD → TDD concluído.
-- `docs/tdd.md` está **validado para SDD** (2026-11-10), com as decisões `DT-01` a `DT-23` confirmadas.
-- A **F1 — Fundação segura** está implementada em `app/` (API ASP.NET Core 10 com SPA Angular 22,
+- `docs/tdd.md` está **validado para SDD** (2026-11-10), com as decisões `DT-01` a `DT-23` confirmadas e o handoff ao SDD liberado.
+- `docs/prd-desafios.md` e a revisão de v1.1/v2 do `docs/tdd.md` estão **validados** (2026-11-14), com as decisões `DT-24` a `DT-34` e o handoff de F7–F10 liberados; a implementação das evoluções continua condicionada à estabilidade da v1.
+- A **F1 — Fundação segura** foi integrada na `main` pelo PR #2 (API ASP.NET Core 10 com SPA Angular 22,
   contas, sessão, papéis, equipe e isolamento entre organizações), com specs em
   `openspec/specs` e o histórico da mudança em `openspec/changes/archive`.
-- A publicação em produção está preparada para o **MonsterASP.NET**: veja
-  [`docs/deploy-monsterasp.md`](docs/deploy-monsterasp.md).
 - A **F2 — Organização, catálogo e pontos** está implementada no backend e no frontend
   (perfil, municípios do IBGE, tipos habilitados, publicação, pontos e consulta pública com
   mapa); a F3 em diante segue pendente.
+- A aplicação está **publicada em produção** no **MonsterASP.NET**; o deploy continua sendo um
+  gate manual, sem publicação automática pela CI: veja
+  [`docs/deploy-monsterasp.md`](docs/deploy-monsterasp.md).
 
 ## Passo a passo
 
@@ -55,7 +73,7 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 
    A skill entrevista cada decisão técnica (`DT-*`). O rascunho já traz uma proposta para cada uma, então a conversa serve para confirmar ou trocar.
 5. **Instalar a CLI do OpenSpec** conforme a documentação oficial do OpenSpec. As skills `openspec-*` e os comandos `/opsx-*` dependem dela.
-6. **Especificar e implementar por fase.** Siga o roadmap do TDD (F0 a F6), uma fase por vez, em uma feature branch:
+6. **Especificar e implementar por fase.** Siga o roadmap do TDD (F0 a F10), uma fase por vez, em uma feature branch. As fases F0–F6 entregam a v1; F7–F10 entregam as evoluções v1.1/v2, após a estabilidade da v1:
 
    ```text
    /opsx-explore             # pensar e esclarecer antes de propor
@@ -85,4 +103,4 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 - **Copiados sem alteração** do modelo `locadora-de-veiculos-2026`: comandos e skills de `.opencode/` e o template de PR.
 - **Adaptados:** `AGENTS.md` (contexto do projeto e exemplos de título de PR), `openspec/config.yaml` (contexto e regras do domínio).
 - **Escritos para o tema:** `docs/prd.md` e `docs/tdd.md`, com a mesma estrutura do modelo.
-- **Evoluções:** `docs/prd-desafios.md` detalha as versões v1.1 e v2 (seção 5.2 do PRD), também como rascunho. Valide-o somente depois da v1.
+- **Evoluções:** `docs/prd-desafios.md` detalha as versões v1.1 e v2 (seção 5.2 do PRD), **validado para TDD** desde 2026-11-14, e a revisão correspondente de `docs/tdd.md` está **validada para SDD** na mesma data; a implementação continua condicionada à estabilidade da v1.

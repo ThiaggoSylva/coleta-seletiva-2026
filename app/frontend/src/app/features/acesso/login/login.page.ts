@@ -16,76 +16,84 @@ import { MensagemDeErro } from '../../../shared/mensagem-de-erro';
   selector: 'app-login',
   imports: [ReactiveFormsModule, RouterLink, MensagemDeErro],
   template: `
-    <section class="mx-auto max-w-md px-6 py-10">
-      <h1 class="text-2xl font-semibold">Entrar</h1>
-      <p class="mt-1 text-sm text-slate-600">Acesse sua conta de organização ou de cidadão.</p>
+    <section class="mx-auto max-w-md px-6 py-12">
+      <div class="cartao">
+        <span class="etiqueta bg-emerald-50 text-emerald-800">Acesso seguro</span>
+        <h1 class="mt-3 text-2xl font-semibold">Entrar</h1>
+        <p class="mt-1 text-sm text-slate-600">Acesse sua conta de organização ou de cidadão.</p>
 
-      @if (senhaAlterada()) {
-        <p class="mt-4 rounded-md bg-emerald-50 p-3 text-sm text-emerald-900" role="status">
-          Senha alterada. Entre novamente com a nova senha.
+        @if (senhaAlterada()) {
+          <p class="mt-4 rounded-md bg-emerald-50 p-3 text-sm text-emerald-900" role="status">
+            Senha alterada. Entre novamente com a nova senha.
+          </p>
+        }
+
+        @if (erroGeral() !== null) {
+          <p class="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-800" role="alert">
+            {{ erroGeral() }}
+          </p>
+        }
+
+        <form class="mt-6 space-y-4" [formGroup]="formulario" (ngSubmit)="entrar()" novalidate>
+          <div>
+            <label for="identificador" class="block text-sm font-medium text-slate-700">
+              Usuário ou e-mail
+            </label>
+            <input
+              id="identificador"
+              #identificador
+              type="text"
+              formControlName="identificador"
+              autocomplete="username"
+              class="mt-1.5 w-full"
+              [attr.aria-invalid]="campoInvalido('identificador')"
+              [attr.aria-describedby]="
+                mensagens('identificador').length > 0 ? 'identificador-erro' : null
+              "
+            />
+            <app-mensagem-de-erro
+              id="identificador-erro"
+              [mensagens]="mensagens('identificador')"
+            />
+          </div>
+
+          <div>
+            <label for="senha" class="block text-sm font-medium text-slate-700">Senha</label>
+            <input
+              id="senha"
+              #senha
+              type="password"
+              formControlName="senha"
+              autocomplete="current-password"
+              class="mt-1.5 w-full"
+              [attr.aria-invalid]="campoInvalido('senha')"
+              [attr.aria-describedby]="mensagens('senha').length > 0 ? 'senha-erro' : null"
+            />
+            <app-mensagem-de-erro id="senha-erro" [mensagens]="mensagens('senha')" />
+          </div>
+
+          <button type="submit" class="botao-primario mt-2 w-full" [disabled]="enviando()">
+            {{ enviando() ? 'Entrando…' : 'Entrar' }}
+          </button>
+        </form>
+
+        <p class="mt-6 border-t border-slate-200 pt-5 text-sm text-slate-600">
+          Ainda não tem conta?
+          <a
+            routerLink="/acesso/registro-cidadao"
+            class="font-medium text-emerald-700 hover:underline"
+          >
+            Cadastre-se como cidadão
+          </a>
+          ou
+          <a
+            routerLink="/acesso/registro-organizacao"
+            class="font-medium text-emerald-700 hover:underline"
+          >
+            cadastre sua organização </a
+          >.
         </p>
-      }
-
-      @if (erroGeral() !== null) {
-        <p class="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-800" role="alert">
-          {{ erroGeral() }}
-        </p>
-      }
-
-      <form class="mt-6 space-y-4" [formGroup]="formulario" (ngSubmit)="entrar()" novalidate>
-        <div>
-          <label for="identificador" class="block text-sm font-medium text-slate-700">
-            Usuário ou e-mail
-          </label>
-          <input
-            id="identificador"
-            #identificador
-            type="text"
-            formControlName="identificador"
-            autocomplete="username"
-            class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 focus:border-emerald-600 focus:outline-none"
-            [attr.aria-invalid]="campoInvalido('identificador')"
-            [attr.aria-describedby]="
-              mensagens('identificador').length > 0 ? 'identificador-erro' : null
-            "
-          />
-          <app-mensagem-de-erro id="identificador-erro" [mensagens]="mensagens('identificador')" />
-        </div>
-
-        <div>
-          <label for="senha" class="block text-sm font-medium text-slate-700">Senha</label>
-          <input
-            id="senha"
-            #senha
-            type="password"
-            formControlName="senha"
-            autocomplete="current-password"
-            class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 focus:border-emerald-600 focus:outline-none"
-            [attr.aria-invalid]="campoInvalido('senha')"
-            [attr.aria-describedby]="mensagens('senha').length > 0 ? 'senha-erro' : null"
-          />
-          <app-mensagem-de-erro id="senha-erro" [mensagens]="mensagens('senha')" />
-        </div>
-
-        <button
-          type="submit"
-          class="w-full rounded-md bg-emerald-700 px-4 py-2 font-medium text-white hover:bg-emerald-800 disabled:opacity-60"
-          [disabled]="enviando()"
-        >
-          {{ enviando() ? 'Entrando…' : 'Entrar' }}
-        </button>
-      </form>
-
-      <p class="mt-6 text-sm text-slate-600">
-        Ainda não tem conta?
-        <a routerLink="/acesso/registro-cidadao" class="font-medium text-emerald-700 underline">
-          Cadastre-se como cidadão
-        </a>
-        ou
-        <a routerLink="/acesso/registro-organizacao" class="font-medium text-emerald-700 underline">
-          cadastre sua organização </a
-        >.
-      </p>
+      </div>
     </section>
   `,
 })
