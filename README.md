@@ -32,7 +32,9 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
   `openspec/specs` e o histórico da mudança em `openspec/changes/archive`.
 - A publicação em produção está preparada para o **MonsterASP.NET**: veja
   [`docs/deploy-monsterasp.md`](docs/deploy-monsterasp.md).
-- Próxima fase do roadmap: F2 (perfil, catálogo e pontos de coleta).
+- A **F2 — Organização, catálogo e pontos** está implementada no backend (perfil, municípios
+  do IBGE, tipos habilitados, publicação, pontos e consulta pública); as telas da F2 e a F3
+  em diante seguem pendentes.
 
 ## Passo a passo
 

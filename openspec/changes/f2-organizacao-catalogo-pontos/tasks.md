@@ -17,16 +17,16 @@
 
 ## 3. Pontos de coleta
 
-- [ ] 3.1 Implementar criação e edição de ponto com endereço, coordenadas, horários e tipos, com validações de CA-03 (RF-08; RN-08).
-- [ ] 3.2 Implementar listagem, detalhe, alteração de status e retirada lógica, com nome único e preservação de histórico (RF-08, RF-22).
-- [ ] 3.3 Restringir a gestão ao Administrador e expor `GET /pontos/opcoes` ao Operador (RF-03, RF-04; DT-06).
-- [ ] 3.4 Implementar `aberto agora` no domínio com fuso IANA, início inclusivo e fim exclusivo (RN-08; CA-05).
+- [x] 3.1 Implementar criação e edição de ponto com endereço, coordenadas, horários e tipos, com validações de CA-03 (RF-08; RN-08).
+- [x] 3.2 Implementar listagem, detalhe, alteração de status e retirada lógica, com nome único e preservação de histórico (RF-08, RF-22).
+- [x] 3.3 Restringir a gestão ao Administrador e expor `GET /pontos/opcoes` ao Operador (RF-03, RF-04; DT-06).
+- [x] 3.4 Implementar `aberto agora` no domínio com fuso IANA, início inclusivo e fim exclusivo (RN-08; CA-05).
 
 ## 4. Consulta pública
 
-- [ ] 4.1 Implementar busca anônima de pontos com filtros de município, tipo e aberto agora, paginação e lista equivalente ao mapa (RF-09; DT-13).
-- [ ] 4.2 Implementar busca por proximidade com raio limitado, coordenadas no corpo e ordenação determinística (RF-09; RN-08; DT-11).
-- [ ] 4.3 Garantir DTOs públicos sem dados pessoais, cache curto e limite de taxa (RF-09; RNF-02, RNF-08; DT-13).
+- [x] 4.1 Implementar busca anônima de pontos com filtros de município, tipo e aberto agora, paginação e lista equivalente ao mapa (RF-09; DT-13).
+- [x] 4.2 Implementar busca por proximidade com raio limitado, coordenadas no corpo e ordenação determinística (RF-09; RN-08; DT-11).
+- [x] 4.3 Garantir DTOs públicos sem dados pessoais, cache curto e limite de taxa (RF-09; RNF-02, RNF-08; DT-13).
 
 ## 5. Frontend
 
