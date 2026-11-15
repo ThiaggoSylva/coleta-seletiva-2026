@@ -29,29 +29,24 @@ internal sealed class ConsultaPublicaDePontos : IConsultaPublicaDePontos
     {
         ArgumentNullException.ThrowIfNull(entrada);
 
-        var consulta = from ponto in _dbContext.PontosDeColeta
-                           .IgnoreQueryFilters()
-                           .AsNoTracking()
-                       join organizacao in _dbContext.Organizacoes
-                           .IgnoreQueryFilters()
-                           .AsNoTracking()
-                           on ponto.OrganizacaoId equals organizacao.Id
-                       join municipio in _dbContext.Municipios.AsNoTracking()
-                           on ponto.MunicipioId equals municipio.Id
-                       where organizacao.Publicada
-                           && ponto.Status == StatusPonto.Ativo
-                           && ponto.ExcluidoEmUtc == null
-                       select new ItemDaConsulta(ponto, organizacao, municipio);
+        // Os filtros são aplicados sobre a entidade, antes da projeção: predicados sobre
+        // um tipo projetado (com entidades dentro) não são traduzidos para SQL e quebravam
+        // a busca com qualquer filtro.
+        var pontosFiltrados = _dbContext.PontosDeColeta
+            .IgnoreQueryFilters()
+            .AsNoTracking()
+            .Where(ponto => ponto.Status == StatusPonto.Ativo && ponto.ExcluidoEmUtc == null);
 
         if (entrada.MunicipioId is int municipioId)
         {
-            consulta = consulta.Where(item => item.Ponto.MunicipioId == municipioId);
+            pontosFiltrados = pontosFiltrados.Where(ponto => ponto.MunicipioId == municipioId);
         }
 
         if (entrada.TipoResiduoId is Guid tipoResiduoId)
         {
-            consulta = consulta.Where(item => _dbContext.PontoTipos
-                .Any(tipo => tipo.PontoColetaId == item.Ponto.Id
+            pontosFiltrados = pontosFiltrados.Where(ponto => _dbContext.PontoTipos
+                .IgnoreQueryFilters()
+                .Any(tipo => tipo.PontoColetaId == ponto.Id
                     && tipo.TipoResiduoId == tipoResiduoId));
         }
 
@@ -60,9 +55,19 @@ internal sealed class ConsultaPublicaDePontos : IConsultaPublicaDePontos
         {
             origem = new Point(longitude, latitude) { SRID = PontoDeColeta.SridWgs84 };
             var raioEmMetros = (entrada.RaioKm ?? 10) * 1000;
-            consulta = consulta.Where(item =>
-                item.Ponto.Localizacao.IsWithinDistance(origem, raioEmMetros));
+            pontosFiltrados = pontosFiltrados.Where(ponto =>
+                ponto.Localizacao.IsWithinDistance(origem, raioEmMetros));
         }
+
+        var consulta = from ponto in pontosFiltrados
+                       join organizacao in _dbContext.Organizacoes
+                           .IgnoreQueryFilters()
+                           .AsNoTracking()
+                           .Where(organizacao => organizacao.Publicada)
+                           on ponto.OrganizacaoId equals organizacao.Id
+                       join municipio in _dbContext.Municipios.AsNoTracking()
+                           on ponto.MunicipioId equals municipio.Id
+                       select new ItemDaConsulta(ponto, organizacao, municipio);
 
         var candidatos = await consulta
             .Take(LimiteDeCandidatos)
