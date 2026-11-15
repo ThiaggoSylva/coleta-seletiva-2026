@@ -16,7 +16,7 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 ├── docs/
 │   ├── prd.md                      # requisitos de produto (Validado para TDD)
 │   ├── tdd.md                      # design técnico (Validado para SDD)
-│   └── prd-desafios.md             # evoluções v1.1 e v2 (Rascunho)
+│   └── prd-desafios.md             # evoluções v1.1 e v2 (Validado para TDD)
 └── openspec/
     ├── config.yaml                 # contexto e regras do projeto para o OpenSpec
     ├── specs/
@@ -79,4 +79,4 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 - **Copiados sem alteração** do modelo `locadora-de-veiculos-2026`: comandos e skills de `.opencode/` e o template de PR.
 - **Adaptados:** `AGENTS.md` (contexto do projeto e exemplos de título de PR), `openspec/config.yaml` (contexto e regras do domínio).
 - **Escritos para o tema:** `docs/prd.md` e `docs/tdd.md`, com a mesma estrutura do modelo.
-- **Evoluções:** `docs/prd-desafios.md` detalha as versões v1.1 e v2 (seção 5.2 do PRD), também como rascunho. Valide-o somente depois da v1.
+- **Evoluções:** `docs/prd-desafios.md` detalha as versões v1.1 e v2 (seção 5.2 do PRD) e está **validado para TDD** desde 2026-11-14, com handoff liberado; a implementação continua condicionada à estabilidade da v1.
