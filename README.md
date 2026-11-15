@@ -26,9 +26,15 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 ## Estado atual
 
 - `docs/prd.md` está **validado para TDD** (2026-11-10), com o handoff PRD → TDD concluído.
-- `docs/tdd.md` está **validado para SDD** (2026-11-10), com as decisões `DT-01` a `DT-23` confirmadas e o handoff ao SDD liberado.
-- A próxima etapa é o SDD com o OpenSpec, começando pela fase F0 do roadmap.
-- Nenhum código de aplicação foi criado ainda.
+- `docs/tdd.md` está **validado para SDD** (2026-11-10), com as decisões `DT-01` a `DT-23` confirmadas.
+- A **F1 — Fundação segura** está implementada em `app/` (API ASP.NET Core 10 com SPA Angular 22,
+  contas, sessão, papéis, equipe e isolamento entre organizações), com specs em
+  `openspec/specs` e o histórico da mudança em `openspec/changes/archive`.
+- A publicação em produção está preparada para o **MonsterASP.NET**: veja
+  [`docs/deploy-monsterasp.md`](docs/deploy-monsterasp.md).
+- A **F2 — Organização, catálogo e pontos** está implementada no backend e no frontend
+  (perfil, municípios do IBGE, tipos habilitados, publicação, pontos e consulta pública com
+  mapa); a F3 em diante segue pendente.
 
 ## Passo a passo
 

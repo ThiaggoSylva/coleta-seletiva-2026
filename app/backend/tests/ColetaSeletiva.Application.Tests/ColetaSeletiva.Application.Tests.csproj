@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ColetaSeletiva.Domain\ColetaSeletiva.Domain.csproj" />
+    <ProjectReference Include="..\..\src\ColetaSeletiva.Application\ColetaSeletiva.Application.csproj" />
+  </ItemGroup>
+
+</Project>
