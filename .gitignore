@@ -1,0 +1,13 @@
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Node.js dependencies
+node_modules/
+**/node_modules/
