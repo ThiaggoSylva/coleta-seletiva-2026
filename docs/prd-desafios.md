@@ -1,10 +1,12 @@
 # PRD — Evoluções da Plataforma de Coleta Seletiva: v1.1 e v2
 
-- **Status:** Rascunho. Aguardando validação explícita; handoff para o TDD não liberado.
+- **Status:** **Validado para TDD** em 2026-11-14, com aprovação explícita do solicitante registrada pela ferramenta `question`; handoff ao TDD liberado.
 - **Data:** 2026-11-09.
+- **Revisão:** 2026-11-14 — entrevista de validação com o solicitante; v1.1 e v2 mantidas juntas, prioridades P0/P1 confirmadas, níveis configuráveis sem números fixos e destino do TDD em `docs/tdd.md`.
+- **Validação:** 2026-11-14 — aprovado pelo solicitante via ferramenta `question`, após revisão de escopo, prioridades, níveis e destino do TDD.
 - **Origem:** evoluções listadas em `docs/prd.md`, seção 5.2, detalhadas no mesmo padrão do modelo `locadora-de-veiculos-2026`.
 - **Base de produto:** `docs/prd.md` (v1).
-- **Natureza da entrega:** documentação preparatória, sem implementação nem desenho técnico. Elaborado por assistente de IA sem entrevista pela ferramenta `question`; decisões marcadas **Proposta** precisam de confirmação.
+- **Natureza da entrega:** documentação de produto, sem implementação nem desenho técnico. As decisões de escopo foram esclarecidas pela ferramenta `question`; o que ainda depende de validação está marcado como pendência.
 
 ## 1. Resumo executivo
 
@@ -47,6 +49,8 @@ Metas quantitativas de adoção, engajamento, latência e disponibilidade não f
 - **Solicitante, produto, design e engenharia:** como na v1; responsáveis nominais a definir.
 
 ## 5. Escopo por versão
+
+Este PRD cobre **v1.1 e v2 em conjunto**, com as duas entregas no mesmo escopo e no mesmo handoff. As prioridades P0/P1 foram confirmadas: P0 é obrigatório para a entrega e P1 pode ser entregue ao final sem invalidar o núcleo.
 
 ### 5.1 v1.1 — E-mail, pontos e fotos
 
@@ -109,7 +113,7 @@ O administrador da plataforma analisa o registro de uma organização, aprova ou
 - **RF-04 — Configurar pontos (P0):** o administrador define, por tipo habilitado, o fator de pontos por unidade, com vigência. Sem fator, o tipo não gera pontos.
 - **RF-05 — Creditar pontos (P0):** ao registrar volume de origem retirada, creditar pontos ao cidadão da solicitação conforme RN-01. Recebimentos em ponto só geram pontos quando o operador informar o código do cidadão (RF-06).
 - **RF-06 — Código do cidadão (P1):** cada cidadão tem um código pessoal exibível e legível por câmera, usado pelo operador para identificar entrega em ponto. O código não expõe dados pessoais.
-- **RF-07 — Extrato e níveis (P0):** o cidadão consulta saldo, extrato (data, origem, tipo, pontos) e nível, definido por faixas de pontos acumulados configuradas pela plataforma.
+- **RF-07 — Extrato e níveis (P0):** o cidadão consulta saldo, extrato (data, origem, tipo, pontos) e nível, definido por faixas de pontos acumulados configuradas pela plataforma. As faixas são configuráveis e não têm valores fixos neste PRD; pontos acumulados não têm valor monetário nem resgate (RN-04).
 - **RF-08 — Corrigir pontos por ajuste (P0):** ajustes de volume da v1 geram lançamentos de correção de pontos, sem editar nem apagar lançamentos (RN-02).
 - **RF-09 — Fotos de pontos (P1):** operador envia até um número limite de fotos por ponto; o administrador aprova ou rejeita; só fotos aprovadas aparecem publicamente. Formatos, tamanhos e remoção de metadados em RNF-03.
 - **RF-10 — Remover foto (P1):** o administrador remove fotos; removidas deixam de aparecer imediatamente.
@@ -218,23 +222,30 @@ Premissas: v1 implementada e estável antes de iniciar a v1.1; v1.1 antes da v2;
 
 ## 12. Questões em aberto e próximos passos
 
-### 12.1 Pendências e validações
+### 12.1 Decisões confirmadas na revisão de 2026-11-14
+
+- Escopo: **v1.1 e v2** validados em conjunto neste PRD.
+- Prioridades **P0/P1** mantidas como no rascunho.
+- Níveis: faixas **configuráveis pela plataforma**, sem números fixos no PRD; pontos sem valor monetário e sem resgate (RN-04).
+- Destino do handoff técnico: **`docs/tdd.md`**.
+
+### 12.2 Pendências e validações
 
 | Pendência | Classificação | Validação / responsável sugerido |
 | --- | --- | --- |
-| Confirmar as decisões propostas e as prioridades P0/P1 | Bloqueante para validar o PRD | Solicitante, via `/generate-prd`. |
-| Regras de nível (faixas) e política de uso dos pontos | Bloqueante para RF-07 | Solicitante e organizações parceiras. |
 | Fonte validada dos fatores de impacto | Bloqueante para uso real de RF-17 e RF-18; não impede o desenho | Administração da plataforma e especialista de domínio a identificar. |
 | Provedor de e-mail e fotos | Decisão técnica no TDD | Engenharia. |
 | Política de retenção de dados no dispositivo e no servidor | Não bloqueante para o desenho; resolver antes de produção | Produto, segurança e operação. |
 | Metas de engajamento, desempenho e disponibilidade | Não bloqueante para o desenho | Produto e representante de organização. |
 
-### 12.2 Handoff para TDD
+### 12.3 Handoff para TDD
 
 - **Entrada:** `docs/prd-desafios.md`, complementando `docs/prd.md`.
-- **Destino:** usar `docs/tdd-desafios.md` somente se o solicitante pedir explicitamente um slug para o TDD; caso contrário, atualizar `docs/tdd.md` com confirmação pela ferramenta `question`.
-- **Estado:** **bloqueado** até a validação explícita deste PRD.
-- **Escopo a validar:** v1.1 (RF-01 a RF-10) e v2 (RF-11 a RF-22), RNF-01 a RNF-08, J-01 a J-07 e CA-01 a CA-12.
+- **Destino:** `docs/tdd.md`, atualizado com as decisões de v1.1 e v2. O uso de `docs/tdd.md` foi confirmado explicitamente pelo solicitante em 2026-11-14; não criar `docs/tdd-desafios.md` sem nova autorização.
+- **Estado:** **liberado** em 2026-11-14, após aprovação explícita do PRD pela ferramenta `question`.
+- **Escopo validado:** v1.1 (RF-01 a RF-10) e v2 (RF-11 a RF-22), RNF-01 a RNF-08, J-01 a J-07 e CA-01 a CA-12, em conjunto.
+- **Fora de escopo:** resgate de pontos por dinheiro, descontos ou prêmios; ranking público com nome real; SMS e aplicativos de mensagem; aplicativo nativo de loja; otimização exata de rotas ou trânsito em tempo real; certificados ou manifestos de destinação; integrações municipais; marketplace de materiais; pagamentos (seção 5.3).
 - **Regras essenciais:** RN-01 a RN-10 deste documento, mais RN-05 a RN-07 e RN-11 da v1.
-- **Entrevista técnica futura:** provedor de e-mail e filas de envio, armazenamento e tratamento de imagens, modelo de pontos, PWA e armazenamento offline, estratégia de sincronização e idempotência, heurística de rota, papel de administração da plataforma, versionamento de fatores, observabilidade e testes.
+- **Pendências para o desenho:** nenhuma bloqueante. A fonte validada dos fatores de impacto bloqueia apenas o uso real de RF-17 e RF-18, não o desenho técnico; as demais pendências são não bloqueantes para o desenho.
+- **Entrevista técnica futura:** provedor de e-mail e filas de envio, armazenamento e tratamento de imagens, modelo de pontos e faixas configuráveis, PWA e armazenamento offline, estratégia de sincronização e idempotência, heurística de rota, papel de administração da plataforma, versionamento de fatores, observabilidade e testes.
 - **Próximo passo:** depois de validar, usar `/generate-tdd Use docs/prd-desafios.md como base validada`.
