@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ColetaSeletiva.Domain\ColetaSeletiva.Domain.csproj" />
+    <ProjectReference Include="..\..\src\ColetaSeletiva.Application\ColetaSeletiva.Application.csproj" />
+    <ProjectReference Include="..\..\src\ColetaSeletiva.Infrastructure\ColetaSeletiva.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\ColetaSeletiva.Api\ColetaSeletiva.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Testcontainers.MsSql" />
+  </ItemGroup>
+
+</Project>

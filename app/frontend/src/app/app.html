@@ -1,0 +1,99 @@
+<header
+  class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/70"
+>
+  <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-3.5">
+    <h1 class="text-lg font-semibold">
+      <a routerLink="/" class="group flex items-center gap-2.5 text-emerald-900">
+        <span
+          class="grid h-9 w-9 place-items-center rounded-xl bg-emerald-700 text-white shadow-sm transition group-hover:bg-emerald-800"
+          aria-hidden="true"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="h-5 w-5"
+          >
+            <path d="M20 11a8 8 0 1 0-3.2 6.4" />
+            <path d="M20 5v6h-6" />
+            <path d="M7.5 12.2l2.4 2.4 4.6-4.6" />
+          </svg>
+        </span>
+        <span class="tracking-tight">Coleta Seletiva</span>
+      </a>
+    </h1>
+
+    <nav class="flex flex-wrap items-center gap-1.5 text-sm" aria-label="Navegação principal">
+      <a
+        routerLink="/pontos"
+        class="rounded-full px-3 py-1.5 font-medium text-slate-600 hover:bg-emerald-50 hover:text-emerald-800"
+      >
+        Pontos de coleta
+      </a>
+      @if (auth.autenticado()) {
+        @if (auth.possuiPapel('Administrador', 'Operador') && !auth.trocaSenhaPendente()) {
+          <a
+            routerLink="/organizacao/inicio"
+            class="rounded-full px-3 py-1.5 font-medium text-slate-600 hover:bg-emerald-50 hover:text-emerald-800"
+          >
+            Área da organização
+          </a>
+        }
+        @if (auth.possuiPapel('Administrador') && !auth.trocaSenhaPendente()) {
+          <a
+            routerLink="/organizacao/equipe"
+            class="rounded-full px-3 py-1.5 font-medium text-slate-600 hover:bg-emerald-50 hover:text-emerald-800"
+          >
+            Equipe
+          </a>
+        }
+        @if (auth.possuiPapel('Cidadao') && !auth.trocaSenhaPendente()) {
+          <a
+            routerLink="/cidadao/perfil"
+            class="rounded-full px-3 py-1.5 font-medium text-slate-600 hover:bg-emerald-50 hover:text-emerald-800"
+          >
+            Meu perfil
+          </a>
+        }
+        <a
+          routerLink="/acesso/trocar-senha"
+          class="rounded-full px-3 py-1.5 font-medium text-slate-600 hover:bg-emerald-50 hover:text-emerald-800"
+        >
+          Trocar senha
+        </a>
+
+        <span
+          class="ml-1 flex items-center gap-2 rounded-full border border-slate-200 bg-white py-1 pl-1 pr-3 text-slate-700"
+        >
+          <span
+            class="grid h-7 w-7 place-items-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-800"
+            aria-hidden="true"
+            >{{ inicial() }}</span
+          >
+          <span class="text-xs leading-tight">
+            <span class="block font-semibold">{{ auth.contaAtual()?.nome }}</span>
+            <span class="block text-slate-500">{{ rotuloDoPapel() }}</span>
+          </span>
+        </span>
+
+        <button type="button" class="botao-secundario !px-3 !py-1.5" (click)="sair()">Sair</button>
+      } @else {
+        <a routerLink="/acesso/login" class="botao-secundario !px-3 !py-1.5"> Entrar </a>
+        <a routerLink="/acesso/registro-cidadao" class="botao-primario !px-3 !py-1.5">
+          Criar conta
+        </a>
+      }
+    </nav>
+  </div>
+</header>
+
+<main class="min-h-screen text-slate-800">
+  <router-outlet />
+
+  <footer class="mx-auto mt-16 max-w-5xl px-6 pb-10 text-xs text-slate-500">
+    Coleta Seletiva · pontos de entrega voluntária de resíduos · dados públicos do IBGE
+  </footer>
+</main>

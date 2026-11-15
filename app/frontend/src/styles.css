@@ -1,0 +1,138 @@
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
+
+@theme {
+  --font-sans:
+    'Inter', 'Inter Variable', 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system,
+    'Roboto', 'Helvetica Neue', Arial, sans-serif;
+
+  /* Verde profundo — cor principal da marca */
+  --color-emerald-50: #eef7f2;
+  --color-emerald-100: #d7ecdf;
+  --color-emerald-200: #b1d8c2;
+  --color-emerald-300: #82bd9f;
+  --color-emerald-400: #4f9d7b;
+  --color-emerald-500: #2f8161;
+  --color-emerald-600: #23674e;
+  --color-emerald-700: #1d5440;
+  --color-emerald-800: #174435;
+  --color-emerald-900: #12382c;
+
+  /* Neutro areia — superfícies e textos */
+  --color-slate-50: #faf9f6;
+  --color-slate-100: #f4f2ec;
+  --color-slate-200: #e6e2d8;
+  --color-slate-300: #d1ccbf;
+  --color-slate-400: #a39e8f;
+  --color-slate-500: #7d7a6c;
+  --color-slate-600: #5f5c50;
+  --color-slate-700: #48453c;
+  --color-slate-800: #32302a;
+  --color-slate-900: #211f1b;
+
+  /* Cantos mais suaves em toda a aplicação */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-800 antialiased;
+    background-image:
+      radial-gradient(58rem 28rem at 88% -12%, #d7ecdf 0%, transparent 62%),
+      radial-gradient(42rem 24rem at -5% -8%, #f4f2ec 0%, transparent 58%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply tracking-tight text-slate-900;
+  }
+
+  ::selection {
+    background-color: var(--color-emerald-200);
+    color: var(--color-emerald-900);
+  }
+
+  input,
+  select,
+  textarea {
+    @apply rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-800 transition;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    @apply border-emerald-500 outline-none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-emerald-500) 18%, transparent);
+  }
+
+  input[type='checkbox'] {
+    @apply h-4 w-4 rounded border-slate-300 accent-emerald-700;
+  }
+
+  button,
+  a {
+    @apply transition;
+  }
+
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--color-emerald-600);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .cartao {
+    @apply rounded-2xl border border-slate-200/80 bg-white p-6;
+    box-shadow:
+      0 1px 2px rgb(33 31 27 / 0.05),
+      0 18px 40px -28px rgb(33 31 27 / 0.45);
+  }
+
+  .cartao-suave {
+    @apply rounded-2xl border border-slate-200/70 bg-slate-50/80 p-5;
+  }
+
+  .hero {
+    @apply relative overflow-hidden rounded-3xl border border-emerald-800/20 px-8 py-10 text-emerald-50;
+    background-image: linear-gradient(135deg, #174435 0%, #1d5440 45%, #2f8161 100%);
+    box-shadow: 0 24px 50px -32px rgb(23 68 53 / 0.9);
+  }
+
+  .botao-primario {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-60;
+  }
+
+  .botao-secundario {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-800 disabled:opacity-60;
+  }
+
+  .etiqueta {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold;
+  }
+
+  .campo {
+    @apply block text-sm;
+  }
+
+  .campo-rotulo {
+    @apply font-medium text-slate-700;
+  }
+}
+
+.leaflet-container {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  font-family: var(--font-sans);
+}
