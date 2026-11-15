@@ -25,6 +25,7 @@ echo "== Copiando a SPA para wwwroot da API"
 rm -rf "$WWWROOT"
 mkdir -p "$WWWROOT"
 cp -R "$FRONTEND_DIR/dist/frontend/browser/." "$WWWROOT/"
+touch "$WWWROOT/.gitkeep"
 
 echo "== API (.NET, Release)"
 cd "$BACKEND_DIR"
