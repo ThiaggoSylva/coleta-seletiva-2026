@@ -7,8 +7,10 @@ using ColetaSeletiva.Application;
 using ColetaSeletiva.Domain.Identidade;
 using ColetaSeletiva.Infrastructure;
 using ColetaSeletiva.Infrastructure.Identidade;
+using ColetaSeletiva.Infrastructure.Persistencia;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -84,12 +86,43 @@ app.UseSerilogRequestLogging(options =>
     options.MessageTemplate =
         "HTTP {RequestMethod} {RequestPath} respondeu {StatusCode} em {Elapsed:0.0000} ms";
 });
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+// A SPA é publicada em wwwroot. Rotas de navegação sem extensão que não existem
+// como arquivo recebem o index.html; /api mantém o 404 original.
+var paginaInicialDaSpa = Path.Combine(app.Environment.WebRootPath ?? string.Empty, "index.html");
+if (File.Exists(paginaInicialDaSpa))
+{
+    app.Use(async (contexto, proximo) =>
+    {
+        await proximo();
+
+        if (contexto.Response.StatusCode == StatusCodes.Status404NotFound
+            && HttpMethods.IsGet(contexto.Request.Method)
+            && !contexto.Request.Path.StartsWithSegments("/api")
+            && !Path.HasExtension(contexto.Request.Path))
+        {
+            contexto.Response.StatusCode = StatusCodes.Status200OK;
+            contexto.Response.ContentType = "text/html; charset=utf-8";
+            await contexto.Response.SendFileAsync(paginaInicialDaSpa);
+        }
+    });
+}
+
 app.UseRouting();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseMiddleware<PrimeiroAcessoMiddleware>();
 app.UseMiddleware<TenantContextMiddleware>();
 app.UseAuthorization();
+
+if (app.Configuration.GetValue("Database:AplicarMigrationsNoInicio", false))
+{
+    await using var escopoDeMigracao = app.Services.CreateAsyncScope();
+    var banco = escopoDeMigracao.ServiceProvider.GetRequiredService<ColetaSeletivaDbContext>();
+    await banco.Database.MigrateAsync();
+}
 
 await using (var escopo = app.Services.CreateAsyncScope())
 {

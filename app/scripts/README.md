@@ -10,6 +10,7 @@ verificações da aplicação. Funcionam no Git Bash/WSL e em runners Linux.
 | `check.sh` | Restaura, compila e testa backend e frontend, valida formatação, configuração do Compose e segurança | Sim; apenas leitura, build e testes |
 | `check-vulnerabilities.sh` | Consulta pacotes NuGet e npm por vulnerabilidades conhecidas e falha em severidade alta ou crítica | Sim; consulta somente leitura |
 | `check-secrets.sh` | Executa gitleaks no histórico, bloqueia `.env` versionado e confere se senha local e chave JWT vazaram para arquivos rastreados | Sim; nenhum valor é impresso |
+| `publicar-monsterasp.sh` | Compila a SPA, copia para `wwwroot` da API, publica em Release e gera o ZIP de publicação | Sim; recria `publish/` e o ZIP |
 
 ## Pré-requisitos
 
@@ -47,6 +48,17 @@ bash app/scripts/check.sh
 bash app/scripts/check-vulnerabilities.sh
 bash app/scripts/check-secrets.sh
 ```
+
+## Publicação no MonsterASP.NET
+
+```bash
+# gera app/backend/coleta-seletiva-monsterasp.zip para upload Web Deploy/FTP
+bash app/scripts/publicar-monsterasp.sh win-x86
+```
+
+O guia completo, com banco, variáveis de ambiente e verificação, está em
+`docs/deploy-monsterasp.md`. O workflow `.github/workflows/deploy-monsterasp.yml`
+executa o mesmo fluxo e envia por Web Deploy usando os segredos do repositório.
 
 O script de migrations ignora a execução enquanto a pasta
 `app/backend/src/ColetaSeletiva.Infrastructure/Migrations` não tiver migrations.

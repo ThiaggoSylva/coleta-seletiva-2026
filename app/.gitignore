@@ -1,3 +1,8 @@
+# Bancos locais de execução
+backend/src/ColetaSeletiva.Api/*.db
+backend/src/ColetaSeletiva.Api/*.db-shm
+backend/src/ColetaSeletiva.Api/*.db-wal
+
 # Build e artefatos .NET
 **/bin/
 **/obj/
@@ -5,6 +10,12 @@
 *.user
 *.suo
 **/.vs/
+
+# SPA compilada copiada para a API durante a publicação
+backend/src/ColetaSeletiva.Api/wwwroot/*
+!backend/src/ColetaSeletiva.Api/wwwroot/.gitkeep
+backend/publish/
+backend/*.zip
 
 # Dependências e artefatos do frontend
 **/node_modules/
