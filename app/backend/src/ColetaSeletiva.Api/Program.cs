@@ -102,9 +102,14 @@ if (File.Exists(paginaInicialDaSpa))
         await proximo();
 
         if (contexto.Response.StatusCode == StatusCodes.Status404NotFound
+            && !contexto.Response.HasStarted
             && HttpMethods.IsGet(contexto.Request.Method)
             && !contexto.Request.Path.StartsWithSegments("/api")
-            && !Path.HasExtension(contexto.Request.Path))
+            && !contexto.Request.Path.StartsWithSegments("/health")
+            && !contexto.Request.Path.StartsWithSegments("/swagger")
+            && !contexto.Request.Path.StartsWithSegments("/openapi")
+            && !Path.HasExtension(contexto.Request.Path)
+            && contexto.Request.Headers.Accept.ToString().Contains("text/html", StringComparison.OrdinalIgnoreCase))
         {
             contexto.Response.StatusCode = StatusCodes.Status200OK;
             contexto.Response.ContentType = "text/html; charset=utf-8";

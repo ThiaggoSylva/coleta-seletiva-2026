@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 # Gera o pacote de publicação para o MonsterASP.NET: SPA em wwwroot + API em Release.
-# Uso: app/scripts/publicar-monsterasp.sh [rid]
-#   rid padrão: win-x86 (runtime usado pela hospedagem). Ao trocar de RID, rode
-#   'dotnet restore -r <rid>' em app/backend e versione os packages.lock.json,
-#   porque a restauração em CI é feita em modo locked.
+# Uso: app/scripts/publicar-monsterasp.sh
+# Publicação framework-dependent (portável); o runtime é fornecido pela hospedagem.
 
 set -euo pipefail
 
@@ -14,7 +12,6 @@ source "$SCRIPT_DIR/lib.sh"
 require_command dotnet
 require_command npm
 
-RID="${1:-win-x86}"
 SAIDA="$BACKEND_DIR/publish"
 WWWROOT="$BACKEND_DIR/src/ColetaSeletiva.Api/wwwroot"
 PACOTE="$BACKEND_DIR/coleta-seletiva-monsterasp.zip"
@@ -29,12 +26,13 @@ rm -rf "$WWWROOT"
 mkdir -p "$WWWROOT"
 cp -R "$FRONTEND_DIR/dist/frontend/browser/." "$WWWROOT/"
 
-echo "== API (.NET, Release, $RID)"
+echo "== API (.NET, Release)"
 cd "$BACKEND_DIR"
 rm -rf "$SAIDA"
+dotnet restore ColetaSeletiva.slnx --locked-mode
 dotnet publish src/ColetaSeletiva.Api/ColetaSeletiva.Api.csproj \
   --configuration Release \
-  --runtime "$RID" \
+  --no-restore \
   --self-contained false \
   --output "$SAIDA"
 
