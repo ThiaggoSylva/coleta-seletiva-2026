@@ -68,6 +68,10 @@ openssl rand -base64 48
 3. Em **Actions → Deploy MonsterASP.NET → Run workflow**. O workflow compila a SPA, roda os
    testes unitários, publica a API para `win-x86` e envia por Web Deploy.
 
+Para publicar em outro runtime (`win-x64`, por exemplo), rode antes
+`dotnet restore -r win-x64` em `app/backend` e versione os `packages.lock.json`: a restauração
+na CI usa modo *locked* e falha se o lockfile não tiver a seção do RID escolhido.
+
 ### Opção B — pacote local + FTP/ZIP
 
 ```bash

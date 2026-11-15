@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Gera o pacote de publicação para o MonsterASP.NET: SPA em wwwroot + API em Release.
 # Uso: app/scripts/publicar-monsterasp.sh [rid]
-#   rid padrão: win-x86 (runtime usado pela hospedagem); use win-x64 se o site for 64 bits.
+#   rid padrão: win-x86 (runtime usado pela hospedagem). Ao trocar de RID, rode
+#   'dotnet restore -r <rid>' em app/backend e versione os packages.lock.json,
+#   porque a restauração em CI é feita em modo locked.
 
 set -euo pipefail
 
