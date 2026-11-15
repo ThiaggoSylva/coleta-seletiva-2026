@@ -2,7 +2,23 @@
 
 Plataforma web de coleta seletiva e pontos de descarte, multi-tenant (um tenant por cooperativa, associação ou prefeitura). Projeto de TCC da Academia do Programador, preparado para ser desenvolvido com o **opencode** no fluxo **PRD → TDD → SDD → Pull Request**.
 
-Esta pasta contém apenas documentação e ferramentas de governança. O código da aplicação será criado em `app/`.
+Esta pasta reúne documentação e ferramentas de governança. O código da aplicação fica em `app/`.
+
+## Aplicação publicada
+
+| O que | Endereço |
+| --- | --- |
+| Site (SPA Angular + API na mesma origem) | <https://coleta-seletiva.runasp.net> |
+| Consulta pública de pontos de coleta | <https://coleta-seletiva.runasp.net/pontos> |
+| Entrada de organizações e cidadãos | <https://coleta-seletiva.runasp.net/acesso/login> |
+| API (somente) | <https://coleta-seletiva.runasp.net/api/v1> |
+| Saúde da API | <https://coleta-seletiva.runasp.net/health> |
+| Especificação OpenAPI | <https://coleta-seletiva.runasp.net/openapi/v1.json> |
+
+O site roda no MonsterASP.NET (plano Free, .NET 10) com SQL Server do mesmo provedor.
+O passo a passo de publicação, as variáveis de ambiente e a reversão estão em
+[`docs/deploy-monsterasp.md`](docs/deploy-monsterasp.md). Para executar a aplicação
+localmente, inclusive a API isolada, veja [`app/README.md`](app/README.md).
 
 ## Estrutura
 
@@ -30,8 +46,9 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 - A **F1 — Fundação segura** está implementada em `app/` (API ASP.NET Core 10 com SPA Angular 22,
   contas, sessão, papéis, equipe e isolamento entre organizações), com specs em
   `openspec/specs` e o histórico da mudança em `openspec/changes/archive`.
-- A publicação em produção está preparada para o **MonsterASP.NET**: veja
-  [`docs/deploy-monsterasp.md`](docs/deploy-monsterasp.md).
+- A aplicação está **publicada em produção** em
+  <https://coleta-seletiva.runasp.net> (SPA e API na mesma origem) e no MonsterASP.NET;
+  o guia de publicação está em [`docs/deploy-monsterasp.md`](docs/deploy-monsterasp.md).
 - A **F2 — Organização, catálogo e pontos** está implementada no backend e no frontend
   (perfil, municípios do IBGE, tipos habilitados, publicação, pontos e consulta pública com
   mapa); a F3 em diante segue pendente.
