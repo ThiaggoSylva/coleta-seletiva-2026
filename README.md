@@ -27,8 +27,9 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 
 - `docs/prd.md` está **validado para TDD** (2026-11-10), com o handoff PRD → TDD concluído.
 - `docs/tdd.md` está **validado para SDD** (2026-11-10), com as decisões `DT-01` a `DT-23` confirmadas e o handoff ao SDD liberado.
-- A próxima etapa é o SDD com o OpenSpec, começando pela fase F0 do roadmap.
-- Nenhum código de aplicação foi criado ainda.
+- `docs/prd-desafios.md` e a revisão de v1.1/v2 do `docs/tdd.md` estão **validados** (2026-11-14), com as decisões `DT-24` a `DT-34` e o handoff de F7–F10 liberados; a implementação das evoluções continua condicionada à estabilidade da v1.
+- A próxima etapa da v1 é o SDD com o OpenSpec, começando pela fase F0 do roadmap; a F1 já está implementada em `app/` na feature branch `feat/f1-fundacao-segura`, aguardando revisão no PR #2.
+- O deploy de produção no MonsterASP.NET continua sendo um gate posterior, sem publicação automática pela CI.
 
 ## Passo a passo
 
@@ -49,7 +50,7 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 
    A skill entrevista cada decisão técnica (`DT-*`). O rascunho já traz uma proposta para cada uma, então a conversa serve para confirmar ou trocar.
 5. **Instalar a CLI do OpenSpec** conforme a documentação oficial do OpenSpec. As skills `openspec-*` e os comandos `/opsx-*` dependem dela.
-6. **Especificar e implementar por fase.** Siga o roadmap do TDD (F0 a F6), uma fase por vez, em uma feature branch:
+6. **Especificar e implementar por fase.** Siga o roadmap do TDD (F0 a F10), uma fase por vez, em uma feature branch. As fases F0–F6 entregam a v1; F7–F10 entregam as evoluções v1.1/v2, após a estabilidade da v1:
 
    ```text
    /opsx-explore             # pensar e esclarecer antes de propor
@@ -79,4 +80,4 @@ Esta pasta contém apenas documentação e ferramentas de governança. O código
 - **Copiados sem alteração** do modelo `locadora-de-veiculos-2026`: comandos e skills de `.opencode/` e o template de PR.
 - **Adaptados:** `AGENTS.md` (contexto do projeto e exemplos de título de PR), `openspec/config.yaml` (contexto e regras do domínio).
 - **Escritos para o tema:** `docs/prd.md` e `docs/tdd.md`, com a mesma estrutura do modelo.
-- **Evoluções:** `docs/prd-desafios.md` detalha as versões v1.1 e v2 (seção 5.2 do PRD) e está **validado para TDD** desde 2026-11-14, com handoff liberado; a implementação continua condicionada à estabilidade da v1.
+- **Evoluções:** `docs/prd-desafios.md` detalha as versões v1.1 e v2 (seção 5.2 do PRD), **validado para TDD** desde 2026-11-14, e a revisão correspondente de `docs/tdd.md` está **validada para SDD** na mesma data; a implementação continua condicionada à estabilidade da v1.
