@@ -140,6 +140,13 @@ await using (var escopo = app.Services.CreateAsyncScope())
 
 app.MapOpenApi();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+app.MapGet("/api/v1", () => Results.Ok(new
+{
+    status = "ok",
+    mensagem = "API Coleta Seletiva",
+    openapi = "/openapi/v1.json",
+    health = "/health",
+}));
 app.MapControllers();
 
 app.Run();
