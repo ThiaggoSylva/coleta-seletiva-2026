@@ -355,7 +355,7 @@ public sealed class TenantIsolationTests
     private static ColetaSeletivaDbContext CriarContexto(TenantContext tenant)
     {
         var options = new DbContextOptionsBuilder<ColetaSeletivaDbContext>()
-            .UseSqlServer(_connectionString)
+            .UseSqlServer(_connectionString, sqlServer => sqlServer.UseNetTopologySuite())
             .Options;
 
         return new ColetaSeletivaDbContext(options, tenant);

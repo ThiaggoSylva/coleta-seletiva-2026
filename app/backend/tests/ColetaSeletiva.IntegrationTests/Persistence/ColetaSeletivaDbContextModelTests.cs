@@ -184,7 +184,9 @@ public sealed class ColetaSeletivaDbContextModelTests
     private static IModel CriarModelo()
     {
         var options = new DbContextOptionsBuilder<ColetaSeletivaDbContext>()
-            .UseSqlServer("Server=localhost;Database=ColetaSeletivaModelo;Integrated Security=True;")
+            .UseSqlServer(
+                "Server=localhost;Database=ColetaSeletivaModelo;Integrated Security=True;",
+                sqlServer => sqlServer.UseNetTopologySuite())
             .Options;
 
         using var contexto = new ColetaSeletivaDbContext(options, new TenantContext());

@@ -50,4 +50,4 @@ Implementa a F2 — Organização, catálogo e pontos: perfil público da organi
 - **Privacidade:** DTOs públicos não expõem dados pessoais e a localização do dispositivo não é persistida; a busca anônima tem limite de taxa e cache curto, mas a topologia com múltiplas instâncias exige armazenamento distribuído para o rate limiting.
 - **Dependência nova:** `leaflet` 1.9.4 e `@types/leaflet` no frontend; uso dos tiles do OpenStreetMap sujeito à política do provedor (DT-02).
 - **Acessibilidade:** o mapa tem lista equivalente e o seletor de coordenadas aceita digitação, mas RNF-04 não foi validado formalmente (teclado, leitor de tela).
-- **Deploy:** continua pendente de `ConnectionStrings__ColetaSeletiva`, `Jwt__SigningKey`, `Sessao__OrigemPermitida` e dos quatro secrets de Web Deploy no GitHub Actions.
+- **Deploy:** continua pendente de `ConnectionStrings__ColetaSeletiva`, `Jwt__SigningKey`, `Sessao__OrigemPermitida` e das credenciais de Web Deploy/FTP; a publicação é manual, não pelo GitHub Actions.
