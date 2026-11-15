@@ -5,4 +5,5 @@ public static class PoliticasDeLimiteDeTaxa
     public const string Login = "login";
     public const string Refresh = "refresh";
     public const string Cadastro = "cadastro";
+    public const string ConsultaPublica = "consulta-publica";
 }

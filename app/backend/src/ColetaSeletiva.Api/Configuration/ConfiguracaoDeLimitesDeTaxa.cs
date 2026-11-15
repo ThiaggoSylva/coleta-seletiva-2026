@@ -5,4 +5,5 @@ public sealed record ConfiguracaoDeLimiteDeTaxa(int PermitLimit, int WindowSecon
 public sealed record ConfiguracaoDeLimitesDeTaxa(
     ConfiguracaoDeLimiteDeTaxa Login,
     ConfiguracaoDeLimiteDeTaxa Refresh,
-    ConfiguracaoDeLimiteDeTaxa Cadastro);
+    ConfiguracaoDeLimiteDeTaxa Cadastro,
+    ConfiguracaoDeLimiteDeTaxa ConsultaPublica);

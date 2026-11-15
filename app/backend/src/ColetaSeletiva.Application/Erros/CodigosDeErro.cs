@@ -13,4 +13,5 @@ public static class CodigosDeErro
     public const string VinculoEmUso = "vinculo_em_uso";
     public const string PublicacaoIncompleta = "publicacao_incompleta";
     public const string NomeEmUso = "nome_em_uso";
+    public const string PontoRetirado = "ponto_retirado";
 }

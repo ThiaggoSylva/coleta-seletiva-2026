@@ -84,7 +84,8 @@ public static class StartupConfiguration
         return new ConfiguracaoDeLimitesDeTaxa(
             Login: LerLimiteDeTaxa(configuration, "Login", padraoDeTentativas: 5),
             Refresh: LerLimiteDeTaxa(configuration, "Refresh", padraoDeTentativas: 30),
-            Cadastro: LerLimiteDeTaxa(configuration, "Cadastro", padraoDeTentativas: 5));
+            Cadastro: LerLimiteDeTaxa(configuration, "Cadastro", padraoDeTentativas: 5),
+            ConsultaPublica: LerLimiteDeTaxa(configuration, "ConsultaPublica", padraoDeTentativas: 60));
     }
 
     private static ConfiguracaoDeLimiteDeTaxa LerLimiteDeTaxa(

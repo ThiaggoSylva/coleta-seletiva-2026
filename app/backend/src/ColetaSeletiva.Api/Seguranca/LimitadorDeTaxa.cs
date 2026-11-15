@@ -28,6 +28,10 @@ public static class LimitadorDeTaxa
             AdicionarPoliticaDeJanelaFixa(options, PoliticasDeLimiteDeTaxa.Login, limites.Login);
             AdicionarPoliticaDeJanelaFixa(options, PoliticasDeLimiteDeTaxa.Refresh, limites.Refresh);
             AdicionarPoliticaDeJanelaFixa(options, PoliticasDeLimiteDeTaxa.Cadastro, limites.Cadastro);
+            AdicionarPoliticaDeJanelaFixa(
+                options,
+                PoliticasDeLimiteDeTaxa.ConsultaPublica,
+                limites.ConsultaPublica);
         });
 
         return services;
