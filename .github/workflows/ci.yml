@@ -192,6 +192,10 @@ jobs:
       - name: Aplicar migrations
         run: bash app/scripts/apply-migrations.sh
 
+      - name: Instalar dependências do frontend
+        working-directory: app/frontend
+        run: npm ci
+
       - name: Instalar dependências E2E
         working-directory: app/e2e
         run: npm ci
