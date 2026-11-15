@@ -3,10 +3,14 @@ using ColetaSeletiva.Application.Acesso.Equipe;
 using ColetaSeletiva.Application.Acesso.PerfilDoCidadao;
 using ColetaSeletiva.Application.Acesso.Sessao;
 using ColetaSeletiva.Application.Auditoria;
+using ColetaSeletiva.Application.Catalogo;
+using ColetaSeletiva.Application.PerfilDaOrganizacao;
 using ColetaSeletiva.Application.Persistencia;
 using ColetaSeletiva.Application.Seguranca;
 using ColetaSeletiva.Infrastructure.Acesso;
 using ColetaSeletiva.Infrastructure.AuditoriaDeEventos;
+using ColetaSeletiva.Infrastructure.Catalogo;
+using ColetaSeletiva.Infrastructure.Perfis;
 using ColetaSeletiva.Infrastructure.Identidade;
 using ColetaSeletiva.Infrastructure.Persistencia;
 using ColetaSeletiva.Infrastructure.Seguranca;
@@ -38,13 +42,18 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IDeteccaoDeAcessoCruzado, DeteccaoDeAcessoCruzado>();
         services.AddScoped<IPerfilDeCidadao, PerfilDeCidadao>();
         services.AddScoped<IRegistroDeAuditoria, RegistroDeAuditoria>();
+        services.AddScoped<ICatalogoDeResiduos, CatalogoDeResiduos>();
+        services.AddScoped<ICatalogoDeMunicipios, CatalogoDeMunicipios>();
+        services.AddScoped<IPerfilDaOrganizacao, PerfilDaOrganizacaoService>();
         services.AddScoped<IAutenticacaoDeContas, AutenticacaoDeContas>();
         services.AddScoped<IAlteracaoDeSenha, AlteracaoDeSenha>();
         services.AddScoped<IRepositorioDeRefreshTokens, RepositorioDeRefreshTokens>();
         services.AddSingleton<IGeradorDeTokenDeAcesso, GeradorDeTokenDeAcesso>();
 
         services.AddDbContext<ColetaSeletivaDbContext>(options =>
-            options.UseSqlServer(connectionString));
+            options.UseSqlServer(
+                connectionString,
+                sqlServer => sqlServer.UseNetTopologySuite()));
 
         services
             .AddIdentityCore<Usuario>(options =>

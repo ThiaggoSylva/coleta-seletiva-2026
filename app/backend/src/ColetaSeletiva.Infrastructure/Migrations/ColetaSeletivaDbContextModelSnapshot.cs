@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 
 #nullable disable
 
@@ -70,7 +71,7 @@ namespace ColetaSeletiva.Infrastructure.Migrations
                     b.ToTable("Auditoria", (string)null);
                 });
 
-            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.Organizacao", b =>
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.ConfiguracaoDePeriodo", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -80,6 +81,79 @@ namespace ColetaSeletiva.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset>("CriadoEmUtc")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<TimeOnly>("HoraFim")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly>("HoraInicio")
+                        .HasColumnType("time");
+
+                    b.Property<Guid>("OrganizacaoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Periodo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizacaoId", "Periodo")
+                        .IsUnique()
+                        .HasDatabaseName("UX_ConfiguracaoDePeriodo_OrganizacaoId_Periodo");
+
+                    b.ToTable("ConfiguracaoDePeriodo", (string)null);
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.Municipio", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Uf")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Uf", "Nome")
+                        .HasDatabaseName("IX_Municipio_Uf_Nome");
+
+                    b.ToTable("Municipio", (string)null);
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.Organizacao", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("AtualizadoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ContatoEmail")
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.Property<string>("ContatoTelefone")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTimeOffset>("CriadoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Fuso")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<int>("LimiteSolicitacoesAbertas")
+                        .HasColumnType("int");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -103,6 +177,209 @@ namespace ColetaSeletiva.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Organizacao", (string)null);
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.OrganizacaoMunicipio", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CriadoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("MunicipioId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("OrganizacaoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("OrganizacaoId", "MunicipioId")
+                        .HasName("AK_OrganizacaoMunicipio_OrganizacaoId_MunicipioId");
+
+                    b.HasIndex("MunicipioId");
+
+                    b.ToTable("OrganizacaoMunicipio", (string)null);
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.OrganizacaoTipo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("AceitaRetiradaDomiciliar")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("AtualizadoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("CriadoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("OrganizacaoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid>("TipoResiduoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("OrganizacaoId", "TipoResiduoId")
+                        .HasName("AK_OrganizacaoTipo_OrganizacaoId_TipoResiduoId");
+
+                    b.HasIndex("TipoResiduoId");
+
+                    b.ToTable("OrganizacaoTipo", (string)null);
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.PontoDeColeta", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("AtualizadoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Bairro")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Cep")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.Property<string>("Complemento")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTimeOffset>("CriadoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ExcluidoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Point>("Localizacao")
+                        .IsRequired()
+                        .HasColumnType("geography");
+
+                    b.Property<int>("MunicipioId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Numero")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Observacoes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("OrganizacaoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("Rua")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Uf")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("OrganizacaoId", "Id")
+                        .HasName("AK_PontoColeta_OrganizacaoId_Id");
+
+                    b.HasIndex("OrganizacaoId", "MunicipioId")
+                        .HasDatabaseName("IX_PontoColeta_OrganizacaoId_MunicipioId");
+
+                    b.HasIndex("OrganizacaoId", "Nome")
+                        .IsUnique()
+                        .HasDatabaseName("UX_PontoColeta_OrganizacaoId_Nome");
+
+                    b.ToTable("PontoColeta", (string)null);
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.PontoHorario", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DiaDaSemana")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<TimeOnly>("HoraFim")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly>("HoraInicio")
+                        .HasColumnType("time");
+
+                    b.Property<Guid>("OrganizacaoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PontoColetaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizacaoId", "PontoColetaId")
+                        .HasDatabaseName("IX_PontoHorario_OrganizacaoId_PontoColetaId");
+
+                    b.ToTable("PontoHorario", (string)null);
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.PontoTipo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OrganizacaoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PontoColetaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TipoResiduoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizacaoId", "TipoResiduoId");
+
+                    b.HasIndex("OrganizacaoId", "PontoColetaId", "TipoResiduoId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_PontoTipo_OrganizacaoId_PontoColetaId_TipoResiduoId");
+
+                    b.ToTable("PontoTipo", (string)null);
                 });
 
             modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.RefreshToken", b =>
@@ -145,6 +422,44 @@ namespace ColetaSeletiva.Infrastructure.Migrations
                         .HasDatabaseName("IX_RefreshToken_UsuarioId_FamiliaId");
 
                     b.ToTable("RefreshToken", (string)null);
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.TipoResiduo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Categoria")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Orientacoes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Unidade")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Codigo")
+                        .IsUnique()
+                        .HasDatabaseName("UX_TipoResiduo_Codigo");
+
+                    b.ToTable("TipoResiduo", (string)null);
                 });
 
             modelBuilder.Entity("ColetaSeletiva.Infrastructure.Identidade.Usuario", b =>
@@ -396,6 +711,88 @@ namespace ColetaSeletiva.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.ConfiguracaoDePeriodo", b =>
+                {
+                    b.HasOne("ColetaSeletiva.Domain.Entidades.Organizacao", null)
+                        .WithMany()
+                        .HasForeignKey("OrganizacaoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.OrganizacaoMunicipio", b =>
+                {
+                    b.HasOne("ColetaSeletiva.Domain.Entidades.Municipio", null)
+                        .WithMany()
+                        .HasForeignKey("MunicipioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ColetaSeletiva.Domain.Entidades.Organizacao", null)
+                        .WithMany()
+                        .HasForeignKey("OrganizacaoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.OrganizacaoTipo", b =>
+                {
+                    b.HasOne("ColetaSeletiva.Domain.Entidades.Organizacao", null)
+                        .WithMany()
+                        .HasForeignKey("OrganizacaoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ColetaSeletiva.Domain.Entidades.TipoResiduo", null)
+                        .WithMany()
+                        .HasForeignKey("TipoResiduoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.PontoDeColeta", b =>
+                {
+                    b.HasOne("ColetaSeletiva.Domain.Entidades.Organizacao", null)
+                        .WithMany()
+                        .HasForeignKey("OrganizacaoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ColetaSeletiva.Domain.Entidades.OrganizacaoMunicipio", null)
+                        .WithMany()
+                        .HasForeignKey("OrganizacaoId", "MunicipioId")
+                        .HasPrincipalKey("OrganizacaoId", "MunicipioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.PontoHorario", b =>
+                {
+                    b.HasOne("ColetaSeletiva.Domain.Entidades.PontoDeColeta", null)
+                        .WithMany("Horarios")
+                        .HasForeignKey("OrganizacaoId", "PontoColetaId")
+                        .HasPrincipalKey("OrganizacaoId", "Id")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.PontoTipo", b =>
+                {
+                    b.HasOne("ColetaSeletiva.Domain.Entidades.PontoDeColeta", null)
+                        .WithMany("Tipos")
+                        .HasForeignKey("OrganizacaoId", "PontoColetaId")
+                        .HasPrincipalKey("OrganizacaoId", "Id")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.HasOne("ColetaSeletiva.Domain.Entidades.OrganizacaoTipo", null)
+                        .WithMany()
+                        .HasForeignKey("OrganizacaoId", "TipoResiduoId")
+                        .HasPrincipalKey("OrganizacaoId", "TipoResiduoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.RefreshToken", b =>
                 {
                     b.HasOne("ColetaSeletiva.Infrastructure.Identidade.Usuario", null)
@@ -464,6 +861,13 @@ namespace ColetaSeletiva.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ColetaSeletiva.Domain.Entidades.PontoDeColeta", b =>
+                {
+                    b.Navigation("Horarios");
+
+                    b.Navigation("Tipos");
                 });
 #pragma warning restore 612, 618
         }

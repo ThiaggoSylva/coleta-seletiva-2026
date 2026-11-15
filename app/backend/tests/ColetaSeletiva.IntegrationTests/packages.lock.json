@@ -735,6 +735,14 @@
           "MSTest.Analyzers": "4.5.2"
         }
       },
+      "NetTopologySuite.IO.SqlServerBytes": {
+        "type": "Transitive",
+        "resolved": "2.1.0",
+        "contentHash": "R4BcV19f2l6EjHSjh/EHwLhYQHrOov9vig1EW5oBm0iqlZOgaIJm5tBnlbFnYlvdYOPuf5p0Qtf8PCVwH77Wbg==",
+        "dependencies": {
+          "NetTopologySuite": "[2.0.0, 3.0.0-A)"
+        }
+      },
       "Serilog": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -884,7 +892,10 @@
         }
       },
       "coletaseletiva.domain": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "NetTopologySuite": "[2.6.0, )"
+        }
       },
       "coletaseletiva.infrastructure": {
         "type": "Project",
@@ -894,6 +905,7 @@
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[10.0.12, )",
           "Microsoft.EntityFrameworkCore": "[10.0.12, )",
           "Microsoft.EntityFrameworkCore.SqlServer": "[10.0.12, )",
+          "Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite": "[10.0.12, )",
           "Microsoft.IdentityModel.JsonWebTokens": "[8.19.2, )"
         }
       },
@@ -975,6 +987,21 @@
           "Microsoft.Extensions.Logging": "10.0.12"
         }
       },
+      "Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite": {
+        "type": "CentralTransitive",
+        "requested": "[10.0.12, )",
+        "resolved": "10.0.12",
+        "contentHash": "ipH71kruhuEDQXT71F7f7rLcZyp18xxVR4BUA4WeNZ1PnRESBurX5QR7MGmwxW1UAUngx6vW7yOvIfLqfEd0kQ==",
+        "dependencies": {
+          "Microsoft.Data.SqlClient": "6.1.6",
+          "Microsoft.EntityFrameworkCore.SqlServer": "10.0.12",
+          "Microsoft.Extensions.Caching.Memory": "10.0.12",
+          "Microsoft.Extensions.Configuration.Abstractions": "10.0.12",
+          "Microsoft.Extensions.Logging": "10.0.12",
+          "NetTopologySuite": "2.6.0",
+          "NetTopologySuite.IO.SqlServerBytes": "2.1.0"
+        }
+      },
       "Microsoft.IdentityModel.JsonWebTokens": {
         "type": "CentralTransitive",
         "requested": "[8.19.2, )",
@@ -983,6 +1010,12 @@
         "dependencies": {
           "Microsoft.IdentityModel.Tokens": "8.19.2"
         }
+      },
+      "NetTopologySuite": {
+        "type": "CentralTransitive",
+        "requested": "[2.6.0, )",
+        "resolved": "2.6.0",
+        "contentHash": "1B1OTacTd4QtFyBeuIOcThwSSLUdRZU3bSFIwM8vk36XiZlBMi3K36u74e4OqwwHRHUuJC1PhbDx4hyI266X1Q=="
       },
       "Serilog.AspNetCore": {
         "type": "CentralTransitive",

@@ -20,6 +20,17 @@ internal sealed class OrganizacaoConfiguration : IEntityTypeConfiguration<Organi
             .HasConversion<string>()
             .HasMaxLength(20)
             .IsRequired();
+        builder
+            .Property(organizacao => organizacao.ContatoEmail)
+            .HasMaxLength(Organizacao.ContatoEmailMaxLength);
+        builder
+            .Property(organizacao => organizacao.ContatoTelefone)
+            .HasMaxLength(Organizacao.ContatoTelefoneMaxLength);
+        builder
+            .Property(organizacao => organizacao.Fuso)
+            .HasMaxLength(Organizacao.FusoMaxLength)
+            .IsRequired();
+        builder.Property(organizacao => organizacao.LimiteSolicitacoesAbertas).IsRequired();
         builder.Property(organizacao => organizacao.Publicada).IsRequired();
         builder.Property(organizacao => organizacao.CriadoEmUtc).IsRequired();
         builder.Property(organizacao => organizacao.AtualizadoEmUtc).IsRequired();

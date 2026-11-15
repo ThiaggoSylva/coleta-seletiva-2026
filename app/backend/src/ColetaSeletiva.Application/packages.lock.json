@@ -38,9 +38,17 @@
         "contentHash": "XRzK7ZF+O6FzdfWrlFTi1Rgj2080ZDsd46vzOjadHUB0Cz5kOvDG8vI7caa5YFrsHQpcfn0DxtjS4E46N4FZsA=="
       },
       "coletaseletiva.domain": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "NetTopologySuite": "[2.6.0, )"
+        }
+      },
+      "NetTopologySuite": {
+        "type": "CentralTransitive",
+        "requested": "[2.6.0, )",
+        "resolved": "2.6.0",
+        "contentHash": "1B1OTacTd4QtFyBeuIOcThwSSLUdRZU3bSFIwM8vk36XiZlBMi3K36u74e4OqwwHRHUuJC1PhbDx4hyI266X1Q=="
       }
-    },
-    "net10.0/win-x86": {}
+    }
   }
 }

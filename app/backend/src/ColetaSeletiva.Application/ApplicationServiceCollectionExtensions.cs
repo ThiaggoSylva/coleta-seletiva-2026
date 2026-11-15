@@ -3,6 +3,8 @@ using ColetaSeletiva.Application.Acesso.PerfilDoCidadao;
 using ColetaSeletiva.Application.Acesso.RegistroDeCidadao;
 using ColetaSeletiva.Application.Acesso.RegistroDeOrganizacao;
 using ColetaSeletiva.Application.Acesso.Sessao;
+using ColetaSeletiva.Application.Catalogo;
+using ColetaSeletiva.Application.PerfilDaOrganizacao;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,6 +31,14 @@ public static class ApplicationServiceCollectionExtensions
         services.AddScoped<ListarOperadoresHandler>();
         services.AddScoped<EditarOperadorHandler>();
         services.AddScoped<InativarOperadorHandler>();
+        services.AddScoped<ConsultarCatalogoDeTiposHandler>();
+        services.AddScoped<ConsultarMunicipiosHandler>();
+        services.AddScoped<ObterPerfilDaOrganizacaoHandler>();
+        services.AddScoped<AtualizarPerfilDaOrganizacaoHandler>();
+        services.AddScoped<DefinirMunicipiosHandler>();
+        services.AddScoped<DefinirPeriodosHandler>();
+        services.AddScoped<DefinirTiposHabilitadosHandler>();
+        services.AddScoped<DefinirPublicacaoHandler>();
         services.AddSingleton<TimeProvider>(TimeProvider.System);
 
         return services;
