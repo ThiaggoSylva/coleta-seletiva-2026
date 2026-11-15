@@ -4,6 +4,31 @@ Este diretório contém a aplicação da plataforma. A matriz abaixo foi verific
 2026-11-10, antes da criação dos projetos, conforme a tarefa 1.1 da mudança
 `f1-fundacao-segura`.
 
+## Aplicação publicada
+
+| O que | Endereço |
+| --- | --- |
+| Site (SPA Angular + API na mesma origem) | <https://coleta-seletiva.runasp.net> |
+| Consulta pública de pontos de coleta | <https://coleta-seletiva.runasp.net/pontos> |
+| Login de organizações e cidadãos | <https://coleta-seletiva.runasp.net/acesso/login> |
+| API (somente) | <https://coleta-seletiva.runasp.net/api/v1> |
+| Saúde da API | <https://coleta-seletiva.runasp.net/health> |
+| Especificação OpenAPI | <https://coleta-seletiva.runasp.net/openapi/v1.json> |
+
+Endpoints públicos mais úteis da API publicada:
+
+```bash
+curl https://coleta-seletiva.runasp.net/health
+curl https://coleta-seletiva.runasp.net/api/v1/publico/tipos
+curl https://coleta-seletiva.runasp.net/api/v1/publico/municipios
+curl -X POST https://coleta-seletiva.runasp.net/api/v1/publico/pontos/busca \
+  -H 'Content-Type: application/json' -d '{}'
+```
+
+O restante de `/api/v1` exige sessão (cookie de refresh + token de acesso). O deploy,
+as variáveis de ambiente e a reversão estão em
+[`../docs/deploy-monsterasp.md`](../docs/deploy-monsterasp.md).
+
 ## Pré-requisitos locais
 
 | Ferramenta | Versão verificada | Compatibilidade |
@@ -147,7 +172,20 @@ npm ci
 npm start
 ```
 
-Acesse `http://localhost:4200`. O proxy de `app/frontend/proxy.conf.json`
+### Somente a API
+
+Para trabalhar apenas no backend, sem a SPA:
+
+```bash
+cd app/backend
+dotnet run --project src/ColetaSeletiva.Api
+```
+
+- API: <http://localhost:5012>
+- Saúde: <http://localhost:5012/health>
+- OpenAPI: <http://localhost:5012/openapi/v1.json>
+
+Com a SPA em execução, acesse `http://localhost:4200`. O proxy de `app/frontend/proxy.conf.json`
 encaminha `/api` para `http://localhost:5012`; para o navegador, SPA e API usam
 a mesma origem. O cookie de refresh permanece `HttpOnly`, `Secure`, com
 `SameSite=Strict` e `Path=/api/v1/auth`, e a renovação ocorre sem expor o token

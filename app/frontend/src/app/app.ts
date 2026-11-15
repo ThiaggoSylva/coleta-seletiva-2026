@@ -23,6 +23,11 @@ export class App {
     return papel === null ? '' : ROTULOS_DE_PAPEL[papel];
   });
 
+  protected readonly inicial = computed(() => {
+    const nome = this.auth.contaAtual()?.nome?.trim() ?? '';
+    return nome.length === 0 ? '·' : nome.slice(0, 1).toUpperCase();
+  });
+
   protected sair(): void {
     this.auth.logout().subscribe(() => {
       void this.router.navigate(['/acesso/login']);
