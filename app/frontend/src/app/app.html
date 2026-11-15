@@ -5,6 +5,7 @@
     </h1>
 
     <nav class="flex flex-wrap items-center gap-4 text-sm" aria-label="Navegação principal">
+      <a routerLink="/pontos" class="font-medium text-emerald-700 underline">Pontos de coleta</a>
       @if (auth.autenticado()) {
         @if (auth.possuiPapel('Administrador', 'Operador') && !auth.trocaSenhaPendente()) {
           <a routerLink="/organizacao/inicio" class="font-medium text-emerald-700 underline">

@@ -25,6 +25,27 @@ export const ORGANIZACAO_ROUTES: Routes = [
     loadComponent: () => import('./equipe/equipe.page').then((m) => m.EquipePage),
   },
   {
+    path: 'perfil',
+    canActivate: GUARDAS_DE_ADMINISTRADOR,
+    loadComponent: () => import('./perfil/perfil.page').then((m) => m.PerfilPage),
+  },
+  {
+    path: 'pontos',
+    pathMatch: 'full',
+    canActivate: GUARDAS_DE_ADMINISTRADOR,
+    loadComponent: () => import('./pontos/pontos.page').then((m) => m.PontosPage),
+  },
+  {
+    path: 'pontos/novo',
+    canActivate: GUARDAS_DE_ADMINISTRADOR,
+    loadComponent: () => import('./pontos/ponto.page').then((m) => m.PontoPage),
+  },
+  {
+    path: 'pontos/:id/editar',
+    canActivate: GUARDAS_DE_ADMINISTRADOR,
+    loadComponent: () => import('./pontos/ponto.page').then((m) => m.PontoPage),
+  },
+  {
     path: 'equipe/nova',
     canActivate: GUARDAS_DE_ADMINISTRADOR,
     loadComponent: () => import('./equipe/operador.page').then((m) => m.OperadorPage),

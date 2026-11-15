@@ -30,15 +30,15 @@
 
 ## 5. Frontend
 
-- [ ] 5.1 Criar a tela de perfil da organização com contato, fuso, limite, municípios, períodos, tipos e publicação (RF-06, RF-07).
-- [ ] 5.2 Criar as telas de listagem, criação e edição de pontos, com horários por dia e seleção de tipos (RF-08).
-- [ ] 5.3 Criar a consulta pública com filtros, lista equivalente, mapa Leaflet/OpenStreetMap e estado vazio (RF-09; RNF-04; DT-02).
+- [x] 5.1 Criar a tela de perfil da organização com contato, fuso, limite, municípios, períodos, tipos e publicação (RF-06, RF-07).
+- [x] 5.2 Criar as telas de listagem, criação e edição de pontos, com horários por dia e seleção de tipos (RF-08).
+- [x] 5.3 Criar a consulta pública com filtros, lista equivalente, mapa Leaflet/OpenStreetMap e estado vazio (RF-09; RNF-04; DT-02).
 
 ## 6. Verificação
 
 - [ ] 6.1 Cobrir domínio e aplicação com testes MSTest/Moq para CA-02–CA-05 e cenários de conflito e autorização (DT-17).
 - [ ] 6.2 Cobrir as rotas novas em testes de integração com SQL Server, incluindo isolamento A/B e ausência de PII na consulta pública (RF-03, RF-09; DT-17).
-- [ ] 6.3 Executar `dotnet build`, `dotnet format --verify-no-changes`, testes unitários, `npm run build` e `npm test -- --run`; registrar bloqueios (DT-17).
+- [x] 6.3 Executar `dotnet build`, `dotnet format --verify-no-changes`, testes unitários, `npm run build` e `npm test -- --run`; registrar bloqueios (DT-17).
 
 ## Workflow follow-up
 

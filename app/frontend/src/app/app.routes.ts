@@ -15,6 +15,10 @@ export const routes: Routes = [
     loadChildren: () => import('./features/cidadao/cidadao.routes').then((m) => m.CIDADAO_ROUTES),
   },
   {
+    path: 'pontos',
+    loadChildren: () => import('./features/publico/publico.routes').then((m) => m.PUBLICO_ROUTES),
+  },
+  {
     path: 'organizacao',
     loadChildren: () =>
       import('./features/organizacao/organizacao.routes').then((m) => m.ORGANIZACAO_ROUTES),

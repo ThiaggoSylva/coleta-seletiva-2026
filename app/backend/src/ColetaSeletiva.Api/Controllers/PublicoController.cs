@@ -17,13 +17,16 @@ public sealed class PublicoController : ControllerBase
 {
     private readonly BuscarPontosPublicosHandler _buscarPontos;
     private readonly ConsultarMunicipiosHandler _consultarMunicipios;
+    private readonly ConsultarCatalogoDeTiposHandler _consultarTipos;
 
     public PublicoController(
         BuscarPontosPublicosHandler buscarPontos,
-        ConsultarMunicipiosHandler consultarMunicipios)
+        ConsultarMunicipiosHandler consultarMunicipios,
+        ConsultarCatalogoDeTiposHandler consultarTipos)
     {
         _buscarPontos = buscarPontos;
         _consultarMunicipios = consultarMunicipios;
+        _consultarTipos = consultarTipos;
     }
 
     [HttpPost("pontos/busca")]
@@ -42,6 +45,17 @@ public sealed class PublicoController : ControllerBase
         return resultado.IsSuccess
             ? Ok(resultado.Value)
             : this.ParaProblemDetails(resultado.Errors);
+    }
+
+    [HttpGet("tipos")]
+    [ProducesResponseType<IReadOnlyList<TipoResiduoDoCatalogo>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status429TooManyRequests)]
+    public async Task<IActionResult> ListarTipos(CancellationToken cancellationToken)
+    {
+        Response.Headers.CacheControl = "public, max-age=300";
+
+        var tipos = await _consultarTipos.ExecutarAsync(cancellationToken);
+        return Ok(tipos);
     }
 
     [HttpGet("municipios")]
