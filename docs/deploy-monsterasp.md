@@ -52,35 +52,48 @@ openssl rand -base64 48
 
 ## 4. Publicar
 
-### Opção A — GitHub Actions com Web Deploy
+### Opção A — MSDeploy (recomendado)
 
-1. No painel, **Deploy → Visual Studio access**: habilite **WebDeploy** e copie **Server**,
-   **Site**, **Login** e **Password**.
-2. Em **Settings → Secrets and variables → Actions** do repositório, crie:
+1. No painel, **Websites → seu site → Deploy → Visual Studio access**: habilite **WebDeploy** e
+   copie **Site**, **URL**, **Login** e **Password**.
+2. Gere o pacote local:
 
-| Secret | Valor |
-| --- | --- |
-| `WEBSITE_NAME` | `siteXXXX` |
-| `SERVER_COMPUTER_NAME` | `https://siteXXXX.siteasp.net:8172` |
-| `SERVER_USERNAME` | login do cartão |
-| `SERVER_PASSWORD` | senha do Web Deploy |
+   ```bash
+   bash app/scripts/publicar-monsterasp.sh
+   ```
 
-3. Em **Actions → Deploy MonsterASP.NET → Run workflow**. O workflow compila a SPA, roda os
-   testes unitários, publica a API para `win-x86` e envia por Web Deploy.
+   O script compila a SPA, copia o resultado para `wwwroot` da API, publica em Release e gera
+   `app/backend/coleta-seletiva-monsterasp.zip`.
+3. Envie a pasta `app/backend/publish` por MSDeploy, sem gravar a senha no repositório. Use
+   variáveis de ambiente ou um arquivo local ignorado:
 
-Para publicar em outro runtime (`win-x64`, por exemplo), rode antes
-`dotnet restore -r win-x64` em `app/backend` e versione os `packages.lock.json`: a restauração
-na CI usa modo *locked* e falha se o lockfile não tiver a seção do RID escolhido.
+   ```bat
+   "%ProgramFiles(x86)%\IIS\Microsoft Web Deploy V3\msdeploy.exe" ^
+     -verb:sync ^
+     -source:contentPath="C:\caminho\para\app\backend\publish" ^
+     -dest:contentPath="siteXXXXX",computerName="https://siteXXXXX.siteasp.net:8172/msdeploy.axd?site=siteXXXXX",userName="siteXXXXX",password="SUA-SENHA",authtype="Basic",includeAcls="False" ^
+     -allowUntrusted ^
+     -disableLink:AppPoolExtension ^
+     -disableLink:ContentExtension ^
+     -disableLink:CertificateExtension ^
+     -verbose
+   ```
 
-### Opção B — pacote local + FTP/ZIP
+   O MSDeploy sincroniza apenas os arquivos alterados. Não versione o comando com a senha
+   preenchida nem compartilhe o valor.
+
+### Opção B — pacote local + ZIP/FTP
 
 ```bash
-app/scripts/publicar-monsterasp.sh win-x86
+app/scripts/publicar-monsterasp.sh
 # gera app/backend/coleta-seletiva-monsterasp.zip
 ```
 
-Envie o conteúdo do ZIP para `/wwwroot` (Files → Upload, ou FTP). O `web.config` do pacote já
-configura o ASP.NET Core Module.
+Envie o conteúdo do ZIP para a raiz do site (Files → Upload, ou FTP/SFTP). O `web.config` do
+pacote já configura o ASP.NET Core Module.
+
+A CI do GitHub executa apenas verificações e **não publica**; o deploy é uma ação manual,
+conforme DT-21/DT-33.
 
 ## 5. Verificar
 

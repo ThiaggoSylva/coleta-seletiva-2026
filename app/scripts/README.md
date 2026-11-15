@@ -52,18 +52,15 @@ bash app/scripts/check-secrets.sh
 ## Publicação no MonsterASP.NET
 
 ```bash
-# gera app/backend/coleta-seletiva-monsterasp.zip para upload Web Deploy/FTP
-bash app/scripts/publicar-monsterasp.sh win-x86
+# gera app/backend/publish e app/backend/coleta-seletiva-monsterasp.zip para Web Deploy/FTP
+bash app/scripts/publicar-monsterasp.sh
 ```
 
 O guia completo, com banco, variáveis de ambiente e verificação, está em
-`docs/deploy-monsterasp.md`. O workflow `.github/workflows/deploy-monsterasp.yml`
-executa o mesmo fluxo e envia por Web Deploy usando os segredos do repositório.
+`docs/deploy-monsterasp.md`. A publicação é manual; a CI do GitHub não faz deploy.
 
-O script de migrations ignora a execução enquanto a pasta
-`app/backend/src/ColetaSeletiva.Infrastructure/Migrations` não tiver migrations.
-A primeira migration será criada na tarefa 2.3 da mudança `f1-fundacao-segura`;
-a partir daí, o script aplica apenas o que estiver pendente.
+O script de migrations aplica as migrations pendentes quando existem e não falha enquanto a
+pasta `app/backend/src/ColetaSeletiva.Infrastructure/Migrations` estiver vazia.
 
 ## Observações
 
