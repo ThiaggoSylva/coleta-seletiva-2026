@@ -21,40 +21,41 @@ const DIAS: Record<string, string> = {
   imports: [ReactiveFormsModule, RouterLink, MapaPontos],
   template: `
     <section class="mx-auto max-w-5xl px-6 py-10">
-      <h1 class="text-2xl font-semibold">Onde entregar seus resíduos</h1>
-      <p class="mt-1 text-sm text-slate-600">
-        Consulte os pontos de coleta publicados pelas organizações cadastradas.
-      </p>
+      <div class="hero">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-200">
+          Mapa da coleta seletiva
+        </p>
+        <h1 class="mt-3 text-3xl font-semibold text-white sm:text-4xl">
+          Onde entregar seus resíduos
+        </h1>
+        <p class="mt-3 max-w-2xl text-sm text-emerald-50/90">
+          Consulte os pontos de coleta publicados pelas organizações cadastradas.
+        </p>
+      </div>
 
-      <form
-        class="mt-6 rounded-md bg-white p-5 shadow-sm"
-        [formGroup]="filtros"
-        (ngSubmit)="buscar()"
-      >
+      <form class="cartao mt-6" [formGroup]="filtros" (ngSubmit)="buscar()">
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div class="text-sm">
             <label class="block">
               <span class="font-medium text-slate-700">Município</span>
               <div class="mt-1 flex gap-2">
                 <input
-                  class="w-full rounded-md border border-slate-300 px-3 py-2"
+                  class="w-full"
                   placeholder="Digite o nome"
                   [value]="textoMunicipio()"
                   (input)="digitarMunicipio($event)"
                   (keydown.enter)="procurarMunicipios($event)"
                 />
-                <button
-                  type="button"
-                  class="rounded-md border border-slate-300 px-3 py-2 font-medium text-slate-700 hover:bg-slate-100"
-                  (click)="procurarMunicipios()"
-                >
+                <button type="button" class="botao-secundario !px-3" (click)="procurarMunicipios()">
                   Buscar
                 </button>
               </div>
             </label>
 
             @if (sugestoes().length > 0) {
-              <ul class="mt-2 max-h-40 overflow-y-auto rounded-md border border-slate-200">
+              <ul
+                class="mt-2 max-h-40 overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-sm"
+              >
                 @for (municipio of sugestoes(); track municipio.id) {
                   <li>
                     <button
@@ -81,10 +82,7 @@ const DIAS: Record<string, string> = {
 
           <label class="block text-sm">
             <span class="font-medium text-slate-700">Tipo de resíduo</span>
-            <select
-              formControlName="tipoResiduoId"
-              class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
-            >
+            <select formControlName="tipoResiduoId" class="mt-1.5 w-full">
               <option value="">Todos os tipos</option>
               @for (tipo of tipos(); track tipo.id) {
                 <option [value]="tipo.id">{{ tipo.nome }}</option>
@@ -97,7 +95,7 @@ const DIAS: Record<string, string> = {
             @if (coordenadas() === null) {
               <button
                 type="button"
-                class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 font-medium text-slate-700 hover:bg-slate-100"
+                class="botao-secundario mt-1 w-full"
                 (click)="usarMinhaLocalizacao()"
               >
                 Usar minha localização
@@ -114,10 +112,7 @@ const DIAS: Record<string, string> = {
             @if (coordenadas() !== null) {
               <label class="mt-2 block">
                 <span class="font-medium text-slate-700">Raio (km)</span>
-                <select
-                  formControlName="raioKm"
-                  class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
-                >
+                <select formControlName="raioKm" class="mt-1.5 w-full">
                   <option [value]="5">5 km</option>
                   <option [value]="10">10 km</option>
                   <option [value]="25">25 km</option>
@@ -134,11 +129,7 @@ const DIAS: Record<string, string> = {
             Somente abertos agora
           </label>
 
-          <button
-            type="submit"
-            class="rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 disabled:opacity-60"
-            [disabled]="carregando()"
-          >
+          <button type="submit" class="botao-primario" [disabled]="carregando()">
             {{ carregando() ? 'Buscando…' : 'Buscar pontos' }}
           </button>
         </div>
@@ -155,13 +146,13 @@ const DIAS: Record<string, string> = {
       }
 
       @if (resultados().length > 0) {
-        <div class="mt-4">
+        <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
           <app-mapa-pontos [marcadores]="marcadores()" rotulo="Mapa dos pontos encontrados" />
         </div>
 
-        <ul class="mt-6 space-y-4">
+        <ul class="mt-6 grid gap-4 lg:grid-cols-2">
           @for (ponto of resultados(); track ponto.id) {
-            <li class="rounded-md bg-white p-5 shadow-sm">
+            <li class="cartao">
               <div class="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 class="text-lg font-semibold">{{ ponto.nome }}</h2>
@@ -230,7 +221,7 @@ const DIAS: Record<string, string> = {
         @if (temMais()) {
           <button
             type="button"
-            class="mt-6 rounded-md border border-emerald-700 px-4 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-50 disabled:opacity-60"
+            class="botao-secundario mt-6"
             [disabled]="carregando()"
             (click)="carregarMais()"
           >
@@ -238,7 +229,7 @@ const DIAS: Record<string, string> = {
           </button>
         }
       } @else if (buscou() && !carregando()) {
-        <p class="mt-6 rounded-md bg-white p-4 text-slate-600">
+        <p class="cartao mt-6 text-slate-600">
           Nenhum ponto encontrado com esses filtros. Tente ampliar o raio, escolher outro tipo ou
           remover o filtro de município.
         </p>
