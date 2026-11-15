@@ -1,21 +1,31 @@
 # Deploy no MonsterASP.NET
 
-Guia para publicar a aplicação da fase F1 (API ASP.NET Core 10 servindo a SPA Angular) no
-MonsterASP.NET com SQL Server. Nenhuma credencial real é registrada no repositório.
+Guia para publicar a aplicação (API ASP.NET Core 10 servindo a SPA Angular, com as fases F1 e
+F2) no MonsterASP.NET com SQL Server. Nenhuma credencial real é registrada no repositório.
 
 ## O que é publicado
 
 - `ColetaSeletiva.Api` (.NET 10) em `/wwwroot` do site, com a SPA Angular compilada em
   `wwwroot`.
 - Banco MSSQL criado no painel, com o schema aplicado por migration ou pelo script SQL.
+- Na F1: contas, autenticação, papéis, equipe e isolamento entre organizações. Na F2: perfil da
+  organização, catálogo de municípios e tipos, pontos de coleta e consulta pública.
 
 ## 1. Criar site e banco
 
-1. **Websites → Create website** e anote o nome (`siteXXXX`).
-2. **Scripting**: selecione a versão **.NET 10** (a aplicação usa `net10.0`).
-3. **Databases**: crie um banco **MSSQL** com um usuário.
+O site e o banco precisam estar **no mesmo plano e, de preferência, no mesmo datacenter**; um
+site Premium não usa a connection string local de um banco Free, e vice-versa.
+
+1. No painel, crie o site em **Websites → Create website** e anote o nome (`siteXXXX`).
+2. Em **Scripting**, selecione a versão **.NET 10** (a aplicação usa `net10.0`).
+3. Em **Databases → Add database**, escolha o plano, selecione **SQL Server 2025** e mantenha a
+   collation padrão `SQL_Latin1_General_CP1_CI_AS`, salvo necessidade específica.
 4. Em **Databases → seu banco → Users → Connection string**, copie a string de
    **Local access** (a aplicação roda dentro da hospedagem).
+5. Em **Deploy → Visual Studio access**, habilite o **Web Deploy** e anote **Site**, **URL**,
+   **Login** e **Password** para a publicação.
+6. No primeiro deploy, o usuário do banco precisa de permissão para criar tabelas e índices se
+   o schema for aplicado pela aplicação; pelo script SQL, execute como o usuário principal.
 
 ## 2. Aplicar o schema
 
@@ -115,6 +125,7 @@ ficam em **Websites → Logs**.
 
 ## Escopo desta entrega
 
-A F1 cobre contas, autenticação, papéis, equipe e isolamento entre organizações. Pontos de
-coleta, retiradas, volumes e relatórios pertencem às fases F2 a F5 do roadmap do TDD e ainda
+A F1 cobre contas, autenticação, papéis, equipe e isolamento entre organizações. A F2 cobre
+perfil público da organização, catálogo de municípios e tipos, pontos de coleta e consulta
+pública. Retiradas, volumes e relatórios pertencem às fases F3 a F5 do roadmap do TDD e ainda
 não existem na aplicação.
