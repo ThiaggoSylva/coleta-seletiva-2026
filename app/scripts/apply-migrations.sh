@@ -24,6 +24,7 @@ export ConnectionStrings__ColetaSeletiva="${ConnectionStrings__ColetaSeletiva:-S
 
 cd "$BACKEND_DIR"
 dotnet tool restore
+dotnet restore ColetaSeletiva.slnx --locked-mode
 dotnet ef database update \
   --project src/ColetaSeletiva.Infrastructure/ColetaSeletiva.Infrastructure.csproj \
   --startup-project src/ColetaSeletiva.Api/ColetaSeletiva.Api.csproj
