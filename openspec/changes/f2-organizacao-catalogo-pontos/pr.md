@@ -16,7 +16,7 @@ Implementa a F2 — Organização, catálogo e pontos: perfil público da organi
 
 - PRD (`docs/prd.md`): **RF-06** (perfil e publicação), **RF-07** (catálogo e tipos habilitados), **RF-08** (gestão de pontos), **RF-09** (consulta pública); **RNF-02** (privacidade), **RNF-04** (usabilidade/acessibilidade), **RNF-08** (proteção contra abuso); **RN-08** (`aberto agora` e horários), **RN-09** (pré-requisitos de publicação), **RN-12** (despublicação não cancela dados). Critérios: **CA-02–CA-05** nas partes cobertas pela fase.
 - TDD (`docs/tdd.md`): **DT-02** (Tailwind + Leaflet/OpenStreetMap), **DT-06** (policies de papel), **DT-07** (multitenancy por `OrganizacaoId` e FKs compostas), **DT-11** (`geography` + índice espacial + coordenadas fora de URL/logs), **DT-13** (`/publico/*` com DTOs próprios, rate limiting e cache curto), **DT-15** (municípios semeados por migração), **DT-17** (MSTest/Moq e Vitest). Fase **F2 — Organização, catálogo e pontos** do roadmap.
-- SDD: `openspec/changes/f2-organizacao-catalogo-pontos/` (`proposal.md`, `design.md`, `tasks.md` e as especificações `perfil-da-organizacao`, `catalogo-e-tipos`, `pontos-de-coleta` e `consulta-publica`). Tarefas 1.1–5.3 e 6.3 concluídas; 6.1 parcial (domínio e aplicação) e 6.2 pendente (integração com SQL real).
+- SDD: `openspec/changes/f2-organizacao-catalogo-pontos/` (`proposal.md`, `design.md`, `tasks.md` e as especificações `perfil-da-organizacao`, `catalogo-e-tipos`, `pontos-de-coleta` e `consulta-publica`). Tarefas 1.1–6.3 concluídas na implementação; 6.2 (integração com SQL real) permanece não executada neste ambiente por falta de Docker.
 
 ## Validação
 
@@ -29,7 +29,8 @@ Implementa a F2 — Organização, catálogo e pontos: perfil público da organi
 - `dotnet build ColetaSeletiva.slnx -c Release`: 0 erros.
 - `dotnet format ColetaSeletiva.slnx --verify-no-changes --no-restore`: sem alterações pendentes.
 - `dotnet test tests/ColetaSeletiva.Domain.Tests -c Release`: **11/11** aprovados (inclui abertura no fuso da organização, fim exclusivo e horário que atravessa a meia-noite).
-- `dotnet test tests/ColetaSeletiva.Application.Tests -c Release`: **47/47** aprovados (perfil, publicação, conflitos de vínculo, validação de pontos, busca pública e limites de paginação/raio).
+- `dotnet test tests/ColetaSeletiva.Application.Tests -c Release`: **74/74** aprovados na branch que reúne a F11 (perfil, publicação, conflitos de vínculo, validação, auditoria e autorização de pontos, busca pública e limites de paginação/raio), incluindo os 19 novos testes da F2.
+- `dotnet build tests/ColetaSeletiva.IntegrationTests -c Release`: 0 erros; novos testes de integração da F2 compilam (`F2/FuncionalidadesDaF2ApiTests`).
 - `npm run build` em `app/frontend`: build de produção concluído; `leaflet` declarado em `allowedCommonJsDependencies`.
 - `npm test` em `app/frontend`: **68/68** testes em 12 arquivos, incluindo os novos casos de listagem, alteração de status e retirada de pontos.
 - `npm run format:check` em `app/frontend`: estilo Prettier aplicado.
@@ -38,7 +39,7 @@ Implementa a F2 — Organização, catálogo e pontos: perfil público da organi
 
 **Não executados nesta máquina:**
 
-- Testes de integração com SQL Server (Testcontainers) e E2E Playwright da F2: Docker indisponível na VM. Consequência: `geography`, índice espacial e isolamento A/B da consulta pública **não foram exercitados em runtime**; o PR não deve ser declarado pronto antes de a CI executá-los.
+- Testes de integração com SQL Server (Testcontainers) e E2E Playwright da F2: Docker indisponível na VM (socket sem permissão). Os cenários de perfil, publicação, catálogo, pontos, isolamento A/B, papéis e ausência de PII estão escritos em `F2/FuncionalidadesDaF2ApiTests`, mas `geography`, índice espacial e as rotas novas **não foram exercitados em runtime**; o PR não deve ser declarado pronto antes de a CI executá-los.
 - Verificação visual das telas: sem SQL Server local a SPA não tem dados; nenhuma tela foi clicada ou inspecionada no navegador.
 - `openspec validate`: CLI indisponível no ambiente.
 
