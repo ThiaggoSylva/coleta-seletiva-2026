@@ -59,6 +59,8 @@ internal sealed class ApiDeTeste : WebApplicationFactory<Program>
             ["Sessao:AccessTokenMinutos"] = "15",
             ["Sessao:RefreshTokenDias"] = "7",
             ["Sessao:OrigemPermitida"] = "http://localhost",
+            // Nenhum teste de integração deve depender dos endpoints públicos do OpenStreetMap.
+            ["FontesPublicas:Pontos:Ativa"] = "false",
         };
 
         foreach (var (chave, valor) in _configuracoesExtras)
