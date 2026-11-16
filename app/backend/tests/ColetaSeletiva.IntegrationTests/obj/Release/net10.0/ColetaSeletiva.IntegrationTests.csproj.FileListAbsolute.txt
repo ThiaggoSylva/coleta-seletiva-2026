@@ -652,3 +652,4 @@ C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\tests\Co
 C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\tests\ColetaSeletiva.IntegrationTests\bin\Release\net10.0\Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite.dll
 C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\tests\ColetaSeletiva.IntegrationTests\bin\Release\net10.0\NetTopologySuite.dll
 C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\tests\ColetaSeletiva.IntegrationTests\bin\Release\net10.0\NetTopologySuite.IO.SqlServerBytes.dll
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\tests\ColetaSeletiva.IntegrationTests\bin\Release\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll

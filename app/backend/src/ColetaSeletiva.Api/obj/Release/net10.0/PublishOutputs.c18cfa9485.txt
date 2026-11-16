@@ -44,6 +44,7 @@ C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\publish\
 C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\publish\Serilog.Sinks.Console.dll
 C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\publish\Serilog.Sinks.Debug.dll
 C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\publish\Serilog.Sinks.File.dll
+C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\publish\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\publish\System.ClientModel.dll
 C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\publish\System.Configuration.ConfigurationManager.dll
 C:\Users\thiag\Documents\Academia 2026\coleta-seletiva-2026\app\backend\publish\System.IdentityModel.Tokens.Jwt.dll

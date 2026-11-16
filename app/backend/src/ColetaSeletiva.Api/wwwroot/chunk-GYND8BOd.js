@@ -1,1 +1,0 @@
-var o=[{path:``,pathMatch:`full`,loadComponent:()=>import(`./chunk-BBM0YyLt.js`).then(t=>t.BuscaPage)}];export{o as PUBLICO_ROUTES};

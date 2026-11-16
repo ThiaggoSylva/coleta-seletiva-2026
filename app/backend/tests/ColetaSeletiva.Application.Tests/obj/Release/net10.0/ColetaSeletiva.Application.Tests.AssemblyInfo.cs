@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ColetaSeletiva.Application.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+38fbee2e036d061a9585c68f7a3a69275bacae8e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a443aa57cfd23a5b3c2a122638a06a07683aac46")]
 [assembly: System.Reflection.AssemblyProductAttribute("ColetaSeletiva.Application.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ColetaSeletiva.Application.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

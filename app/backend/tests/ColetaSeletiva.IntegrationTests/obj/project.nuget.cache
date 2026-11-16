@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "6hujwy2z4CM=",
+  "dgSpecHash": "BZ3TSuZHMVU=",
   "success": true,
   "projectFilePath": "C:\\Users\\thiag\\Documents\\Academia 2026\\coleta-seletiva-2026\\app\\backend\\tests\\ColetaSeletiva.IntegrationTests\\ColetaSeletiva.IntegrationTests.csproj",
   "expectedPackageFiles": [
@@ -110,6 +110,7 @@
     "C:\\Users\\thiag\\.nuget\\packages\\serilog.sinks.file\\7.0.0\\serilog.sinks.file.7.0.0.nupkg.sha512",
     "C:\\Users\\thiag\\.nuget\\packages\\sharpziplib\\1.4.2\\sharpziplib.1.4.2.nupkg.sha512",
     "C:\\Users\\thiag\\.nuget\\packages\\ssh.net\\2026.0.0\\ssh.net.2026.0.0.nupkg.sha512",
+    "C:\\Users\\thiag\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\11.0.1\\swashbuckle.aspnetcore.swaggerui.11.0.1.nupkg.sha512",
     "C:\\Users\\thiag\\.nuget\\packages\\system.clientmodel\\1.8.0\\system.clientmodel.1.8.0.nupkg.sha512",
     "C:\\Users\\thiag\\.nuget\\packages\\system.configuration.configurationmanager\\9.0.11\\system.configuration.configurationmanager.9.0.11.nupkg.sha512",
     "C:\\Users\\thiag\\.nuget\\packages\\system.diagnostics.eventlog\\10.0.12\\system.diagnostics.eventlog.10.0.12.nupkg.sha512",
