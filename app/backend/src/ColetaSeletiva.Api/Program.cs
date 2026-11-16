@@ -4,6 +4,7 @@ using ColetaSeletiva.Api.Configuration;
 using ColetaSeletiva.Api.Erros;
 using ColetaSeletiva.Api.Seguranca;
 using ColetaSeletiva.Application;
+using ColetaSeletiva.Application.ConsultaPublica;
 using ColetaSeletiva.Domain.Identidade;
 using ColetaSeletiva.Infrastructure;
 using ColetaSeletiva.Infrastructure.Identidade;
@@ -36,8 +37,10 @@ var limitesDeTaxa = StartupConfiguration.CriarConfiguracaoDeLimitesDeTaxa(builde
 var connectionString = builder.Configuration.GetConnectionString(StartupConfiguration.ConnectionStringName)
     ?? throw new InvalidOperationException("A connection string da aplicação não foi configurada.");
 
+var opcoesDaFontePublica = StartupConfiguration.CriarOpcoesDaFontePublica(builder.Configuration);
+
 builder.Services.AddApplication();
-builder.Services.AddInfrastructure(connectionString);
+builder.Services.AddInfrastructure(connectionString, opcoesDaFontePublica);
 builder.Services.AddExceptionHandler<TratadorGlobalDeExcecoes>();
 builder.Services.AddProblemDetails();
 builder.Services.AdicionarLimitadorDeTaxa(limitesDeTaxa);
