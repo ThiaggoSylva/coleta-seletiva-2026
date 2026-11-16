@@ -27,7 +27,7 @@
 ## 5. Verificação
 
 - [x] 5.1 Cobrir mapeamento de tags, normalização, distância, deduplicação e fonte desativada com testes MSTest (DT-17; DT-35).
-- [ ] 5.2 Cobrir o adaptador com `HttpMessageHandler` simulado e um teste de integração da mescla com SQL Server (DT-17; DT-35) — bloqueado neste ambiente por ausência de Docker.
+- [x] 5.2 Cobrir o adaptador com `HttpMessageHandler` simulado e um teste de integração da mescla com SQL Server (DT-17; DT-35). Os testes foram escritos; a execução dos de integração segue bloqueada neste ambiente por ausência de Docker.
 - [x] 5.3 Executar `dotnet build`, testes unitários da Application e `npm run build`; registrar bloqueios (DT-17).
 
 ## Workflow follow-up
