@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace ColetaSeletiva.IntegrationTests.Infrastructure;
@@ -14,15 +16,18 @@ internal sealed class ApiDeTeste : WebApplicationFactory<Program>
     private readonly string _connectionString;
     private readonly IReadOnlyDictionary<string, string?> _configuracoesExtras;
     private readonly Action<ILoggingBuilder>? _configurarLogging;
+    private readonly Action<IServiceCollection>? _configurarServicos;
 
     public ApiDeTeste(
         string connectionString,
         IReadOnlyDictionary<string, string?>? configuracoesExtras = null,
-        Action<ILoggingBuilder>? configurarLogging = null)
+        Action<ILoggingBuilder>? configurarLogging = null,
+        Action<IServiceCollection>? configurarServicos = null)
     {
         _connectionString = connectionString;
         _configuracoesExtras = configuracoesExtras ?? new Dictionary<string, string?>();
         _configurarLogging = configurarLogging;
+        _configurarServicos = configurarServicos;
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -45,6 +50,13 @@ internal sealed class ApiDeTeste : WebApplicationFactory<Program>
         if (_configurarLogging is not null)
         {
             builder.ConfigureLogging(_configurarLogging);
+        }
+
+        // Aplicado depois dos registros da aplicação, para substituir dependências
+        // externas (por exemplo, a fonte pública de pontos) com dublês de teste.
+        if (_configurarServicos is not null)
+        {
+            builder.ConfigureTestServices(_configurarServicos);
         }
     }
 
