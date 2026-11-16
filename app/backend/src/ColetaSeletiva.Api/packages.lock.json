@@ -61,6 +61,12 @@
           "Serilog": "4.0.0"
         }
       },
+      "Swashbuckle.AspNetCore.SwaggerUI": {
+        "type": "Direct",
+        "requested": "[11.0.1, )",
+        "resolved": "11.0.1",
+        "contentHash": "Mu0j015xm7W/Axz6J6bXrh+/qEiyUGQUIGrWWvivv732yO1LtnmyV3zRwWB1dOFvlrU/CWUZqIYe1+hIcsCacg=="
+      },
       "Azure.Core": {
         "type": "Transitive",
         "resolved": "1.50.0",

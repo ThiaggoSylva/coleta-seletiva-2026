@@ -125,6 +125,14 @@ app.UseMiddleware<PrimeiroAcessoMiddleware>();
 app.UseMiddleware<TenantContextMiddleware>();
 app.UseAuthorization();
 
+app.UseSwaggerUI(options =>
+{
+    options.RoutePrefix = "swagger";
+    options.SwaggerEndpoint("/openapi/v1.json", "Coleta Seletiva API v1");
+    options.DocumentTitle = "Coleta Seletiva API";
+    options.DisplayRequestDuration();
+});
+
 if (app.Configuration.GetValue("Database:AplicarMigrationsNoInicio", false))
 {
     await using var escopoDeMigracao = app.Services.CreateAsyncScope();
@@ -140,13 +148,25 @@ await using (var escopo = app.Services.CreateAsyncScope())
 
 app.MapOpenApi();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
-app.MapGet("/api/v1", () => Results.Ok(new
+app.MapGet("/api/v1", (HttpRequest requisicao) =>
 {
-    status = "ok",
-    mensagem = "API Coleta Seletiva",
-    openapi = "/openapi/v1.json",
-    health = "/health",
-}));
+    var aceitaHtml = requisicao.Headers.Accept.ToString()
+        .Contains("text/html", StringComparison.OrdinalIgnoreCase);
+
+    if (aceitaHtml)
+    {
+        return Results.Redirect("/swagger");
+    }
+
+    return Results.Ok(new
+    {
+        status = "ok",
+        mensagem = "API Coleta Seletiva",
+        documentacao = "/swagger",
+        openapi = "/openapi/v1.json",
+        health = "/health",
+    });
+});
 app.MapControllers();
 
 app.Run();

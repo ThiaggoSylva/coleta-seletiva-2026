@@ -11,7 +11,8 @@ Esta pasta reúne documentação e ferramentas de governança. O código da apli
 | Site (SPA Angular + API na mesma origem) | <https://coleta-seletiva.runasp.net> |
 | Consulta pública de pontos de coleta | <https://coleta-seletiva.runasp.net/pontos> |
 | Entrada de organizações e cidadãos | <https://coleta-seletiva.runasp.net/acesso/login> |
-| API (somente) | <https://coleta-seletiva.runasp.net/api/v1> |
+| API (raiz informativa) | <https://coleta-seletiva.runasp.net/api/v1> |
+| Documentação interativa (Swagger UI) | <https://coleta-seletiva.runasp.net/swagger> |
 | Saúde da API | <https://coleta-seletiva.runasp.net/health> |
 | Especificação OpenAPI | <https://coleta-seletiva.runasp.net/openapi/v1.json> |
 
