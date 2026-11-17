@@ -1,6 +1,6 @@
 # TDD — Plataforma Web de Coleta Seletiva e Pontos de Descarte
 
-- **Status:** v1 validada para SDD em 2026-11-10; **v1.1 e v2 validadas para SDD em 2026-11-14**, com aprovação explícita do documento completo.
+- **Status:** v1 validada para SDD em 2026-11-10; **v1.1 e v2 validadas para SDD em 2026-11-14**, com aprovação explícita do documento completo. **Revisão de 2026-11-16:** acrescenta DT-35 (pontos de fontes públicas), validada pela ferramenta `question`.
 - **Data:** 2026-11-10 (v1, rascunho original de 2026-11-09); revisão de 2026-11-14 (v1.1 e v2).
 - **Escopo:** desenho da v1, v1.1 e v2 do produto, sem implementação, instalações, provisionamento, commits ou PR.
 - **Fonte de produto:** [docs/prd.md](prd.md) (v1, validado para TDD em 2026-11-10) e [docs/prd-desafios.md](prd-desafios.md) (v1.1 e v2, validado para TDD em 2026-11-14). Na v1: RF-01–RF-22, RNF-01–RNF-08, RN-01–RN-12, J-01–J-06 e CA-01–CA-12. Nos desafios: RF-01–RF-22, RNF-01–RNF-08, RN-01–RN-10, J-01–J-07 e CA-01–CA-12. Como os IDs locais se repetem entre os dois PRDs, este documento qualifica a origem (`docs/prd-desafios.md:RF-01`, por exemplo).
@@ -28,7 +28,7 @@ Confirmadas na entrevista técnica de 2026-11-10:
 
 - Todo o escopo P0 integra a v1; P1 também pertence à v1, mas é entregue por último (fase F5).
 - Desenvolvimento local primeiro; produção e hospedagem são gates posteriores.
-- Fuso por organização, padrão `America/Sao_Paulo`; sem integração externa de negócio.
+- Fuso por organização, padrão `America/Sao_Paulo`; sem integração externa de negócio, exceto a leitura somente leitura de pontos públicos do OpenStreetMap (DT-35).
 - O roadmap F0–F6 foi mantido para a v1, com P0 em F4, P1 e piloto em F5 e produção em F6.
 
 Confirmadas na entrevista técnica de 2026-11-14 (v1.1 e v2):
@@ -42,7 +42,9 @@ Confirmadas na entrevista técnica de 2026-11-14 (v1.1 e v2):
 
 O desenho cobre a v1 (F0–F6) e as evoluções v1.1/v2 (F7–F10): e-mail transacional, pontos e níveis, fotos de pontos, perfil e PWA do Coletor com execução offline, rotas, impacto estimado e verificação de organizações.
 
-Ficam fora do desenho: resgate de pontos por dinheiro, descontos ou prêmios; ranking público com nome real; SMS e aplicativos de mensagem; aplicativo nativo de loja; otimização exata de rotas ou roteirização com trânsito em tempo real; emissão de certificados ou manifestos de destinação; integrações municipais; marketplace de materiais; pagamentos; geocodificação externa; conversão de unidades; recuperação de senha por e-mail.
+Ficam fora do desenho: resgate de pontos por dinheiro, descontos ou prêmios; ranking público com nome real; SMS e aplicativos de mensagem; aplicativo nativo de loja; otimização exata de rotas ou roteirização com trânsito em tempo real; emissão de certificados ou manifestos de destinação; integrações municipais; marketplace de materiais; pagamentos; geocodificação de endereços; conversão de unidades; recuperação de senha por e-mail.
+
+A leitura de pontos do OpenStreetMap (DT-35) é somente leitura, opcional por configuração e nunca substitui o cadastro das organizações. Importar pontos externos para o banco, permitir sua edição ou usá-los em retiradas e volumes permanece fora do escopo.
 Nenhuma meta de carga, latência, disponibilidade, cobertura percentual, RPO ou RTO foi aprovada. Não se afirma conformidade legal, acessibilidade certificada nem prontidão operacional. Valores de fatores de impacto não são definidos neste documento; apenas o mecanismo versionado e a exigência de fonte validada.
 
 ## 2. Decisões técnicas centralizadas
@@ -85,6 +87,7 @@ Todas as decisões abaixo estão **Confirmadas** pelas entrevistas técnicas de 
 | DT-32 | Verificação de organizações com estados Não verificada, Em análise, Verificada e Rejeitada; motivo obrigatório em rejeição/revogação, histórico append-only e auditoria; selo e prioridade na listagem pública | Confirmada (2026-11-14). Atende RF-21, RF-22 e RN-10. Alternativa: verificação automática, sem base de confiança suficiente | Organizações não verificadas continuam consultáveis e identificadas; rejeição e revogação exigem motivo; estado nunca é apagado |
 | DT-33 | Deploy de produção no MonsterASP.NET: API .NET publicada com o build Angular em `wwwroot`, fallback de SPA excluindo `/api`, `/health` e `/swagger`, SQL Server do provedor, migrations por script idempotente com credencial de schema e segredos em variáveis do painel | Confirmada (2026-11-14). Mantém a mesma origem exigida por DT-05/DT-20 e evita proxy adicional. Alternativa: site IIS separado com proxy, mais peças e mesma origem a manter | Publicação por Web Deploy ou ZIP; rollback por pacote anterior e migrations compatíveis; banco do provedor é SQL Server 2025 e a compatibilidade será ensaiada antes do rollout |
 | DT-34 | Código pessoal do cidadão opaco, em Crockford Base32 com dígito verificador, gerado pelo servidor, único e sem dados pessoais; QR Code renderizado no cliente; consulta pelo Operador com limite de taxa e sem expor o cadastro | Confirmada (2026-11-14). Atende RF-06 (P1) e RNF-02. Alternativa: usar e-mail ou CPF, recusada por privacidade | Regenerar invalida o código anterior; código nunca é usado como autenticação; leitura por câmera é conveniência e exige confirmação do operador |
+| DT-35 | Pontos de fontes públicas: porta `IFontePublicaDePontos` na Application, adaptador `OverpassFontePublicaDePontos` na Infrastructure lendo `amenity=recycling` do OpenStreetMap via Overpass, Nominatim apenas para resolver o município em caixa geográfica, mescla na consulta pública antes da paginação, cache em memória, timeout curto, deduplicação por nome e proximidade, atribuição ODbL e degradação para apenas os pontos cadastrados | Confirmada (2026-11-16). Atende RF-23 e mantém RF-09. Alternativa: dataset municipal por cidade, com cobertura limitada; ou importar para o banco, que voltaria a depender de dados criados no banco | Nenhum ponto externo é persistido, editável ou usado em retiradas; a fonte só é consultada com recorte geográfico; indisponibilidade vira aviso, nunca erro da consulta |
 
 ### 2.1 Registro da entrevista técnica
 
@@ -134,6 +137,17 @@ A entrevista de 2026-11-14 confirmou as decisões estruturais das evoluções e 
 
 As versões de MailKit, SkiaSharp, `idb`, biblioteca de QR Code e ferramentas de PWA serão verificadas em fontes oficiais e travadas nas fases F7–F10, sem contornar compatibilidade com Angular 22 e .NET 10.
 
+### 2.3 Registro da entrevista técnica de 2026-11-16 (fontes públicas)
+
+A revisão de RF-23 foi decidida pela ferramenta `question` em 2026-11-16, com quatro respostas.
+
+| Tema | Resposta do solicitante | DT |
+| --- | --- | --- |
+| Fonte real de pontos | OpenStreetMap via Overpass API, sem chave de API e com licença ODbL | DT-35 |
+| Exibição | Sempre mesclados aos pontos cadastrados, identificados como fonte externa | DT-35 |
+| Recorte geográfico | Apenas com município selecionado ou localização e raio informados | DT-35 |
+| Fluxo | PRD → TDD → SDD → PR em feature branch, sem abrir PR sem autorização | Governança |
+
 ## 3. Arquitetura e estrutura
 
 ### 3.1 Componentes
@@ -155,6 +169,7 @@ flowchart LR
     I --> FS[(Arquivos de fotos protegidos)]
     I --> SMTP[Servidor SMTP]
     W -->|tiles| MAP[Provedor de mapa]
+    API -->|Overpass / Nominatim| OSM[OpenStreetMap: pontos públicos]
 ```
 
 As setas indicam fluxo ou composição. Dependências de compilação: Application → Domain; Infrastructure → Application e Domain; Api → Application e Infrastructure apenas para composição. Domain não referencia EF, Identity, HTTP, SMTP, arquivos nem Angular. A Api não contém regras de negócio. O navegador conversa com o provedor de mapa apenas para tiles e nunca envia dados pessoais a ele. O PWA do Coletor é o mesmo projeto Angular, com service worker e armazenamento local; não há backend separado.
@@ -750,6 +765,7 @@ Sem datas, duração ou equipe presumidas. O roadmap F0–F6 foi confirmado em 2
 | F8 — Pontos e fotos | Fatores por tipo, ledger de pontos, correções, extrato, níveis configuráveis, código do cidadão (P1), upload e aprovação de fotos, remoção de metadados e serving público. RF-04–10; RN-01–04; RNF-02–04; DT-25, DT-26, DT-34 | F7. `docs/prd-desafios.md:CA-02`–`CA-05` passam; crédito na mesma transação do volume; foto inválida ou com GPS é recusada; foto não aprovada não aparece |
 | F9 — Coletor, rotas e offline | Papel Coletor, PWA instalável, IndexedDB cifrado, montagem e estados de rota, ordem por proximidade, execução offline e sincronização idempotente com conflitos. RF-11–16; RN-05–08; RNF-05, RNF-06, RNF-08; DT-27–DT-29 | F8. `docs/prd-desafios.md:CA-06`, `CA-07`, `CA-11` passam; reenvio não duplica; conflito é preservado; logout apaga dados locais; coletor só vê a própria rota |
 | F10 — Impacto, verificação e plataforma | Administrador da plataforma, fatores de impacto versionados, estimativa e transparência pública, verificação de organizações com selo e prioridade, auditoria e testes por papel. RF-17–22; RN-09–10; RNF-06, RNF-07; DT-30–DT-32 | F9. `docs/prd-desafios.md:CA-08`–`CA-10` e `CA-12` passam; fonte e versão obrigatórias; administrador da plataforma sem PII; deploy de v2 no MonsterASP.NET conforme DT-33, com autorização |
+| F11 — Pontos de fontes públicas | Leitura de pontos reais do OpenStreetMap na consulta pública, com atribuição, cache, deduplicação e degradação para apenas os pontos cadastrados. RF-23; RNF-02, RNF-04; DT-35 | F2 (a consulta pública já existe) e revisão de 2026-11-16 aprovada pela `question`. RF-23 verificado; fonte indisponível não quebra a busca; nenhum ponto externo é persistido ou exposto com PII |
 
 PRs de implementação devem ser pequenos e coesos, usar o template do repositório e citar RF, RNF, DT, fase e tarefas SDD reais. Nenhum subconjunto de F1 a F3 pode ser anunciado como v1 pronta, e nenhuma fase F7–F10 pode ser anunciada como evolução concluída sem os critérios de aceite do PRD de desafios verificados.
 
@@ -780,6 +796,7 @@ PRs de implementação devem ser pequenos e coesos, usar o template do repositó
 | Administração da plataforma | Papel concentra poder e é alvo de abuso | Policies separadas, ausência de PII, auditoria e provisionamento por configuração; revisar responsáveis antes de F10 |
 | Compatibilidade do banco do provedor | SQL Server 2025 pode divergir do SQL Server 2022 usado no desenvolvimento | Ensaiar migrations, `geography`, `rowversion` e índices em banco de teste do provedor antes do rollout (DT-33) |
 | PWA e navegadores | Service worker e IndexedDB variam por navegador e modo privado | Testar navegadores-alvo em F9; instalação é opcional e a área web continua funcional sem PWA |
+| Fonte pública de pontos | Overpass e Nominatim têm limites e indisponibilidade; cobertura do OpenStreetMap varia por cidade | Cache curto, timeout, uma consulta por recorte e aviso ao usuário; monitorar falhas e reavaliar provedor antes de uso intenso (DT-35) |
 
 O PRD da v1 está validado para TDD em 2026-11-10 e este TDD está validado para SDD quanto à v1 na mesma data. A revisão de v1.1/v2 foi validada para SDD em 2026-11-14, com aprovação explícita do documento completo registrada pela ferramenta `question`; o handoff de F7–F10 está liberado, mas a implementação continua condicionada à estabilidade da v1 e a specs SDD próprias. O documento não equivale a especificações SDD aprovadas nem autoriza produção, deploy ou merge. As pendências de produto herdadas permanecem não bloqueantes para o desenho e bloqueantes para os gates indicados.
 
@@ -797,6 +814,7 @@ O PRD da v1 está validado para TDD em 2026-11-10 e este TDD está validado para
 | RF-21–22; RN-11; RNF-07 | Anonimização, bloqueio por solicitação aberta, exclusão lógica e histórico | DT-06–08 | CA-11 | F2, F5 |
 | RNF-01–03 | Autorização, privacidade, locks e idempotência | DT-05–07, DT-10–11 | CA-01, CA-04, CA-07, CA-11 | F1–F5 |
 | RNF-04 | Frontend acessível, mapa e lista | DT-01–02 | CA-12 | F2–F5 |
+| RF-23; RNF-02 | Pontos de fontes públicas, atribuição e degradação | DT-35 | RF-09 ampliado | F11 |
 | RNF-05 | Auditoria transacional | DT-08, DT-18 | CA-11 | F1–F5 |
 | RNF-06, RNF-08 | Medição, limites de taxa, proteção do CSV | DT-13, DT-16, DT-18 | CA-10, CA-12 | F1, F5–F6 |
 | Transversal de entrega | Estrutura, execução local, CI, segredos e backup/restore | DT-19–DT-23 | Verificações de build, restore e operação | F0–F6 |

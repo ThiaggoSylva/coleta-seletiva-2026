@@ -1,5 +1,6 @@
 using System.Text;
 using ColetaSeletiva.Application.Acesso.Sessao;
+using ColetaSeletiva.Application.ConsultaPublica;
 using ColetaSeletiva.Infrastructure.Seguranca;
 
 namespace ColetaSeletiva.Api.Configuration;
@@ -15,6 +16,7 @@ public static class StartupConfiguration
 
     private const string JwtSectionName = "Jwt";
     private const string LimitesDeTaxaSectionName = "LimitesDeTaxa";
+    private const string FontesPublicasSectionName = "FontesPublicas:Pontos";
 
     public static void Validate(IConfiguration configuration)
     {
@@ -29,6 +31,7 @@ public static class StartupConfiguration
         ValidateSigningKey(jwt);
         ValidateOrigemPermitida(configuration);
         _ = CriarConfiguracaoDeLimitesDeTaxa(configuration);
+        _ = CriarOpcoesDaFontePublica(configuration);
     }
 
     public static JwtSettings CriarJwtSettings(IConfiguration configuration)
@@ -74,6 +77,30 @@ public static class StartupConfiguration
         }
 
         return new ConfiguracaoDeSessao(validadeDoToken, validadeDoRefresh);
+    }
+
+    /// <summary>
+    /// Lê a configuração da fonte pública de pontos. Desligada por padrão fora do
+    /// ambiente em que os endpoints públicos do OpenStreetMap estão liberados.
+    /// </summary>
+    public static OpcoesDaFontePublica CriarOpcoesDaFontePublica(IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        var secao = configuration.GetSection(FontesPublicasSectionName);
+        var padrao = new OpcoesDaFontePublica();
+
+        return new OpcoesDaFontePublica(
+            Ativa: secao.GetValue("Ativa", padrao.Ativa),
+            UrlDoOverpass: secao["UrlDoOverpass"] ?? padrao.UrlDoOverpass,
+            UrlDoNominatim: secao["UrlDoNominatim"] ?? padrao.UrlDoNominatim,
+            EmailDeContato: secao["EmailDeContato"] ?? padrao.EmailDeContato,
+            TimeoutSegundos: secao.GetValue("TimeoutSegundos", padrao.TimeoutSegundos),
+            MinutosDeCache: secao.GetValue("MinutosDeCache", padrao.MinutosDeCache),
+            MinutosDeCacheDoMunicipio: secao.GetValue(
+                "MinutosDeCacheDoMunicipio",
+                padrao.MinutosDeCacheDoMunicipio),
+            MaximoDePontos: secao.GetValue("MaximoDePontos", padrao.MaximoDePontos));
     }
 
     public static ConfiguracaoDeLimitesDeTaxa CriarConfiguracaoDeLimitesDeTaxa(

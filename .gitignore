@@ -11,3 +11,6 @@ node_modules/
 # Node.js dependencies
 node_modules/
 **/node_modules/
+
+# SDK local dos agentes
+.dotnet/

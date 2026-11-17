@@ -56,6 +56,9 @@ localmente, inclusive a API isolada, veja [`app/README.md`](app/README.md).
   execução, notificações internas, recebimentos e ajustes de volume, painel e CSV). Da F5, já
   estão entregues os ajustes de volume e a exportação CSV sem PII; as demais fases seguem
   pendentes.
+- A **F11 — Pontos de fontes públicas** lê pontos reais do OpenStreetMap na consulta pública,
+  sempre identificados e com atribuição ODbL; a fonte pode ser desligada por
+  `FontesPublicas__Pontos__Ativa=false` e a consulta continua apenas com os pontos cadastrados.
 - A aplicação está **publicada em produção** no **MonsterASP.NET**; o deploy continua sendo um
   gate manual, sem publicação automática pela CI: veja
   [`docs/deploy-monsterasp.md`](docs/deploy-monsterasp.md).
