@@ -86,7 +86,8 @@ public sealed record OpcaoDePonto(
     Guid Id,
     string Nome,
     string Municipio,
-    string Uf);
+    string Uf,
+    IReadOnlyList<Guid> TiposResiduoIds);
 
 public interface IPontosDeColeta
 {

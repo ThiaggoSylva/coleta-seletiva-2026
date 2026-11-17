@@ -1,7 +1,7 @@
 # Deploy no MonsterASP.NET
 
-Guia para publicar a aplicação (API ASP.NET Core 10 servindo a SPA Angular, com as fases F1 e
-F2) no MonsterASP.NET com SQL Server. Nenhuma credencial real é registrada no repositório.
+Guia para publicar a aplicação (API ASP.NET Core 10 servindo a SPA Angular, com as fases F1 a
+F4) no MonsterASP.NET com SQL Server. Nenhuma credencial real é registrada no repositório.
 
 ## O que é publicado
 
@@ -9,7 +9,9 @@ F2) no MonsterASP.NET com SQL Server. Nenhuma credencial real é registrada no r
   `wwwroot`.
 - Banco MSSQL criado no painel, com o schema aplicado por migration ou pelo script SQL.
 - Na F1: contas, autenticação, papéis, equipe e isolamento entre organizações. Na F2: perfil da
-  organização, catálogo de municípios e tipos, pontos de coleta e consulta pública.
+  organização, catálogo de municípios e tipos, pontos de coleta e consulta pública. Na F3:
+  disponibilidade, bloqueios, solicitações, fila de retiradas e notificações. Na F4: volumes,
+  painel e relatórios CSV.
 
 ## 1. Criar site e banco
 
@@ -130,5 +132,7 @@ ficam em **Websites → Logs**.
 
 A F1 cobre contas, autenticação, papéis, equipe e isolamento entre organizações. A F2 cobre
 perfil público da organização, catálogo de municípios e tipos, pontos de coleta e consulta
-pública. Retiradas, volumes e relatórios pertencem às fases F3 a F5 do roadmap do TDD e ainda
-não existem na aplicação.
+pública. A F3 cobre disponibilidade, bloqueios, solicitações, fila, execução e notificações; a
+F4 cobre recebimentos e ajustes de volume, painel e CSV. Transparência, exclusão de conta com
+anonimização, TOTP, metas de desempenho, teste de restore e piloto pertencem às fases seguintes
+e ainda não existem na aplicação.

@@ -289,7 +289,16 @@ internal sealed class PontosDeColetaService : IPontosDeColeta
                     && ponto.Status == StatusPonto.Ativo
                     && ponto.ExcluidoEmUtc == null
                 orderby ponto.Nome
-                select new OpcaoDePonto(ponto.Id, ponto.Nome, municipio.Nome, ponto.Uf))
+                select new OpcaoDePonto(
+                    ponto.Id,
+                    ponto.Nome,
+                    municipio.Nome,
+                    ponto.Uf,
+                    _dbContext
+                        .PontoTipos.AsNoTracking()
+                        .Where(tipo => tipo.PontoColetaId == ponto.Id)
+                        .Select(tipo => tipo.TipoResiduoId)
+                        .ToList()))
             .ToListAsync(cancellationToken);
     }
 

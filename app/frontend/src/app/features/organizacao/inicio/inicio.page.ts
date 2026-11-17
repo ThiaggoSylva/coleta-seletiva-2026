@@ -11,20 +11,45 @@ import { AuthService } from '../../../core/auth/auth.service';
       <p class="mt-2 text-slate-700">Bem-vindo(a), {{ auth.contaAtual()?.nome }}.</p>
       <ul class="mt-6 space-y-2 text-slate-700">
         <li>
-          <a routerLink="/organizacao/perfil" class="font-medium text-emerald-700 underline">
-            Perfil, municípios, períodos e tipos aceitos
+          <a routerLink="/organizacao/retiradas" class="font-medium text-emerald-700 underline">
+            Retiradas domiciliares
           </a>
         </li>
         <li>
-          <a routerLink="/organizacao/pontos" class="font-medium text-emerald-700 underline">
-            Pontos de coleta
+          <a routerLink="/organizacao/volumes" class="font-medium text-emerald-700 underline">
+            Volumes recebidos e coletados
           </a>
         </li>
-        <li>
-          <a routerLink="/organizacao/equipe" class="font-medium text-emerald-700 underline">
-            Equipe
-          </a>
-        </li>
+        @if (auth.possuiPapel('Administrador')) {
+          <li>
+            <a routerLink="/organizacao/painel" class="font-medium text-emerald-700 underline">
+              Painel e relatórios
+            </a>
+          </li>
+          <li>
+            <a
+              routerLink="/organizacao/disponibilidade"
+              class="font-medium text-emerald-700 underline"
+            >
+              Disponibilidade de retirada
+            </a>
+          </li>
+          <li>
+            <a routerLink="/organizacao/perfil" class="font-medium text-emerald-700 underline">
+              Perfil, municípios, períodos e tipos aceitos
+            </a>
+          </li>
+          <li>
+            <a routerLink="/organizacao/pontos" class="font-medium text-emerald-700 underline">
+              Pontos de coleta
+            </a>
+          </li>
+          <li>
+            <a routerLink="/organizacao/equipe" class="font-medium text-emerald-700 underline">
+              Equipe
+            </a>
+          </li>
+        }
       </ul>
     </section>
   `,

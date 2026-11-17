@@ -175,7 +175,7 @@ public sealed class PontosHandlersTests
             .Setup(pontos => pontos.ListarOpcoesAsync(
                 OrganizacaoDeTeste,
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync([new OpcaoDePonto(PontoId, "Ponto Centro", "Goiânia", "GO")]);
+            .ReturnsAsync([new OpcaoDePonto(PontoId, "Ponto Centro", "Goiânia", "GO", [])]);
 
         var resultado = await cenario.CriarHandlerDeOpcoes().ExecutarAsync();
 

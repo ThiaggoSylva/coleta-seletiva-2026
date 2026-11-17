@@ -1,5 +1,6 @@
 using ColetaSeletiva.Application.Seguranca;
 using ColetaSeletiva.Domain.Entidades;
+using ColetaSeletiva.Domain.Retiradas;
 using ColetaSeletiva.Infrastructure.Identidade;
 using ColetaSeletiva.Infrastructure.Persistencia.Conversores;
 using Microsoft.AspNetCore.Identity;
@@ -44,6 +45,23 @@ public sealed class ColetaSeletivaDbContext : IdentityDbContext<Usuario, Identit
     public DbSet<PontoHorario> PontoHorarios => Set<PontoHorario>();
 
     public DbSet<PontoTipo> PontoTipos => Set<PontoTipo>();
+
+    public DbSet<DisponibilidadeDeRetirada> DisponibilidadesDeRetirada =>
+        Set<DisponibilidadeDeRetirada>();
+
+    public DbSet<BloqueioDeData> BloqueiosDeData => Set<BloqueioDeData>();
+
+    public DbSet<JanelaDeRetirada> JanelasDeRetirada => Set<JanelaDeRetirada>();
+
+    public DbSet<SolicitacaoDeRetirada> SolicitacoesDeRetirada => Set<SolicitacaoDeRetirada>();
+
+    public DbSet<SolicitacaoItem> SolicitacaoItens => Set<SolicitacaoItem>();
+
+    public DbSet<SolicitacaoHistorico> SolicitacaoHistorico => Set<SolicitacaoHistorico>();
+
+    public DbSet<RegistroDeVolume> RegistrosDeVolume => Set<RegistroDeVolume>();
+
+    public DbSet<Notificacao> Notificacoes => Set<Notificacao>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -146,6 +164,50 @@ public sealed class ColetaSeletivaDbContext : IdentityDbContext<Usuario, Identit
                 && _tenantContext.OrganizacaoId != null
                 && tipo.OrganizacaoId == _tenantContext.OrganizacaoId));
 
+        builder.Entity<DisponibilidadeDeRetirada>().HasQueryFilter(disponibilidade =>
+            !_tenantContext.Autenticado
+            || (_tenantContext.EscopoValido
+                && !_tenantContext.EhCidadao
+                && _tenantContext.OrganizacaoId != null
+                && disponibilidade.OrganizacaoId == _tenantContext.OrganizacaoId));
+
+        builder.Entity<BloqueioDeData>().HasQueryFilter(bloqueio =>
+            !_tenantContext.Autenticado
+            || (_tenantContext.EscopoValido
+                && !_tenantContext.EhCidadao
+                && _tenantContext.OrganizacaoId != null
+                && bloqueio.OrganizacaoId == _tenantContext.OrganizacaoId));
+
+        builder.Entity<JanelaDeRetirada>().HasQueryFilter(janela =>
+            !_tenantContext.Autenticado
+            || (_tenantContext.EscopoValido
+                && !_tenantContext.EhCidadao
+                && _tenantContext.OrganizacaoId != null
+                && janela.OrganizacaoId == _tenantContext.OrganizacaoId));
+
+        builder.Entity<SolicitacaoDeRetirada>().HasQueryFilter(solicitacao =>
+            !_tenantContext.Autenticado
+            || (_tenantContext.EscopoValido
+                && ((_tenantContext.EhCidadao
+                        && _tenantContext.UsuarioId != null
+                        && solicitacao.CidadaoId == _tenantContext.UsuarioId)
+                    || (!_tenantContext.EhCidadao
+                        && _tenantContext.OrganizacaoId != null
+                        && solicitacao.OrganizacaoId == _tenantContext.OrganizacaoId))));
+
+        builder.Entity<RegistroDeVolume>().HasQueryFilter(volume =>
+            !_tenantContext.Autenticado
+            || (_tenantContext.EscopoValido
+                && !_tenantContext.EhCidadao
+                && _tenantContext.OrganizacaoId != null
+                && volume.OrganizacaoId == _tenantContext.OrganizacaoId));
+
+        builder.Entity<Notificacao>().HasQueryFilter(notificacao =>
+            !_tenantContext.Autenticado
+            || (_tenantContext.EscopoValido
+                && _tenantContext.UsuarioId != null
+                && notificacao.UsuarioId == _tenantContext.UsuarioId));
+
         builder.Entity<RefreshToken>().HasQueryFilter(token =>
             !_tenantContext.Autenticado
             || (_tenantContext.EscopoValido
@@ -194,6 +256,18 @@ public sealed class ColetaSeletivaDbContext : IdentityDbContext<Usuario, Identit
                     break;
                 case RefreshToken token:
                     ValidarRefreshToken(entrada, token);
+                    break;
+                case SolicitacaoDeRetirada solicitacao:
+                    ValidarSolicitacao(entrada, solicitacao);
+                    break;
+                case JanelaDeRetirada janela:
+                    ValidarJanela(entrada, janela);
+                    break;
+                case RegistroDeVolume volume:
+                    ValidarVolume(entrada, volume);
+                    break;
+                case Notificacao notificacao:
+                    ValidarNotificacao(entrada, notificacao);
                     break;
                 case IEntidadeDaOrganizacao entidade:
                     ValidarEntidadeDaOrganizacao(entrada, entidade);
@@ -362,6 +436,119 @@ public sealed class ColetaSeletivaDbContext : IdentityDbContext<Usuario, Identit
         {
             throw new ViolacaoDeTenantException(
                 "O refresh token não pertence à organização da sessão.");
+        }
+    }
+
+    private void ValidarSolicitacao(
+        EntityEntry entrada,
+        SolicitacaoDeRetirada solicitacao)
+    {
+        if (_tenantContext.EhCidadao)
+        {
+            if (solicitacao.CidadaoId != _tenantContext.UsuarioId)
+            {
+                throw new ViolacaoDeTenantException(
+                    "A solicitação informada não pertence ao cidadão da sessão.");
+            }
+
+            if (entrada.State == EntityState.Modified
+                && entrada.Property(nameof(SolicitacaoDeRetirada.CidadaoId)).OriginalValue
+                    is Guid cidadaoOriginal
+                && cidadaoOriginal != _tenantContext.UsuarioId)
+            {
+                throw new ViolacaoDeTenantException(
+                    "O dono da solicitação não pode ser alterado.");
+            }
+
+            return;
+        }
+
+        var organizacaoId = _tenantContext.OrganizacaoId
+            ?? throw new ViolacaoDeTenantException(
+                "A sessão não possui organização válida para alterar solicitações.");
+
+        if (solicitacao.OrganizacaoId != organizacaoId)
+        {
+            throw new ViolacaoDeTenantException(
+                "A solicitação informada não pertence à organização da sessão.");
+        }
+
+        if (entrada.State == EntityState.Modified
+            && entrada.Property(nameof(SolicitacaoDeRetirada.OrganizacaoId)).OriginalValue
+                is Guid organizacaoOriginal
+            && organizacaoOriginal != organizacaoId)
+        {
+            throw new ViolacaoDeTenantException(
+                "A organização da solicitação não pode ser alterada.");
+        }
+    }
+
+    private void ValidarJanela(EntityEntry entrada, JanelaDeRetirada janela)
+    {
+        if (_tenantContext.EhCidadao
+            && entrada.State == EntityState.Added
+            && janela.OrganizacaoId != Guid.Empty)
+        {
+            return;
+        }
+
+        var organizacaoId = _tenantContext.OrganizacaoId;
+        if (!_tenantContext.EhCidadao && organizacaoId == janela.OrganizacaoId)
+        {
+            return;
+        }
+
+        throw new ViolacaoDeTenantException(
+            "A janela informada não pertence ao escopo da sessão.");
+    }
+
+    private void ValidarVolume(EntityEntry entrada, RegistroDeVolume volume)
+    {
+        if (entrada.State is EntityState.Modified or EntityState.Deleted)
+        {
+            throw new ViolacaoDeTenantException("Registros de volume são imutáveis.");
+        }
+
+        if (_tenantContext.EhCidadao)
+        {
+            throw new ViolacaoDeTenantException(
+                "O cidadão não pode registrar ou alterar volumes.");
+        }
+
+        var organizacaoId = _tenantContext.OrganizacaoId
+            ?? throw new ViolacaoDeTenantException(
+                "A sessão não possui organização válida para registrar volumes.");
+
+        if (volume.OrganizacaoId != organizacaoId)
+        {
+            throw new ViolacaoDeTenantException(
+                "O volume informado não pertence à organização da sessão.");
+        }
+    }
+
+    private void ValidarNotificacao(EntityEntry entrada, Notificacao notificacao)
+    {
+        if (entrada.State == EntityState.Deleted)
+        {
+            throw new ViolacaoDeTenantException("Notificações não podem ser excluídas.");
+        }
+
+        if (entrada.State == EntityState.Added)
+        {
+            return;
+        }
+
+        if (notificacao.UsuarioId != _tenantContext.UsuarioId)
+        {
+            throw new ViolacaoDeTenantException(
+                "A notificação informada não pertence ao usuário da sessão.");
+        }
+
+        if (entrada.Property(nameof(Notificacao.UsuarioId)).OriginalValue is Guid destinatarioOriginal
+            && destinatarioOriginal != _tenantContext.UsuarioId)
+        {
+            throw new ViolacaoDeTenantException(
+                "O destinatário da notificação não pode ser alterado.");
         }
     }
 

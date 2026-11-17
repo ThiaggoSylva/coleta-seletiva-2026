@@ -77,6 +77,9 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(
         PoliticasDeAcesso.SomenteEquipeDaOrganizacao,
         policy => policy.RequireRole(Papeis.Administrador, Papeis.Operador));
+    options.AddPolicy(
+        PoliticasDeAcesso.SomenteCidadao,
+        policy => policy.RequireRole(Papeis.Cidadao));
 });
 builder.Services
     .AddControllers()

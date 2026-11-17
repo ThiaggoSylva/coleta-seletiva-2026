@@ -6,6 +6,7 @@ namespace ColetaSeletiva.IntegrationTests.Infrastructure;
 internal static class SqlServerTestDatabase
 {
     private const string ImagemSqlServer = "mcr.microsoft.com/mssql/server:2022-latest";
+    private const string VariavelDeAmbiente = "COLETASELETIVA_TESTES_SQLSERVER";
 
     private static readonly Lazy<Task<MsSqlContainer>> Contêiner = new(
         CriarContêinerAsync,
@@ -14,6 +15,17 @@ internal static class SqlServerTestDatabase
     public static async Task<string> ObterConnectionStringAsync(string nomeBanco)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(nomeBanco);
+
+        var externa = Environment.GetEnvironmentVariable(VariavelDeAmbiente);
+        if (!string.IsNullOrWhiteSpace(externa))
+        {
+            var externo = new SqlConnectionStringBuilder(externa)
+            {
+                InitialCatalog = nomeBanco,
+            };
+
+            return externo.ConnectionString;
+        }
 
         var contêiner = await Contêiner.Value;
         var builder = new SqlConnectionStringBuilder(contêiner.GetConnectionString())

@@ -20,4 +20,16 @@ public static class AcoesAuditadas
     public const string PontoEditado = "ponto.editado";
     public const string PontoStatusAlterado = "ponto.status.alterado";
     public const string PontoRetirado = "ponto.retirado";
+    public const string DisponibilidadeDefinida = "retirada.disponibilidade.definida";
+    public const string DataBloqueada = "retirada.data.bloqueada";
+    public const string DataDesbloqueada = "retirada.data.desbloqueada";
+    public const string SolicitacaoCriada = "retirada.solicitada";
+    public const string SolicitacaoCancelada = "retirada.cancelada";
+    public const string RetiradaAgendada = "retirada.agendada";
+    public const string RetiradaReagendada = "retirada.reagendada";
+    public const string RetiradaRecusada = "retirada.recusada";
+    public const string RetiradaExecutada = "retirada.executada";
+    public const string RetiradaNaoRealizada = "retirada.nao.realizada";
+    public const string VolumeRegistrado = "volume.registrado";
+    public const string VolumeAjustado = "volume.ajustado";
 }
