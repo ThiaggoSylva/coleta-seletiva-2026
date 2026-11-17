@@ -29,8 +29,15 @@ describe('App', () => {
   });
 
   afterEach(() => {
+    responderNotificacoesPendentes();
     http.verify();
   });
+
+  function responderNotificacoesPendentes(): void {
+    http
+      .match((requisicao) => requisicao.url.startsWith('/api/v1/notificacoes'))
+      .forEach((requisicao) => requisicao.flush({ itens: [], naoLidas: 0 }));
+  }
 
   function entrar(papel: Papel): void {
     TestBed.inject(AuthService).login('ana@example.org', 'SenhaForte!123').subscribe();

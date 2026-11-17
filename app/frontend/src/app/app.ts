@@ -1,7 +1,9 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Papel } from './core/auth/auth.models';
 import { AuthService } from './core/auth/auth.service';
+import { NotificacoesService } from './core/servicos/notificacoes.service';
+import { SinoNotificacoes } from './shared/notificacoes/sino-notificacoes';
 
 const ROTULOS_DE_PAPEL: Record<Papel, string> = {
   Administrador: 'Administrador',
@@ -10,13 +12,24 @@ const ROTULOS_DE_PAPEL: Record<Papel, string> = {
 };
 
 @Component({
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink, SinoNotificacoes],
   selector: 'app-root',
   templateUrl: './app.html',
 })
 export class App {
   private readonly router = inject(Router);
+  private readonly notificacoes = inject(NotificacoesService);
   protected readonly auth = inject(AuthService);
+
+  constructor() {
+    effect(() => {
+      if (this.auth.autenticado()) {
+        this.notificacoes.iniciar();
+      } else {
+        this.notificacoes.parar();
+      }
+    });
+  }
 
   protected readonly rotuloDoPapel = computed(() => {
     const papel = this.auth.papel();

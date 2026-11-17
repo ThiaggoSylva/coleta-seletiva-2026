@@ -55,4 +55,33 @@ export const ORGANIZACAO_ROUTES: Routes = [
     canActivate: GUARDAS_DE_ADMINISTRADOR,
     loadComponent: () => import('./equipe/operador.page').then((m) => m.OperadorPage),
   },
+  {
+    path: 'retiradas',
+    pathMatch: 'full',
+    canActivate: [autenticadoGuard, primeiroAcessoGuard, papelGuard('Administrador', 'Operador')],
+    loadComponent: () =>
+      import('./retiradas/retiradas.page').then((m) => m.RetiradasDaOrganizacaoPage),
+  },
+  {
+    path: 'retiradas/:id',
+    canActivate: [autenticadoGuard, primeiroAcessoGuard, papelGuard('Administrador', 'Operador')],
+    loadComponent: () =>
+      import('./retiradas/retirada.page').then((m) => m.RetiradaDaOrganizacaoPage),
+  },
+  {
+    path: 'disponibilidade',
+    canActivate: GUARDAS_DE_ADMINISTRADOR,
+    loadComponent: () =>
+      import('./retiradas/disponibilidade.page').then((m) => m.DisponibilidadePage),
+  },
+  {
+    path: 'volumes',
+    canActivate: [autenticadoGuard, primeiroAcessoGuard, papelGuard('Administrador', 'Operador')],
+    loadComponent: () => import('./retiradas/volumes.page').then((m) => m.VolumesPage),
+  },
+  {
+    path: 'painel',
+    canActivate: GUARDAS_DE_ADMINISTRADOR,
+    loadComponent: () => import('./retiradas/painel.page').then((m) => m.PainelPage),
+  },
 ];

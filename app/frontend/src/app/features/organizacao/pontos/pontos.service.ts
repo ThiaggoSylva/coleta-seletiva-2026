@@ -71,6 +71,7 @@ export interface OpcaoDePonto {
   nome: string;
   municipio: string;
   uf: string;
+  tiposResiduoIds: string[];
 }
 
 @Injectable({ providedIn: 'root' })
