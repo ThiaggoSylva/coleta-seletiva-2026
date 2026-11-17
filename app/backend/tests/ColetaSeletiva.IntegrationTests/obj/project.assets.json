@@ -2669,6 +2669,22 @@
           }
         }
       },
+      "Swashbuckle.AspNetCore.SwaggerUI/11.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
       "System.ClientModel/1.8.0": {
         "type": "package",
         "dependencies": {
@@ -2848,7 +2864,8 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.12",
           "Microsoft.AspNetCore.OpenApi": "10.0.12",
           "Serilog.AspNetCore": "10.0.0",
-          "Serilog.Sinks.Console": "6.1.1"
+          "Serilog.Sinks.Console": "6.1.1",
+          "Swashbuckle.AspNetCore.SwaggerUI": "11.0.1"
         },
         "compile": {
           "bin/placeholder/ColetaSeletiva.Api.dll": {}
@@ -6246,6 +6263,24 @@
         "ssh.net.nuspec"
       ]
     },
+    "Swashbuckle.AspNetCore.SwaggerUI/11.0.1": {
+      "sha512": "Mu0j015xm7W/Axz6J6bXrh+/qEiyUGQUIGrWWvivv732yO1LtnmyV3zRwWB1dOFvlrU/CWUZqIYe1+hIcsCacg==",
+      "type": "package",
+      "path": "swashbuckle.aspnetcore.swaggerui/11.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll",
+        "lib/net10.0/Swashbuckle.AspNetCore.SwaggerUI.pdb",
+        "lib/net10.0/Swashbuckle.AspNetCore.SwaggerUI.xml",
+        "lib/net11.0/Swashbuckle.AspNetCore.SwaggerUI.dll",
+        "lib/net11.0/Swashbuckle.AspNetCore.SwaggerUI.pdb",
+        "lib/net11.0/Swashbuckle.AspNetCore.SwaggerUI.xml",
+        "package-readme.md",
+        "swashbuckle.aspnetcore.swaggerui.11.0.1.nupkg.sha512",
+        "swashbuckle.aspnetcore.swaggerui.nuspec"
+      ]
+    },
     "System.ClientModel/1.8.0": {
       "sha512": "AqRzhn0v29GGGLj/Z6gKq4lGNtvPHT4nHdG5PDJh9IfVjv/nYUVmX11hwwws1vDFeIAzrvmn0dPu8IjLtu6fAw==",
       "type": "package",
@@ -6652,6 +6687,7 @@
           "NetTopologySuite": "2.6.0",
           "Serilog.AspNetCore": "10.0.0",
           "Serilog.Sinks.Console": "6.1.1",
+          "Swashbuckle.AspNetCore.SwaggerUI": "11.0.1",
           "System.Security.Cryptography.Pkcs": "10.0.15",
           "Testcontainers.MsSql": "4.16.0"
         },
@@ -7002,6 +7038,10 @@
       "Serilog.Sinks.Console": {
         "include": "Runtime, Compile, Native, BuildTransitive",
         "version": "[6.1.1, )"
+      },
+      "Swashbuckle.AspNetCore.SwaggerUI": {
+        "include": "Runtime, Compile, Native, BuildTransitive",
+        "version": "[11.0.1, )"
       },
       "System.Security.Cryptography.Pkcs": {
         "include": "Runtime, Compile, Native, BuildTransitive",

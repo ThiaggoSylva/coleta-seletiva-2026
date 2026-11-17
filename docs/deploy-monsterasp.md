@@ -110,6 +110,9 @@ conforme DT-21/DT-33.
 ```text
 GET https://SEU-SITE/health                     -> {"status":"ok"}
 GET https://SEU-SITE/                           -> SPA Angular
+GET https://SEU-SITE/api/v1                     -> JSON com links de documentação e saúde
+GET https://SEU-SITE/swagger                    -> Swagger UI
+GET https://SEU-SITE/openapi/v1.json            -> especificação OpenAPI
 GET https://SEU-SITE/api/v1/auth/me             -> 401 sem sessão
 ```
 

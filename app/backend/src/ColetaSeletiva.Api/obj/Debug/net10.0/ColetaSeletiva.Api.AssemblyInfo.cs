@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ColetaSeletiva.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f6d2a94bee6f44cc196a094c7138f32c6c312e73")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a443aa57cfd23a5b3c2a122638a06a07683aac46")]
 [assembly: System.Reflection.AssemblyProductAttribute("ColetaSeletiva.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ColetaSeletiva.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

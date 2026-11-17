@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "jfJqZhE5dAw=",
+  "dgSpecHash": "CGr+U5wpHj4=",
   "success": true,
   "projectFilePath": "C:\\Users\\thiag\\Documents\\Academia 2026\\coleta-seletiva-2026\\app\\backend\\src\\ColetaSeletiva.Api\\ColetaSeletiva.Api.csproj",
   "expectedPackageFiles": [
@@ -58,6 +58,7 @@
     "C:\\Users\\thiag\\.nuget\\packages\\serilog.sinks.console\\6.1.1\\serilog.sinks.console.6.1.1.nupkg.sha512",
     "C:\\Users\\thiag\\.nuget\\packages\\serilog.sinks.debug\\3.0.0\\serilog.sinks.debug.3.0.0.nupkg.sha512",
     "C:\\Users\\thiag\\.nuget\\packages\\serilog.sinks.file\\7.0.0\\serilog.sinks.file.7.0.0.nupkg.sha512",
+    "C:\\Users\\thiag\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\11.0.1\\swashbuckle.aspnetcore.swaggerui.11.0.1.nupkg.sha512",
     "C:\\Users\\thiag\\.nuget\\packages\\system.clientmodel\\1.8.0\\system.clientmodel.1.8.0.nupkg.sha512",
     "C:\\Users\\thiag\\.nuget\\packages\\system.codedom\\6.0.0\\system.codedom.6.0.0.nupkg.sha512",
     "C:\\Users\\thiag\\.nuget\\packages\\system.composition\\9.0.0\\system.composition.9.0.0.nupkg.sha512",
