@@ -50,7 +50,12 @@ localmente, inclusive a API isolada, veja [`app/README.md`](app/README.md).
   `openspec/specs` e o histórico da mudança em `openspec/changes/archive`.
 - A **F2 — Organização, catálogo e pontos** está implementada no backend e no frontend
   (perfil, municípios do IBGE, tipos habilitados, publicação, pontos e consulta pública com
-  mapa); a F3 em diante segue pendente.
+  mapa).
+- A **F3 — Retiradas e notificações** e a **F4 — Volumes, painel e P0 completo** estão
+  implementadas no backend e no frontend (disponibilidade e bloqueios, solicitações, fila e
+  execução, notificações internas, recebimentos e ajustes de volume, painel e CSV). Da F5, já
+  estão entregues os ajustes de volume e a exportação CSV sem PII; as demais fases seguem
+  pendentes.
 - A aplicação está **publicada em produção** no **MonsterASP.NET**; o deploy continua sendo um
   gate manual, sem publicação automática pela CI: veja
   [`docs/deploy-monsterasp.md`](docs/deploy-monsterasp.md).
