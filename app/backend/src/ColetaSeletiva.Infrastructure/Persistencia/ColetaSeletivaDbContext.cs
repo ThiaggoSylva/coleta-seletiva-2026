@@ -105,22 +105,46 @@ public sealed class ColetaSeletivaDbContext : IdentityDbContext<Usuario, Identit
                         && auditoria.OrganizacaoId == _tenantContext.OrganizacaoId))));
 
         builder.Entity<OrganizacaoMunicipio>().HasQueryFilter(vinculo =>
-            FiltroDaOrganizacao(vinculo.OrganizacaoId));
+            !_tenantContext.Autenticado
+            || (_tenantContext.EscopoValido
+                && !_tenantContext.EhCidadao
+                && _tenantContext.OrganizacaoId != null
+                && vinculo.OrganizacaoId == _tenantContext.OrganizacaoId));
 
         builder.Entity<OrganizacaoTipo>().HasQueryFilter(vinculo =>
-            FiltroDaOrganizacao(vinculo.OrganizacaoId));
+            !_tenantContext.Autenticado
+            || (_tenantContext.EscopoValido
+                && !_tenantContext.EhCidadao
+                && _tenantContext.OrganizacaoId != null
+                && vinculo.OrganizacaoId == _tenantContext.OrganizacaoId));
 
         builder.Entity<ConfiguracaoDePeriodo>().HasQueryFilter(periodo =>
-            FiltroDaOrganizacao(periodo.OrganizacaoId));
+            !_tenantContext.Autenticado
+            || (_tenantContext.EscopoValido
+                && !_tenantContext.EhCidadao
+                && _tenantContext.OrganizacaoId != null
+                && periodo.OrganizacaoId == _tenantContext.OrganizacaoId));
 
         builder.Entity<PontoDeColeta>().HasQueryFilter(ponto =>
-            FiltroDaOrganizacao(ponto.OrganizacaoId));
+            !_tenantContext.Autenticado
+            || (_tenantContext.EscopoValido
+                && !_tenantContext.EhCidadao
+                && _tenantContext.OrganizacaoId != null
+                && ponto.OrganizacaoId == _tenantContext.OrganizacaoId));
 
         builder.Entity<PontoHorario>().HasQueryFilter(horario =>
-            FiltroDaOrganizacao(horario.OrganizacaoId));
+            !_tenantContext.Autenticado
+            || (_tenantContext.EscopoValido
+                && !_tenantContext.EhCidadao
+                && _tenantContext.OrganizacaoId != null
+                && horario.OrganizacaoId == _tenantContext.OrganizacaoId));
 
         builder.Entity<PontoTipo>().HasQueryFilter(tipo =>
-            FiltroDaOrganizacao(tipo.OrganizacaoId));
+            !_tenantContext.Autenticado
+            || (_tenantContext.EscopoValido
+                && !_tenantContext.EhCidadao
+                && _tenantContext.OrganizacaoId != null
+                && tipo.OrganizacaoId == _tenantContext.OrganizacaoId));
 
         builder.Entity<RefreshToken>().HasQueryFilter(token =>
             !_tenantContext.Autenticado
@@ -133,15 +157,6 @@ public sealed class ColetaSeletivaDbContext : IdentityDbContext<Usuario, Identit
                         && Usuarios.Any(usuario =>
                             usuario.Id == token.UsuarioId
                             && usuario.OrganizacaoId == _tenantContext.OrganizacaoId)))));
-    }
-
-    private bool FiltroDaOrganizacao(Guid organizacaoId)
-    {
-        return !_tenantContext.Autenticado
-            || (_tenantContext.EscopoValido
-                && !_tenantContext.EhCidadao
-                && _tenantContext.OrganizacaoId != null
-                && organizacaoId == _tenantContext.OrganizacaoId);
     }
 
     private void AplicarGuardaDeTenant()

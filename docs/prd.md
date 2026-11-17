@@ -1,6 +1,6 @@
 # PRD — Plataforma Web de Coleta Seletiva e Pontos de Descarte
 
-- **Status:** Validado para TDD em 2026-11-10, por aprovação explícita do solicitante pela ferramenta `question`; handoff liberado (ver 12.2).
+- **Status:** Validado para TDD em 2026-11-10, por aprovação explícita do solicitante pela ferramenta `question`; handoff liberado (ver 12.2). **Revisão de 2026-11-16:** acrescenta RF-23 (pontos de fontes públicas), validada pela mesma ferramenta.
 - **Data:** 2026-11-10 (rascunho original de 2026-11-09; revisão e entrevista de validação em 2026-11-10).
 - **Origem:** tema escolhido pelo solicitante para o TCC da Academia do Programador. Estrutura, rigor e nível de detalhe seguem o modelo `locadora-de-veiculos-2026`. Pedido de revisão e validação de `docs/prd.md` registrado nesta data.
 - **Natureza da entrega:** documentação preparatória, sem implementação.
@@ -149,6 +149,7 @@ O administrador consulta o painel por período, tipo e origem, exporta o relató
 - **RF-07 — Catálogo e tipos habilitados (P0):** exibir o catálogo da plataforma (código, nome, categoria, unidade fixa, orientações de preparo) e permitir que o administrador habilite os tipos que a organização atende, indicando para cada um se aceita retirada domiciliar. O catálogo é somente leitura na v1; o catálogo inicial de tipos e unidades será validado com uma organização (12.1).
 - **RF-08 — Gerir pontos de coleta (P0):** o administrador insere, edita, lista e retira logicamente pontos com nome, endereço (UF, município, bairro, rua, número, complemento, CEP), coordenadas definidas no mapa, horário de funcionamento por dia da semana (um ou mais intervalos no mesmo dia), tipos aceitos (subconjunto não vazio dos tipos habilitados), observações e status Ativo, Inativo ou Indisponível temporariamente. O município do ponto deve constar entre os municípios atendidos pela organização. Nome único por organização. Horários que atravessam a meia-noite não são aceitos na v1 (RN-08).
 - **RF-09 — Consultar pontos publicamente (P0):** consulta sem login, somente leitura, de pontos ativos de organizações publicadas. Filtros: município, tipo de resíduo, "aberto agora" e proximidade a partir da localização informada pelo dispositivo. Mostrar mapa e lista equivalente, horários, tipos aceitos e contato da organização. Nenhum dado pessoal é exposto.
+- **RF-23 — Consultar pontos de fontes públicas (P1):** a consulta anônima combina os pontos cadastrados pelas organizações com pontos de coleta reais lidos do OpenStreetMap, sempre identificados como fonte externa e com atribuição ODbL. A leitura externa só ocorre quando há recorte geográfico (município selecionado ou localização com raio), respeita o filtro de tipo de resíduo quando aplicável, nunca substitui o cadastro da plataforma, não expõe dados pessoais e não impede a consulta quando a fonte estiver indisponível. Pontos externos não são editáveis, não são retirados pelo produto e não participam de retiradas ou registros de volume na v1.
 
 ### 7.3 Retiradas
 
@@ -229,6 +230,7 @@ Os cenários são critérios futuros de aceitação, não testes executados nem 
 | Tipo de resíduo | Catálogo da plataforma: código, nome, categoria, unidade fixa, orientações. |
 | Tipo habilitado | Organização, tipo e indicação de retirada domiciliar. |
 | Ponto de coleta | Organização, nome, endereço (UF e município entre os atendidos), coordenadas, horários por dia da semana no mesmo dia, tipos aceitos, status. |
+| Ponto de fonte pública | Ponto somente leitura do OpenStreetMap: identificador, nome, coordenadas, tipos deduzidos das tags e atribuição. Não pertence a organização e não é persistido. |
 | Disponibilidade | Organização, dia da semana, período, capacidade; bloqueios de datas. |
 | Solicitação de retirada | Cidadão, organização, endereço e contato copiados no momento do pedido (UF e município selecionados em lista), janela, itens e quantidades estimadas, estado, motivo e histórico de estados. |
 | Registro de volume | Organização, tipo, quantidade, origem (retirada, recebimento em ponto ou ajuste), referência à solicitação, ao ponto ou ao registro original, operador, instante e motivo (ajustes). |
@@ -237,7 +239,7 @@ Os cenários são critérios futuros de aceitação, não testes executados nem 
 
 Cadastros nascem ativos e saem das novas operações por exclusão lógica. Solicitações transitam conforme RN-03. Dados históricos necessários à leitura de solicitações e volumes sobrevivem a alterações dos cadastros de origem; a representação técnica é decidida no TDD. A visibilidade dos dados pessoais segue RN-11.
 
-**Integrações:** nenhuma integração externa de negócio na v1. Serão necessários, a decidir no TDD: fonte para a lista oficial de municípios e provedor de mapa e tiles. Endereços informados são declaratórios; não há validação por serviço externo.
+**Integrações:** a v1 não possui integração externa de negócio. Há dependências públicas e somente leitura: a lista oficial de municípios do IBGE, copiada por migração, e o provedor de mapa e tiles, decidido no TDD. A revisão de 2026-11-16 acrescentou a leitura opcional de pontos de coleta do OpenStreetMap (Overpass e Nominatim), com atribuição ODbL, cache curto e degradação para apenas os pontos cadastrados. Endereços informados continuam declaratórios; não há geocodificação de endereço nem validação por serviço externo.
 
 ## 11. Riscos, premissas e dependências
 
@@ -249,12 +251,13 @@ Cadastros nascem ativos e saem das novas operações por exclusão lógica. Soli
 | Resíduos regulados | Pilhas, baterias e eletroeletrônicos têm regras de logística reversa; o catálogo inicial permanece pendente de validação com a organização e a regulação local. |
 | Qualidade da localização | Coordenadas escolhidas manualmente podem ficar imprecisas; oferecer conferência no mapa e exibir endereço textual. |
 | Dependência de mapa e tiles | Uso gratuito de tiles públicos tem políticas de uso; avaliar provedor adequado antes de produção. |
+| Dependência de fonte pública de pontos | O Overpass e o Nominatim são endpoints públicos com limites de uso e indisponibilidade eventual; a consulta exibe apenas os pontos cadastrados quando a fonte falha e nunca promete cobertura total. |
 | Concorrência por vagas | Janelas muito disputadas dependem de consistência forte; coberto por RNF-03 e CA-07. |
 | Adoção | Sem cidadãos e organizações usando, a plataforma não gera valor; métricas de adoção a definir após piloto. |
 | Ausência de e-mail | Cidadão precisa abrir a plataforma para saber do status; avaliar canal externo na evolução. |
 | Metas operacionais ausentes | Não prometer capacidade, disponibilidade ou recuperação; definir contexto e metas antes de compromisso de produção. |
 
-Premissas confirmadas: português do Brasil, fuso por organização com padrão `America/Sao_Paulo`, v1 sem pagamentos e sem integração externa de negócio. Não se escolhem tecnologias neste PRD.
+Premissas confirmadas: português do Brasil, fuso por organização com padrão `America/Sao_Paulo`, v1 sem pagamentos e sem integração externa de negócio, exceto a leitura de pontos públicos do OpenStreetMap (RF-23). Não se escolhem tecnologias neste PRD.
 
 ## 12. Questões em aberto e próximos passos
 
@@ -269,6 +272,7 @@ O conteúdo foi aprovado para TDD em 2026-11-10. As pendências abaixo não bloq
 | Retenção de dados pessoais, base legal e atendimento a titulares | Não bloqueante para o desenho inicial; resolver antes de produção | Produto, segurança e operação a designar. |
 | Verificação de identidade das organizações | Não bloqueante para o TCC; necessária antes de produção, pois a v1 usa cadastro aberto | Produto e operação a designar. |
 | Fonte da lista oficial de municípios e provedor de mapa | Decisão técnica no TDD | Engenharia. |
+| Política de uso do Overpass e do Nominatim, licença ODbL e limites do endpoint público | Não bloqueante para o desenho; necessária antes de uso intenso em produção | Engenharia e produto revisam cache, limites e política de uso antes do piloto. |
 
 ### 12.2 Handoff para TDD
 
@@ -276,7 +280,7 @@ O conteúdo foi aprovado para TDD em 2026-11-10. As pendências abaixo não bloq
 - **Destino padrão:** `docs/tdd.md`.
 - **Estado:** **validado** em 2026-11-10 por aprovação explícita do solicitante pela ferramenta `question`; handoff liberado.
 - **Validação realizada:** entrevista de produto com o solicitante pela ferramenta `question` em 2026-11-10, em duas rodadas, com aprovação final do conteúdo; as decisões e os parâmetros confirmados estão nas seções 2.1 a 2.3.
-- **Escopo validado para o TDD:** RF-01 a RF-22, RNF-01 a RNF-08, jornadas J-01 a J-06 e critérios CA-01 a CA-12.
+- **Escopo validado para o TDD:** RF-01 a RF-23 (RF-23 incluída na revisão de 2026-11-16), RNF-01 a RNF-08, jornadas J-01 a J-06 e critérios CA-01 a CA-12.
 - **Regras essenciais:** RN-01 a RN-12; janelas e capacidade por organização, estados da solicitação, imutabilidade do volume com ajustes, unidades fixas sem conversão, visibilidade pública, bloqueio e despublicação sem cancelamento e visibilidade de dados pessoais somente enquanto a solicitação estiver em Solicitada ou Agendada (RN-11).
 - **Limites:** seções 5.2 e 5.3.
 - **Dependências e pendências:** seção 12.1 e riscos da seção 11.

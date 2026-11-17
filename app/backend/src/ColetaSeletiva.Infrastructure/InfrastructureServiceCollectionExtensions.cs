@@ -13,6 +13,7 @@ using ColetaSeletiva.Infrastructure.Acesso;
 using ColetaSeletiva.Infrastructure.AuditoriaDeEventos;
 using ColetaSeletiva.Infrastructure.Catalogo;
 using ColetaSeletiva.Infrastructure.ConsultaPublica;
+using ColetaSeletiva.Infrastructure.FontesPublicas;
 using ColetaSeletiva.Infrastructure.Perfis;
 using ColetaSeletiva.Infrastructure.Pontos;
 using ColetaSeletiva.Infrastructure.Identidade;
@@ -29,10 +30,13 @@ public static class InfrastructureServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        string connectionString)
+        string connectionString,
+        OpcoesDaFontePublica? opcoesDaFontePublica = null)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
+
+        services.AddFontesPublicasDePontos(opcoesDaFontePublica ?? new OpcoesDaFontePublica());
 
         services.AddScoped<TenantContext>();
         services.AddScoped<ITenantContext>(provedor =>

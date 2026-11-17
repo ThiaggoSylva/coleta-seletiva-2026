@@ -16,25 +16,35 @@ export interface BuscaPublicaEntrada {
   tamanhoPagina?: number;
 }
 
+export type OrigemDoPonto = 'Organizacao' | 'OpenStreetMap';
+
+/**
+ * Ponto exibido na consulta pública. Pontos de fonte externa
+ * (`origem === 'OpenStreetMap'`) podem não ter endereço estruturado, horário
+ * conhecido ou tipos aceitos informados.
+ */
 export interface PontoPublico {
   id: string;
+  origem: OrigemDoPonto;
   nome: string;
   organizacaoNome: string;
   contatoEmail: string | null;
   contatoTelefone: string | null;
-  municipio: Municipio;
-  bairro: string;
-  rua: string;
-  numero: string;
+  municipio: Municipio | null;
+  bairro: string | null;
+  rua: string | null;
+  numero: string | null;
   complemento: string | null;
-  cep: string;
+  cep: string | null;
   latitude: number;
   longitude: number;
   observacoes: string | null;
-  abertoAgora: boolean;
+  abertoAgora: boolean | null;
   distanciaKm: number | null;
   horarios: HorarioDoPonto[];
   tipos: TipoDoPonto[];
+  atribuicao: string | null;
+  urlDaFonte: string | null;
 }
 
 export interface PaginaDePontosPublicos {
@@ -42,6 +52,8 @@ export interface PaginaDePontosPublicos {
   pagina: number;
   tamanhoPagina: number;
   total: number;
+  avisoDeFonteExterna: string | null;
+  atribuicaoDeFonteExterna: string | null;
 }
 
 @Injectable({ providedIn: 'root' })

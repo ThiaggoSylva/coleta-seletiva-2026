@@ -13,31 +13,40 @@ public sealed record BuscaPublicaDePontosEntrada(
     int Pagina = 1,
     int TamanhoPagina = 20);
 
+/// <summary>
+/// Ponto exibido na consulta pública. Pontos de fontes externas não pertencem a uma
+/// organização e podem não ter endereço estruturado, horário conhecido ou tipos aceitos.
+/// </summary>
 public sealed record PontoPublico(
-    Guid Id,
+    string Id,
+    OrigemDoPonto Origem,
     string Nome,
     string OrganizacaoNome,
     string? ContatoEmail,
     string? ContatoTelefone,
-    MunicipioDoCatalogo Municipio,
-    string Bairro,
-    string Rua,
-    string Numero,
+    MunicipioDoCatalogo? Municipio,
+    string? Bairro,
+    string? Rua,
+    string? Numero,
     string? Complemento,
-    string Cep,
+    string? Cep,
     double Latitude,
     double Longitude,
     string? Observacoes,
-    bool AbertoAgora,
+    bool? AbertoAgora,
     double? DistanciaKm,
     IReadOnlyList<HorarioDoPontoResposta> Horarios,
-    IReadOnlyList<TipoDoPontoResposta> Tipos);
+    IReadOnlyList<TipoDoPontoResposta> Tipos,
+    string? Atribuicao = null,
+    string? UrlDaFonte = null);
 
 public sealed record PaginaDePontosPublicos(
     IReadOnlyList<PontoPublico> Itens,
     int Pagina,
     int TamanhoPagina,
-    int Total);
+    int Total,
+    string? AvisoDeFonteExterna = null,
+    string? AtribuicaoDeFonteExterna = null);
 
 public interface IConsultaPublicaDePontos
 {

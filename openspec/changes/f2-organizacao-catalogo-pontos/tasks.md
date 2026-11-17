@@ -36,9 +36,15 @@
 
 ## 6. Verificação
 
-- [ ] 6.1 Cobrir domínio e aplicação com testes MSTest/Moq para CA-02–CA-05 e cenários de conflito e autorização (DT-17).
-- [ ] 6.2 Cobrir as rotas novas em testes de integração com SQL Server, incluindo isolamento A/B e ausência de PII na consulta pública (RF-03, RF-09; DT-17).
+- [x] 6.1 Cobrir domínio e aplicação com testes MSTest/Moq para CA-02–CA-05 e cenários de conflito e autorização (DT-17).
+- [x] 6.2 Cobrir as rotas novas em testes de integração com SQL Server, incluindo isolamento A/B e ausência de PII na consulta pública (RF-03, RF-09; DT-17).
 - [x] 6.3 Executar `dotnet build`, `dotnet format --verify-no-changes`, testes unitários, `npm run build` e `npm test -- --run`; registrar bloqueios (DT-17).
+
+> 6.1: `DefinirVinculosHandlerTests` e `PontosHandlersTests` cobrem conflito de vínculo, validação,
+> falha de transação, auditoria e negação a cidadão/sessão sem autenticação. 6.2: `F2/
+> FuncionalidadesDaF2ApiTests` cobre perfil, publicação, catálogo, pontos, isolamento A/B, papéis e
+> ausência de PII na consulta pública. Os testes de integração compilam, mas não puderam ser
+> executados no ambiente de implementação por falta de acesso ao Docker/Testcontainers.
 
 ## Workflow follow-up
 

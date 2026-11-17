@@ -33,7 +33,7 @@ internal sealed class PontosDeColetaService : IPontosDeColeta
             .AsNoTracking()
             .Include(ponto => ponto.Horarios)
             .Include(ponto => ponto.Tipos)
-            .Where(ponto => ponto.OrganizacaoId == organizacaoId)
+            .Where(ponto => ponto.OrganizacaoId == organizacaoId && ponto.ExcluidoEmUtc == null)
             .OrderBy(ponto => ponto.Nome)
             .ToListAsync(cancellationToken);
 

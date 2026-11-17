@@ -51,6 +51,9 @@ localmente, inclusive a API isolada, veja [`app/README.md`](app/README.md).
 - A **F2 — Organização, catálogo e pontos** está implementada no backend e no frontend
   (perfil, municípios do IBGE, tipos habilitados, publicação, pontos e consulta pública com
   mapa); a F3 em diante segue pendente.
+- A **F11 — Pontos de fontes públicas** lê pontos reais do OpenStreetMap na consulta pública,
+  sempre identificados e com atribuição ODbL; a fonte pode ser desligada por
+  `FontesPublicas__Pontos__Ativa=false` e a consulta continua apenas com os pontos cadastrados.
 - A aplicação está **publicada em produção** no **MonsterASP.NET**; o deploy continua sendo um
   gate manual, sem publicação automática pela CI: veja
   [`docs/deploy-monsterasp.md`](docs/deploy-monsterasp.md).

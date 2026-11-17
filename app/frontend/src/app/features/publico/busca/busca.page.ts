@@ -145,10 +145,20 @@ const DIAS: Record<string, string> = {
         </p>
       }
 
+      @if (avisoFonteExterna() !== null) {
+        <p class="mt-2 rounded-md bg-amber-50 p-3 text-sm text-amber-900" role="status">
+          {{ avisoFonteExterna() }}
+        </p>
+      }
+
       @if (resultados().length > 0) {
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
           <app-mapa-pontos [marcadores]="marcadores()" rotulo="Mapa dos pontos encontrados" />
         </div>
+
+        @if (atribuicaoFonteExterna() !== null) {
+          <p class="mt-2 text-xs text-slate-500">{{ atribuicaoFonteExterna() }}</p>
+        }
 
         <ul class="mt-6 grid gap-4 lg:grid-cols-2">
           @for (ponto of resultados(); track ponto.id) {
@@ -157,26 +167,33 @@ const DIAS: Record<string, string> = {
                 <div>
                   <h2 class="text-lg font-semibold">{{ ponto.nome }}</h2>
                   <p class="text-sm text-slate-600">{{ ponto.organizacaoNome }}</p>
-                  <p class="mt-2 text-sm text-slate-700">
-                    {{ ponto.rua }}, {{ ponto.numero
-                    }}{{ ponto.complemento ? ' — ' + ponto.complemento : '' }}
-                  </p>
-                  <p class="text-sm text-slate-700">
-                    {{ ponto.bairro }} — {{ ponto.municipio.nome }}/{{ ponto.municipio.uf }} · CEP
-                    {{ ponto.cep }}
-                  </p>
+                  @if (endereco(ponto) !== null) {
+                    <p class="mt-2 text-sm text-slate-700">{{ endereco(ponto) }}</p>
+                  }
+                  @if (localidade(ponto) !== null) {
+                    <p class="text-sm text-slate-700">{{ localidade(ponto) }}</p>
+                  }
+                  @if (ponto.origem === 'OpenStreetMap') {
+                    <p class="mt-1 text-xs text-slate-500">Fonte pública (OpenStreetMap)</p>
+                  }
                 </div>
 
                 <div class="text-right text-sm">
                   <span
                     class="rounded-full px-3 py-1 font-medium"
                     [class]="
-                      ponto.abertoAgora
+                      ponto.abertoAgora === true
                         ? 'bg-emerald-100 text-emerald-900'
                         : 'bg-slate-100 text-slate-700'
                     "
                   >
-                    {{ ponto.abertoAgora ? 'Aberto agora' : 'Fechado agora' }}
+                    {{
+                      ponto.abertoAgora === null
+                        ? 'Horário não informado'
+                        : ponto.abertoAgora
+                          ? 'Aberto agora'
+                          : 'Fechado agora'
+                    }}
                   </span>
                   @if (ponto.distanciaKm !== null) {
                     <p class="mt-2 text-slate-600">{{ distancia(ponto.distanciaKm) }}</p>
@@ -186,7 +203,7 @@ const DIAS: Record<string, string> = {
 
               <p class="mt-3 text-sm text-slate-700">
                 <span class="font-medium">Recebe:</span>
-                {{ nomesDosTipos(ponto) }}
+                {{ ponto.tipos.length > 0 ? nomesDosTipos(ponto) : 'tipos não informados' }}
               </p>
 
               @if (ponto.horarios.length > 0) {
@@ -201,6 +218,19 @@ const DIAS: Record<string, string> = {
 
               @if (ponto.observacoes !== null) {
                 <p class="mt-2 text-sm text-slate-600">{{ ponto.observacoes }}</p>
+              }
+
+              @if (ponto.urlDaFonte !== null) {
+                <p class="mt-2 text-sm">
+                  <a
+                    [href]="ponto.urlDaFonte"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="font-medium text-emerald-700 underline"
+                  >
+                    Ver no OpenStreetMap
+                  </a>
+                </p>
               }
 
               @if (ponto.contatoEmail !== null || ponto.contatoTelefone !== null) {
@@ -263,6 +293,8 @@ export class BuscaPage implements OnInit {
   protected readonly carregando = signal(false);
   protected readonly buscou = signal(false);
   protected readonly erro = signal<string | null>(null);
+  protected readonly avisoFonteExterna = signal<string | null>(null);
+  protected readonly atribuicaoFonteExterna = signal<string | null>(null);
 
   protected readonly filtros = this.fb.nonNullable.group({
     tipoResiduoId: [''],
@@ -271,13 +303,20 @@ export class BuscaPage implements OnInit {
   });
 
   protected readonly marcadores = computed<MarcadorDoMapa[]>(() =>
-    this.resultados().map((ponto) => ({
-      id: ponto.id,
-      nome: ponto.nome,
-      latitude: ponto.latitude,
-      longitude: ponto.longitude,
-      descricao: `${ponto.organizacaoNome} · ${ponto.bairro}, ${ponto.municipio.nome}/${ponto.municipio.uf}`,
-    })),
+    this.resultados().map((ponto) => {
+      const local =
+        ponto.municipio === null
+          ? null
+          : `${ponto.bairro === null ? '' : `${ponto.bairro}, `}${ponto.municipio.nome}/${ponto.municipio.uf}`;
+
+      return {
+        id: ponto.id,
+        nome: ponto.nome,
+        latitude: ponto.latitude,
+        longitude: ponto.longitude,
+        descricao: local === null ? ponto.organizacaoNome : `${ponto.organizacaoNome} · ${local}`,
+      };
+    }),
   );
 
   protected readonly temMais = computed(() => this.resultados().length < this.total());
@@ -372,6 +411,8 @@ export class BuscaPage implements OnInit {
           this.buscou.set(true);
           this.pagina.set(resposta.pagina);
           this.total.set(resposta.total);
+          this.avisoFonteExterna.set(resposta.avisoDeFonteExterna ?? null);
+          this.atribuicaoFonteExterna.set(resposta.atribuicaoDeFonteExterna ?? null);
           this.resultados.update((atuais) =>
             pagina === 1 ? resposta.itens : [...atuais, ...resposta.itens],
           );
@@ -386,6 +427,28 @@ export class BuscaPage implements OnInit {
 
   protected nomesDosTipos(ponto: PontoPublico): string {
     return ponto.tipos.map((tipo) => tipo.nome).join(', ');
+  }
+
+  protected endereco(ponto: PontoPublico): string | null {
+    if (ponto.rua === null) {
+      return null;
+    }
+
+    const numero = ponto.numero === null ? 's/n' : ponto.numero;
+    const complemento = ponto.complemento === null ? '' : ` — ${ponto.complemento}`;
+
+    return `${ponto.rua}, ${numero}${complemento}`;
+  }
+
+  protected localidade(ponto: PontoPublico): string | null {
+    if (ponto.municipio === null) {
+      return null;
+    }
+
+    const bairro = ponto.bairro === null ? '' : `${ponto.bairro} — `;
+    const cep = ponto.cep === null ? '' : ` · CEP ${ponto.cep}`;
+
+    return `${bairro}${ponto.municipio.nome}/${ponto.municipio.uf}${cep}`;
   }
 
   protected dia(diaDaSemana: string): string {
