@@ -22,8 +22,7 @@ export const CIDADAO_ROUTES: Routes = [
   {
     path: 'retiradas/nova',
     canActivate: [autenticadoGuard, primeiroAcessoGuard, papelGuard('Cidadao')],
-    loadComponent: () =>
-      import('./retiradas/nova-retirada.page').then((m) => m.NovaRetiradaPage),
+    loadComponent: () => import('./retiradas/nova-retirada.page').then((m) => m.NovaRetiradaPage),
   },
   {
     path: 'retiradas/:id',

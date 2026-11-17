@@ -27,7 +27,10 @@ import { AuthService } from '../../../core/auth/auth.service';
             </a>
           </li>
           <li>
-            <a routerLink="/organizacao/disponibilidade" class="font-medium text-emerald-700 underline">
+            <a
+              routerLink="/organizacao/disponibilidade"
+              class="font-medium text-emerald-700 underline"
+            >
               Disponibilidade de retirada
             </a>
           </li>
