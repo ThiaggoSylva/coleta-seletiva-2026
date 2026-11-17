@@ -21,6 +21,17 @@ O passo a passo de publicação, as variáveis de ambiente e a reversão estão 
 [`docs/deploy-monsterasp.md`](docs/deploy-monsterasp.md). Para executar a aplicação
 localmente, inclusive a API isolada, veja [`app/README.md`](app/README.md).
 
+## Telas
+
+Consulta pública de pontos, com filtros por município e tipo de resíduo, mapa e horários de
+funcionamento:
+
+![Consulta pública de pontos de coleta, com mapa e lista de pontos](docs/images/demo-pontos.gif)
+
+| Entrada de organizações e cidadãos | Cadastro de cidadão |
+| --- | --- |
+| ![Tela de entrada, com usuário ou e-mail e senha](docs/images/login.png) | ![Tela de cadastro de cidadão](docs/images/registro-cidadao.png) |
+
 ## Estrutura
 
 ```text
