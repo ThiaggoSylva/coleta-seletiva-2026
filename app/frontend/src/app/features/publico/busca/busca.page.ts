@@ -304,18 +304,17 @@ export class BuscaPage implements OnInit {
 
   protected readonly marcadores = computed<MarcadorDoMapa[]>(() =>
     this.resultados().map((ponto) => {
-      const local = ponto.municipio === null
-        ? null
-        : `${ponto.bairro === null ? '' : `${ponto.bairro}, `}${ponto.municipio.nome}/${ponto.municipio.uf}`;
+      const local =
+        ponto.municipio === null
+          ? null
+          : `${ponto.bairro === null ? '' : `${ponto.bairro}, `}${ponto.municipio.nome}/${ponto.municipio.uf}`;
 
       return {
         id: ponto.id,
         nome: ponto.nome,
         latitude: ponto.latitude,
         longitude: ponto.longitude,
-        descricao: local === null
-          ? ponto.organizacaoNome
-          : `${ponto.organizacaoNome} · ${local}`,
+        descricao: local === null ? ponto.organizacaoNome : `${ponto.organizacaoNome} · ${local}`,
       };
     }),
   );
