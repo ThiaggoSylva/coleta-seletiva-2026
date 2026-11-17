@@ -14,4 +14,11 @@ public static class CodigosDeErro
     public const string PublicacaoIncompleta = "publicacao_incompleta";
     public const string NomeEmUso = "nome_em_uso";
     public const string PontoRetirado = "ponto_retirado";
+    public const string JanelaIndisponivel = "janela_indisponivel";
+    public const string CapacidadeEsgotada = "capacidade_esgotada";
+    public const string DataBloqueada = "data_bloqueada";
+    public const string EstadoInvalido = "estado_invalido";
+    public const string LimiteDeSolicitacoes = "limite_de_solicitacoes";
+    public const string VolumeNegativo = "volume_negativo";
+    public const string RegistroImutavel = "registro_imutavel";
 }

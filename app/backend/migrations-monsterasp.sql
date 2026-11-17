@@ -6393,3 +6393,340 @@ END;
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE TABLE [BloqueioData] (
+        [Id] uniqueidentifier NOT NULL,
+        [OrganizacaoId] uniqueidentifier NOT NULL,
+        [DataLocal] date NOT NULL,
+        [Motivo] nvarchar(300) NULL,
+        [CriadoPorUsuarioId] uniqueidentifier NOT NULL,
+        [CriadoEmUtc] datetimeoffset NOT NULL,
+        CONSTRAINT [PK_BloqueioData] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_BloqueioData_Organizacao_OrganizacaoId] FOREIGN KEY ([OrganizacaoId]) REFERENCES [Organizacao] ([Id]) ON DELETE NO ACTION
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE TABLE [DisponibilidadeRetirada] (
+        [Id] uniqueidentifier NOT NULL,
+        [OrganizacaoId] uniqueidentifier NOT NULL,
+        [DiaDaSemana] nvarchar(20) NOT NULL,
+        [Periodo] nvarchar(20) NOT NULL,
+        [Capacidade] int NOT NULL,
+        [CriadoEmUtc] datetimeoffset NOT NULL,
+        [AtualizadoEmUtc] datetimeoffset NOT NULL,
+        CONSTRAINT [PK_DisponibilidadeRetirada] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_DisponibilidadeRetirada_Organizacao_OrganizacaoId] FOREIGN KEY ([OrganizacaoId]) REFERENCES [Organizacao] ([Id]) ON DELETE NO ACTION
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE TABLE [JanelaRetirada] (
+        [Id] uniqueidentifier NOT NULL,
+        [OrganizacaoId] uniqueidentifier NOT NULL,
+        [DataLocal] date NOT NULL,
+        [Periodo] nvarchar(20) NOT NULL,
+        [CriadoEmUtc] datetimeoffset NOT NULL,
+        CONSTRAINT [PK_JanelaRetirada] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_JanelaRetirada_Organizacao_OrganizacaoId] FOREIGN KEY ([OrganizacaoId]) REFERENCES [Organizacao] ([Id]) ON DELETE NO ACTION
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE TABLE [Notificacao] (
+        [Id] uniqueidentifier NOT NULL,
+        [UsuarioId] uniqueidentifier NOT NULL,
+        [OrganizacaoId] uniqueidentifier NULL,
+        [Tipo] nvarchar(30) NOT NULL,
+        [ReferenciaId] uniqueidentifier NOT NULL,
+        [Titulo] nvarchar(160) NOT NULL,
+        [Mensagem] nvarchar(500) NOT NULL,
+        [Lida] bit NOT NULL,
+        [LidaEmUtc] datetimeoffset NULL,
+        [CriadaEmUtc] datetimeoffset NOT NULL,
+        CONSTRAINT [PK_Notificacao] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_Notificacao_AspNetUsers_UsuarioId] FOREIGN KEY ([UsuarioId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_Notificacao_Organizacao_OrganizacaoId] FOREIGN KEY ([OrganizacaoId]) REFERENCES [Organizacao] ([Id]) ON DELETE NO ACTION
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE TABLE [SolicitacaoRetirada] (
+        [Id] uniqueidentifier NOT NULL,
+        [OrganizacaoId] uniqueidentifier NOT NULL,
+        [CidadaoId] uniqueidentifier NOT NULL,
+        [NomeCidadao] nvarchar(150) NOT NULL,
+        [TelefoneCidadao] nvarchar(20) NULL,
+        [Uf] nvarchar(2) NOT NULL,
+        [MunicipioId] int NOT NULL,
+        [MunicipioNome] nvarchar(120) NOT NULL,
+        [Bairro] nvarchar(120) NOT NULL,
+        [Rua] nvarchar(150) NOT NULL,
+        [Numero] nvarchar(20) NOT NULL,
+        [Complemento] nvarchar(80) NULL,
+        [Cep] nvarchar(8) NOT NULL,
+        [PontoReferencia] nvarchar(300) NULL,
+        [Observacoes] nvarchar(500) NULL,
+        [DataLocal] date NOT NULL,
+        [Periodo] nvarchar(20) NOT NULL,
+        [Estado] nvarchar(20) NOT NULL,
+        [Motivo] nvarchar(500) NULL,
+        [CriadoEmUtc] datetimeoffset NOT NULL,
+        [AtualizadoEmUtc] datetimeoffset NOT NULL,
+        [RowVersion] rowversion NOT NULL,
+        CONSTRAINT [PK_SolicitacaoRetirada] PRIMARY KEY ([Id]),
+        CONSTRAINT [AK_SolicitacaoRetirada_OrganizacaoId_Id] UNIQUE ([OrganizacaoId], [Id]),
+        CONSTRAINT [FK_SolicitacaoRetirada_AspNetUsers_CidadaoId] FOREIGN KEY ([CidadaoId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_SolicitacaoRetirada_Organizacao_OrganizacaoId] FOREIGN KEY ([OrganizacaoId]) REFERENCES [Organizacao] ([Id]) ON DELETE NO ACTION
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE TABLE [RegistroVolume] (
+        [Id] uniqueidentifier NOT NULL,
+        [OrganizacaoId] uniqueidentifier NOT NULL,
+        [TipoResiduoId] uniqueidentifier NOT NULL,
+        [Quantidade] decimal(12,3) NOT NULL,
+        [Origem] nvarchar(30) NOT NULL,
+        [SolicitacaoId] uniqueidentifier NULL,
+        [PontoId] uniqueidentifier NULL,
+        [RegistroOriginalId] uniqueidentifier NULL,
+        [OperadorUsuarioId] uniqueidentifier NOT NULL,
+        [OperadorNome] nvarchar(150) NOT NULL,
+        [OcorridoEmUtc] datetimeoffset NOT NULL,
+        [DataLocal] date NOT NULL,
+        [Motivo] nvarchar(500) NULL,
+        [CriadoEmUtc] datetimeoffset NOT NULL,
+        CONSTRAINT [PK_RegistroVolume] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_RegistroVolume_AspNetUsers_OperadorUsuarioId] FOREIGN KEY ([OperadorUsuarioId]) REFERENCES [AspNetUsers] ([Id]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_RegistroVolume_Organizacao_OrganizacaoId] FOREIGN KEY ([OrganizacaoId]) REFERENCES [Organizacao] ([Id]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_RegistroVolume_PontoColeta_PontoId] FOREIGN KEY ([PontoId]) REFERENCES [PontoColeta] ([Id]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_RegistroVolume_RegistroVolume_RegistroOriginalId] FOREIGN KEY ([RegistroOriginalId]) REFERENCES [RegistroVolume] ([Id]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_RegistroVolume_SolicitacaoRetirada_SolicitacaoId] FOREIGN KEY ([SolicitacaoId]) REFERENCES [SolicitacaoRetirada] ([Id]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_RegistroVolume_TipoResiduo_TipoResiduoId] FOREIGN KEY ([TipoResiduoId]) REFERENCES [TipoResiduo] ([Id]) ON DELETE NO ACTION
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE TABLE [SolicitacaoHistorico] (
+        [Id] uniqueidentifier NOT NULL,
+        [SolicitacaoId] uniqueidentifier NOT NULL,
+        [EstadoAnterior] nvarchar(20) NULL,
+        [EstadoNovo] nvarchar(20) NOT NULL,
+        [AtorUsuarioId] uniqueidentifier NOT NULL,
+        [OcorridoEmUtc] datetimeoffset NOT NULL,
+        [Motivo] nvarchar(500) NULL,
+        CONSTRAINT [PK_SolicitacaoHistorico] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_SolicitacaoHistorico_SolicitacaoRetirada_SolicitacaoId] FOREIGN KEY ([SolicitacaoId]) REFERENCES [SolicitacaoRetirada] ([Id]) ON DELETE CASCADE
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE TABLE [SolicitacaoItem] (
+        [Id] uniqueidentifier NOT NULL,
+        [SolicitacaoId] uniqueidentifier NOT NULL,
+        [TipoResiduoId] uniqueidentifier NOT NULL,
+        [QuantidadeEstimada] decimal(12,3) NOT NULL,
+        CONSTRAINT [PK_SolicitacaoItem] PRIMARY KEY ([Id]),
+        CONSTRAINT [FK_SolicitacaoItem_SolicitacaoRetirada_SolicitacaoId] FOREIGN KEY ([SolicitacaoId]) REFERENCES [SolicitacaoRetirada] ([Id]) ON DELETE CASCADE,
+        CONSTRAINT [FK_SolicitacaoItem_TipoResiduo_TipoResiduoId] FOREIGN KEY ([TipoResiduoId]) REFERENCES [TipoResiduo] ([Id]) ON DELETE NO ACTION
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE UNIQUE INDEX [UX_BloqueioData_OrganizacaoId_DataLocal] ON [BloqueioData] ([OrganizacaoId], [DataLocal]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE UNIQUE INDEX [UX_DisponibilidadeRetirada_Organizacao_Dia_Periodo] ON [DisponibilidadeRetirada] ([OrganizacaoId], [DiaDaSemana], [Periodo]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE UNIQUE INDEX [UX_JanelaRetirada_Organizacao_Data_Periodo] ON [JanelaRetirada] ([OrganizacaoId], [DataLocal], [Periodo]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_Notificacao_OrganizacaoId] ON [Notificacao] ([OrganizacaoId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_Notificacao_UsuarioId_CriadaEmUtc] ON [Notificacao] ([UsuarioId], [CriadaEmUtc]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_Notificacao_UsuarioId_Lida] ON [Notificacao] ([UsuarioId], [Lida]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_RegistroVolume_OperadorUsuarioId] ON [RegistroVolume] ([OperadorUsuarioId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_RegistroVolume_Organizacao_Data_Tipo] ON [RegistroVolume] ([OrganizacaoId], [DataLocal], [TipoResiduoId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_RegistroVolume_Organizacao_Origem] ON [RegistroVolume] ([OrganizacaoId], [Origem]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_RegistroVolume_PontoId] ON [RegistroVolume] ([PontoId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_RegistroVolume_RegistroOriginalId] ON [RegistroVolume] ([RegistroOriginalId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_RegistroVolume_SolicitacaoId] ON [RegistroVolume] ([SolicitacaoId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_RegistroVolume_TipoResiduoId] ON [RegistroVolume] ([TipoResiduoId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_SolicitacaoHistorico_SolicitacaoId_Ocorrido] ON [SolicitacaoHistorico] ([SolicitacaoId], [OcorridoEmUtc]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_SolicitacaoItem_TipoResiduoId] ON [SolicitacaoItem] ([TipoResiduoId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE UNIQUE INDEX [UX_SolicitacaoItem_SolicitacaoId_TipoResiduoId] ON [SolicitacaoItem] ([SolicitacaoId], [TipoResiduoId]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_SolicitacaoRetirada_Cidadao_Organizacao_Estado] ON [SolicitacaoRetirada] ([CidadaoId], [OrganizacaoId], [Estado]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_SolicitacaoRetirada_Organizacao_Data_Periodo_Estado] ON [SolicitacaoRetirada] ([OrganizacaoId], [DataLocal], [Periodo], [Estado]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    CREATE INDEX [IX_SolicitacaoRetirada_Organizacao_Estado_Data] ON [SolicitacaoRetirada] ([OrganizacaoId], [Estado], [DataLocal]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116022330_F3RetiradasVolumesRelatorios'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261116022330_F3RetiradasVolumesRelatorios', N'10.0.12');
+END;
+
+COMMIT;
+GO
+
