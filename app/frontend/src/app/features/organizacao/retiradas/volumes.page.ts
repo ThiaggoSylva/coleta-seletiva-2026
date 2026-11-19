@@ -275,7 +275,7 @@ const ROTULOS_DE_ORIGEM: Record<string, string> = {
                           <input
                             placeholder="Ex.: Correção de pesagem"
                             maxlength="500"
-                            class="w-48"
+                            class="w-60"
                             [value]="motivoDoAjuste()"
                             (input)="alterarMotivoDoAjuste($event)"
                           />
