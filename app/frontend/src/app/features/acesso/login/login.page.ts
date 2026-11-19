@@ -45,7 +45,7 @@ import { MensagemDeErro } from '../../../shared/mensagem-de-erro';
               type="text"
               formControlName="identificador"
               autocomplete="username"
-              placeholder="Ex.: maria@exemplo.com ou maria.silva"
+              placeholder="Ex.: maria.silva"
               class="mt-1.5 w-full"
               [attr.aria-invalid]="campoInvalido('identificador')"
               [attr.aria-describedby]="
