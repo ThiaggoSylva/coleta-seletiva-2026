@@ -41,7 +41,7 @@ const DIAS: Record<string, string> = {
               <div class="mt-1 flex gap-2">
                 <input
                   class="w-full"
-                  placeholder="Digite o nome"
+                  placeholder="Ex.: Campinas"
                   [value]="textoMunicipio()"
                   (input)="digitarMunicipio($event)"
                   (keydown.enter)="procurarMunicipios($event)"

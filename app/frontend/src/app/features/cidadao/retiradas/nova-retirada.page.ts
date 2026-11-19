@@ -92,6 +92,7 @@ interface SelecaoDeTipo {
               <span class="campo-rotulo">Nome do município</span>
               <input
                 class="mt-1 w-full"
+                placeholder="Ex.: Campinas"
                 [value]="textoMunicipio()"
                 (input)="digitarMunicipio($event)"
                 (keydown.enter)="buscarMunicipios()"
@@ -217,6 +218,7 @@ interface SelecaoDeTipo {
                 <span class="campo-rotulo">Bairro</span>
                 <input
                   formControlName="bairro"
+                  placeholder="Ex.: Jardim das Flores"
                   class="mt-1 w-full"
                   [class.border-red-500]="invalido('bairro')"
                 />
@@ -227,6 +229,7 @@ interface SelecaoDeTipo {
                 <span class="campo-rotulo">Rua</span>
                 <input
                   formControlName="rua"
+                  placeholder="Ex.: Rua das Acácias"
                   class="mt-1 w-full"
                   [class.border-red-500]="invalido('rua')"
                 />
@@ -237,6 +240,7 @@ interface SelecaoDeTipo {
                 <span class="campo-rotulo">Número</span>
                 <input
                   formControlName="numero"
+                  placeholder="Ex.: 120"
                   class="mt-1 w-full"
                   [class.border-red-500]="invalido('numero')"
                 />
@@ -247,6 +251,7 @@ interface SelecaoDeTipo {
                 <span class="campo-rotulo">Complemento (opcional)</span>
                 <input
                   formControlName="complemento"
+                  placeholder="Ex.: Apto 12"
                   class="mt-1 w-full"
                   [class.border-red-500]="invalido('complemento')"
                 />
@@ -269,6 +274,7 @@ interface SelecaoDeTipo {
                 <span class="campo-rotulo">Ponto de referência (opcional)</span>
                 <input
                   formControlName="pontoReferencia"
+                  placeholder="Ex.: Ao lado da padaria"
                   class="mt-1 w-full"
                   [class.border-red-500]="invalido('pontoReferencia')"
                 />
@@ -280,6 +286,7 @@ interface SelecaoDeTipo {
                 <textarea
                   formControlName="observacoes"
                   rows="3"
+                  placeholder="Ex.: Deixar os sacos na portaria."
                   class="mt-1 w-full"
                   [class.border-red-500]="invalido('observacoes')"
                 ></textarea>
@@ -312,6 +319,7 @@ interface SelecaoDeTipo {
                         type="number"
                         min="0.001"
                         step="0.001"
+                        placeholder="Ex.: 2"
                         class="w-28"
                         [value]="selecaoDoTipo(tipo).quantidade"
                         (input)="alterarQuantidade(tipo, $event)"

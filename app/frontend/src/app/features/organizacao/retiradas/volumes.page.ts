@@ -98,6 +98,7 @@ const ROTULOS_DE_ORIGEM: Record<string, string> = {
               type="number"
               min="0.001"
               step="0.001"
+              placeholder="Ex.: 12.5"
               class="mt-1"
               [value]="quantidadeDoRecebimento()"
               (input)="alterarQuantidadeDoRecebimento($event)"
@@ -266,13 +267,13 @@ const ROTULOS_DE_ORIGEM: Record<string, string> = {
                           <input
                             type="number"
                             step="0.001"
-                            placeholder="+/- quantidade"
+                            placeholder="Ex.: -2.5"
                             class="w-32 text-right"
                             [value]="quantidadeDoAjuste()"
                             (input)="alterarQuantidadeDoAjuste($event)"
                           />
                           <input
-                            placeholder="Motivo"
+                            placeholder="Ex.: Correção de pesagem"
                             maxlength="500"
                             class="w-48"
                             [value]="motivoDoAjuste()"

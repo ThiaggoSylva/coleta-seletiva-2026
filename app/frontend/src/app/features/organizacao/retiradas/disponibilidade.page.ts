@@ -145,6 +145,7 @@ const PERIODOS = [
               <input
                 class="mt-1"
                 maxlength="300"
+                placeholder="Ex.: Feriado municipal"
                 [value]="novoMotivoDeBloqueio()"
                 (input)="alterarNovoMotivoDeBloqueio($event)"
               />

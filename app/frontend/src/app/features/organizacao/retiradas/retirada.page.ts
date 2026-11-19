@@ -184,7 +184,7 @@ const MOTIVOS_DE_NAO_REALIZACAO = Object.entries(ROTULOS_DE_MOTIVO_NAO_REALIZACA
               rows="3"
               class="mt-3 w-full"
               maxlength="500"
-              placeholder="Motivo da recusa"
+              placeholder="Ex.: Endereço fora da área de atendimento"
               [value]="motivoDaRecusa()"
               (input)="alterarMotivoDaRecusa($event)"
             ></textarea>
@@ -268,6 +268,7 @@ const MOTIVOS_DE_NAO_REALIZACAO = Object.entries(ROTULOS_DE_MOTIVO_NAO_REALIZACA
                           type="number"
                           min="0.001"
                           step="0.001"
+                          placeholder="Ex.: 12.5"
                           class="w-28 text-right"
                           [value]="quantidadeExecutada(residuo.tipoResiduoId)"
                           (input)="alterarQuantidadeExecutada(residuo.tipoResiduoId, $event)"
