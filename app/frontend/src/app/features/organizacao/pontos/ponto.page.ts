@@ -87,7 +87,7 @@ const CENTRO_PADRAO: Coordenada = { latitude: -23.5505, longitude: -46.6333 };
                 <span class="font-medium text-slate-700">Nome do ponto</span>
                 <input
                   formControlName="nome"
-                  placeholder="Ex.: Ecoponto Centro"
+                  placeholder="Ecoponto Setor Central"
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
                   [class.border-red-500]="invalido('nome')"
                 />
@@ -125,7 +125,7 @@ const CENTRO_PADRAO: Coordenada = { latitude: -23.5505, longitude: -46.6333 };
                 <span class="font-medium text-slate-700">Bairro</span>
                 <input
                   formControlName="bairro"
-                  placeholder="Ex.: Centro"
+                  placeholder="Setor Central"
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
                   [class.border-red-500]="invalido('bairro')"
                 />
@@ -136,7 +136,7 @@ const CENTRO_PADRAO: Coordenada = { latitude: -23.5505, longitude: -46.6333 };
                 <span class="font-medium text-slate-700">Rua</span>
                 <input
                   formControlName="rua"
-                  placeholder="Ex.: Rua das Acácias"
+                  placeholder="Rua 7"
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
                   [class.border-red-500]="invalido('rua')"
                 />
@@ -147,7 +147,7 @@ const CENTRO_PADRAO: Coordenada = { latitude: -23.5505, longitude: -46.6333 };
                 <span class="font-medium text-slate-700">Número</span>
                 <input
                   formControlName="numero"
-                  placeholder="Ex.: 120"
+                  placeholder="123"
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
                   [class.border-red-500]="invalido('numero')"
                 />
@@ -158,7 +158,7 @@ const CENTRO_PADRAO: Coordenada = { latitude: -23.5505, longitude: -46.6333 };
                 <span class="font-medium text-slate-700">Complemento</span>
                 <input
                   formControlName="complemento"
-                  placeholder="Ex.: Próximo à praça"
+                  placeholder="Ao lado da praça (opcional)"
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
                 />
               </label>
@@ -168,7 +168,7 @@ const CENTRO_PADRAO: Coordenada = { latitude: -23.5505, longitude: -46.6333 };
                 <input
                   formControlName="cep"
                   inputmode="numeric"
-                  placeholder="00000-000"
+                  placeholder="74000-000"
                   maxlength="9"
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
                   [class.border-red-500]="invalido('cep')"
@@ -181,7 +181,7 @@ const CENTRO_PADRAO: Coordenada = { latitude: -23.5505, longitude: -46.6333 };
                 <textarea
                   formControlName="observacoes"
                   rows="2"
-                  placeholder="Ex.: Recebemos pilhas e baterias."
+                  placeholder="Instruções de acesso e referências (opcional)"
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
                 ></textarea>
               </label>
@@ -210,7 +210,7 @@ const CENTRO_PADRAO: Coordenada = { latitude: -23.5505, longitude: -46.6333 };
                 <input
                   formControlName="latitude"
                   type="number"
-                  placeholder="Ex.: -23.5505"
+                  placeholder="-16.6869"
                   step="0.000001"
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
                   (input)="atualizarCoordenadas()"
@@ -224,7 +224,7 @@ const CENTRO_PADRAO: Coordenada = { latitude: -23.5505, longitude: -46.6333 };
                 <input
                   formControlName="longitude"
                   type="number"
-                  placeholder="Ex.: -46.6333"
+                  placeholder="-49.2648"
                   step="0.000001"
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
                   (input)="atualizarCoordenadas()"
