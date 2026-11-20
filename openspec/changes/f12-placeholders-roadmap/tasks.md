@@ -22,12 +22,12 @@
 - [x] 4.1 Configurar dois projetos Playwright, desktop `1280×720` e mobile `390×844`, sem nova dependência de runtime; verificar com `npx playwright test --list` que o spec é descoberto nos dois projetos (RNF-09; DT-42).
 - [x] 4.2 Criar spec E2E das quatro rotas com retorno funcional, aviso "em breve" e ausência de rolagem horizontal; verificar execução nos dois viewports com `npx playwright test` (RF-26; RNF-09; CA-15; DT-42).
 - [x] 4.3 Fazer inspeção local no servidor de desenvolvimento em desktop e celular, incluindo os estados anônimo e autenticados; verificar ausência de corte de texto, links corretos e nenhum dado pessoal em logs, erros ou screenshots (RNF-09, RNF-10; CA-15, CA-16). Nota: executada por inspeção automatizada de DOM/geometria via Playwright nos dois viewports (títulos, `scrollWidth`, links e ausência de PII); não houve visualização humana de imagens nem retenção de screenshots.
-- [ ] 4.4 Executar `dotnet build`, `dotnet test`, `dotnet format --verify-no-changes`, `npm run build`, `npm test` e os testes Playwright; registrar comandos, resultados e eventuais bloqueios no PR (CA-13–CA-16; DT-42).
+- [x] 4.4 Executar `dotnet build`, `dotnet test`, `dotnet format --verify-no-changes`, `npm run build`, `npm test` e os testes Playwright; registrar comandos, resultados e eventuais bloqueios no PR (CA-13–CA-16; DT-42). Resultados: `dotnet build` ok; `dotnet test` 78+45+137 aprovados; `dotnet format` ok; `npm run build` ok; `npm test` 79 aprovados; Playwright 10/10 dos novos testes aprovados nos dois viewports e 25/26 da suíte completa (o teste estável `perfil.spec.ts` em desktop falhou uma vez e passou na execução isolada). `npm run format:check` global falha em arquivos preexistentes; os arquivos alterados foram verificados individualmente com Prettier.
 
 ## 5. Coerência e entrega
 
-- [ ] 5.1 Revisar o diff completo em relação à `main` para confirmar que não há migration, segredo, dado pessoal, dependência nova ou alteração de contrato existente; verificar com inspeção do diff e busca por identificadores sensíveis (RNF-10, RNF-11; CA-16).
-- [ ] 5.2 Conferir que a implementação cobre RF-24–RF-27, RN-13, RNF-09–RNF-11 e CA-13–CA-16 e que `docs/prd.md`, `docs/tdd.md` e este change permanecem coerentes; verificar com a matriz de rastreabilidade do PR (F12; DT-36–DT-42).
+- [x] 5.1 Revisar o diff completo em relação à `main` para confirmar que não há migration, segredo, dado pessoal, dependência nova ou alteração de contrato existente; verificar com inspeção do diff e busca por identificadores sensíveis (RNF-10, RNF-11; CA-16). Revisão de 25 arquivos: nenhuma migration, `package.json`/lock, `appsettings` ou `.env` alterado; correspondências sensíveis no diff são apenas constantes de teste, campos de estado e texto de documentação.
+- [x] 5.2 Conferir que a implementação cobre RF-24–RF-27, RN-13, RNF-09–RNF-11 e CA-13–CA-16 e que `docs/prd.md`, `docs/tdd.md` e este change permanecem coerentes; verificar com a matriz de rastreabilidade do PR (F12; DT-36–DT-42). `openspec validate f12-placeholders-roadmap --strict` aprovado após a atualização das tarefas.
 
 ## Workflow follow-up
 
