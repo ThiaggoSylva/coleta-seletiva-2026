@@ -6,14 +6,14 @@ import { App } from './app';
 import { ContaAutenticada, Papel } from './core/auth/auth.models';
 import { AuthService } from './core/auth/auth.service';
 
-function criarConta(papel: Papel): ContaAutenticada {
+function criarConta(papel: Papel, trocaSenhaPendente = false): ContaAutenticada {
   return {
     id: '11111111-1111-1111-1111-111111111111',
     nome: 'Ana',
     email: 'ana@example.org',
     papel,
     organizacaoId: papel === 'Cidadao' ? null : '22222222-2222-2222-2222-222222222222',
-    trocaSenhaPendente: false,
+    trocaSenhaPendente,
   };
 }
 
@@ -39,12 +39,12 @@ describe('App', () => {
       .forEach((requisicao) => requisicao.flush({ itens: [], naoLidas: 0 }));
   }
 
-  function entrar(papel: Papel): void {
+  function entrar(papel: Papel, trocaSenhaPendente = false): void {
     TestBed.inject(AuthService).login('ana@example.org', 'SenhaForte!123').subscribe();
     http.expectOne('/api/v1/auth/login').flush({
       tokenDeAcesso: 'token-de-acesso',
       expiraEmUtc: new Date(Date.now() + 900_000).toISOString(),
-      usuario: criarConta(papel),
+      usuario: criarConta(papel, trocaSenhaPendente),
     });
   }
 
@@ -89,5 +89,66 @@ describe('App', () => {
 
     expect(compiled.textContent).toContain('Área da organização');
     expect(compiled.textContent).not.toContain('Equipe');
+  });
+
+  function linksDaPagina(fixture: { nativeElement: HTMLElement }): string[] {
+    return Array.from(fixture.nativeElement.querySelectorAll('a')).map(
+      (link) => link.getAttribute('href') ?? '',
+    );
+  }
+
+  it('oferece apenas o link público de roadmap ao visitante', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const links = linksDaPagina(fixture);
+
+    expect(links).toContain('/em-breve/transparencia-impacto');
+    expect(links).not.toContain('/em-breve/preferencias-email');
+    expect(links).not.toContain('/em-breve/extrato-pontos');
+    expect(links).not.toContain('/em-breve/rotas-coletor');
+  });
+
+  it('oferece apenas os módulos do cidadão', async () => {
+    entrar('Cidadao');
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const links = linksDaPagina(fixture);
+
+    expect(links).toContain('/em-breve/preferencias-email');
+    expect(links).toContain('/em-breve/extrato-pontos');
+    expect(links).not.toContain('/em-breve/rotas-coletor');
+  });
+
+  it('oferece rotas do coletor ao Administrador e oculta os módulos do cidadão', async () => {
+    entrar('Administrador');
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const links = linksDaPagina(fixture);
+
+    expect(links).toContain('/em-breve/rotas-coletor');
+    expect(links).not.toContain('/em-breve/preferencias-email');
+    expect(links).not.toContain('/em-breve/extrato-pontos');
+  });
+
+  it('oferece rotas do coletor ao Operador', async () => {
+    entrar('Operador');
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const links = linksDaPagina(fixture);
+
+    expect(links).toContain('/em-breve/rotas-coletor');
+    expect(links).not.toContain('/em-breve/preferencias-email');
+  });
+
+  it('oculta os links do cabeçalho quando a troca de senha está pendente', async () => {
+    entrar('Cidadao', true);
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const links = linksDaPagina(fixture);
+
+    expect(links).not.toContain('/em-breve/preferencias-email');
+    expect(links).not.toContain('/em-breve/extrato-pontos');
+    expect(links).not.toContain('/em-breve/rotas-coletor');
+    expect(links).toContain('/em-breve/transparencia-impacto');
   });
 });

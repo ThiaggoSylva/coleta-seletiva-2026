@@ -13,9 +13,9 @@
 
 ## 3. Frontend
 
-- [ ] 3.1 Criar em `app/frontend/src` o espelho estável de `id`, `titulo`, `descricao`, `fase` e `rota`, as quatro rotas `/em-breve/*` com `data` e os guardas existentes; verificar com `npm run build` e teste automatizado de paridade de IDs, fases e rotas (RF-26; RNF-11; DT-38, DT-40).
-- [ ] 3.2 Implementar `EmBrevePage` reutilizável com título, descrição, fase, aviso "em breve" e ação de retorno, sem formulário, dado fictício ou data prometida; verificar com teste de componente que todos os dados de rota são exibidos (RF-26; RN-13; CA-15; DT-40).
-- [ ] 3.3 Adicionar links no cabeçalho filtrados por papel e troca de senha pendente, mais o link público no rodapé; verificar com testes que visitante, Cidadão, Administrador, Operador e usuário com troca pendente veem apenas links permitidos (RF-27; DT-41).
+- [x] 3.1 Criar em `app/frontend/src` o espelho estável de `id`, `titulo`, `descricao`, `fase` e `rota`, as quatro rotas `/em-breve/*` com `data` e os guardas existentes; verificar com `npm run build` e teste automatizado de paridade de IDs, fases e rotas (RF-26; RNF-11; DT-38, DT-40).
+- [x] 3.2 Implementar `EmBrevePage` reutilizável com título, descrição, fase, aviso "em breve" e ação de retorno, sem formulário, dado fictício ou data prometida; verificar com teste de componente que todos os dados de rota são exibidos (RF-26; RN-13; CA-15; DT-40).
+- [x] 3.3 Adicionar links no cabeçalho filtrados por papel e troca de senha pendente, mais o link público no rodapé; verificar com testes que visitante, Cidadão, Administrador, Operador e usuário com troca pendente veem apenas links permitidos (RF-27; DT-41).
 
 ## 4. Verificação em web e celular
 
