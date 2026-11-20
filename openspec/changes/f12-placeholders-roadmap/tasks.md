@@ -2,11 +2,11 @@
 
 ## 1. Revisão do planejamento (gate F12)
 
-- [ ] 1.1 Validar proposal, specs, design e tasks com `openspec validate f12-placeholders-roadmap --strict` e obter aprovação explícita pela ferramenta `question`; verificar sucesso do comando e registro da aprovação antes de tocar em código (RF-24–RF-27; DT-36–DT-42).
+- [x] 1.1 Validar proposal, specs, design e tasks com `openspec validate f12-placeholders-roadmap --strict` e obter aprovação explícita pela ferramenta `question`; verificar sucesso do comando e registro da aprovação antes de tocar em código (RF-24–RF-27; DT-36–DT-42).
 
 ## 2. Catálogo e API
 
-- [ ] 2.1 Criar `ModuloEmBreve`, `CatalogoDePlaceholders` e o serviço de consulta em `ColetaSeletiva.Application` com os quatro módulos, fases F7–F10 e rotas estáveis; verificar com teste unitário que o catálogo contém exatamente os quatro IDs, sem campos de nome, contato, endereço ou organização (RF-24; RNF-10; CA-13, CA-16; DT-38).
+- [x] 2.1 Criar `ModuloEmBreve`, `CatalogoDePlaceholders` e o serviço de consulta em `ColetaSeletiva.Application` com os quatro módulos, fases F7–F10 e rotas estáveis; verificar com teste unitário que o catálogo contém exatamente os quatro IDs, sem campos de nome, contato, endereço ou organização (RF-24; RNF-10; CA-13, CA-16; DT-38).
 - [ ] 2.2 Adicionar `CodigosDeErro.EmBreve` e implementar `EmBreveController` com índice `200`, rotas literais por módulo e `404` para id desconhecido; verificar com teste de integração o payload do índice, o `code=nao_encontrado` e a ausência de PII (RF-24; CA-13; DT-36).
 - [ ] 2.3 Implementar o `ProblemDetails` `501` com `code=em_breve`, `modulo`, `fase`, `detail` e `traceId`, reutilizando a correlação existente, e anotar os códigos no OpenAPI; verificar com teste de integração cada módulo e com asserção sobre o documento OpenAPI (RF-25; RN-13; CA-14; DT-37).
 - [ ] 2.4 Aplicar `[AllowAnonymous]` ao índice e à transparência, `somente-cidadao` a e-mail/extrato e `somente-equipe-da-organizacao` a rotas, mantendo o limite de taxa público; verificar com testes de integração `401`, `403` e `501` por papel, sem vazamento de metadados nas negações (RF-27; RNF-10; CA-15; DT-36, DT-39).
