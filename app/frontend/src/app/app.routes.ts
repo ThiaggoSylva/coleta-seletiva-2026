@@ -23,4 +23,8 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/organizacao/organizacao.routes').then((m) => m.ORGANIZACAO_ROUTES),
   },
+  {
+    path: 'em-breve',
+    loadChildren: () => import('./features/roadmap/roadmap.routes').then((m) => m.ROADMAP_ROUTES),
+  },
 ];

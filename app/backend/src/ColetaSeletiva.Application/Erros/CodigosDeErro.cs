@@ -21,4 +21,5 @@ public static class CodigosDeErro
     public const string LimiteDeSolicitacoes = "limite_de_solicitacoes";
     public const string VolumeNegativo = "volume_negativo";
     public const string RegistroImutavel = "registro_imutavel";
+    public const string EmBreve = "em_breve";
 }

@@ -1,6 +1,6 @@
 # PRD — Plataforma Web de Coleta Seletiva e Pontos de Descarte
 
-- **Status:** Validado para TDD em 2026-11-10, por aprovação explícita do solicitante pela ferramenta `question`; handoff liberado (ver 12.2). **Revisão de 2026-11-16:** acrescenta RF-23 (pontos de fontes públicas), validada pela mesma ferramenta.
+- **Status:** Validado para TDD em 2026-11-10, por aprovação explícita do solicitante pela ferramenta `question`; handoff liberado (ver 12.2). **Revisão de 2026-11-16:** acrescenta RF-23 (pontos de fontes públicas), validada pela mesma ferramenta. **Revisão de 2026-11-19:** acrescenta a seção 13 (placeholders de roadmap), validada pela mesma ferramenta.
 - **Data:** 2026-11-10 (rascunho original de 2026-11-09; revisão e entrevista de validação em 2026-11-10).
 - **Origem:** tema escolhido pelo solicitante para o TCC da Academia do Programador. Estrutura, rigor e nível de detalhe seguem o modelo `locadora-de-veiculos-2026`. Pedido de revisão e validação de `docs/prd.md` registrado nesta data.
 - **Natureza da entrega:** documentação preparatória, sem implementação.
@@ -286,3 +286,92 @@ O conteúdo foi aprovado para TDD em 2026-11-10. As pendências abaixo não bloq
 - **Dependências e pendências:** seção 12.1 e riscos da seção 11.
 - **Entrevista técnica futura:** linguagem, frameworks, bibliotecas, arquitetura, autenticação e sessão, modelo de isolamento, geolocalização e mapa, fonte de municípios, concorrência de capacidade, precisão de quantidades, relatórios e CSV, notificações internas, observabilidade, testes, estrutura em `app/`, execução e entrega. O TDD de rascunho desta pasta pode conter propostas para cada ponto; elas serão confirmadas ou substituídas na etapa técnica.
 - **Próximo passo:** usar `/generate-tdd Use docs/prd.md como base validada`.
+
+## 13. Placeholders de roadmap — revisão de 2026-11-19
+
+- **Status:** Validado para TDD em 2026-11-19, por aprovação explícita do solicitante pela ferramenta `question`; o conteúdo validado em 2026-11-10 e 2026-11-16 permanece inalterado.
+- **Origem:** pedido do solicitante para construir placeholders na API e no frontend, testar em web e celular, entregar por PR e preparar a publicação. A entrevista desta revisão foi realizada pela ferramenta `question` em 2026-11-19, com confirmação para mesclar esta seção sem substituir o conteúdo anterior.
+- **Relação com as versões:** os placeholders anunciam entregas futuras do `docs/prd-desafios.md` (v1.1/v2, fases F7–F10) e de pendências da v1 (F5). Não alteram o escopo validado da v1 nem antecipam critérios de aceite dessas fases.
+
+### 13.1 Contexto e problema
+
+A aplicação publicada cobre as fases F1–F4, com partes de F5 e a fonte pública F11. Recursos do roadmap já documentados — preferências de e-mail, extrato de pontos, rotas do coletor e transparência/impacto — ainda não existem. Sem sinalização no produto, a ausência é interpretada como funcionalidade inexistente ou incompleta, e a API não oferece uma forma previsível de descobrir o que está planejado.
+
+Hipótese de valor (não validada com usuários reais): tornar o roadmap visível no próprio produto, com páginas estáveis e contrato de API explícito, sem criar a impressão de que a funcionalidade já funciona e sem publicar dados fictícios.
+
+### 13.2 Objetivos e métricas
+
+- Objetivo: todo módulo escolhido ter uma rota de frontend estável e uma operação de API documentada que indique claramente o estado “em breve” e a fase do roadmap.
+- Indicador verificável: cobertura dos quatro módulos nas duas camadas e ausência de links quebrados na navegação aplicável a cada papel.
+- Baselines e metas de adoção ou uso: **A definir**; não há medição de uso dos placeholders nem responsável designado para esse acompanhamento.
+
+### 13.3 Público-alvo e stakeholders
+
+- Cidadão: vê transparência/impacto e os placeholders de preferências de e-mail e extrato de pontos.
+- Administrador e Operador da organização: veem transparência/impacto e o placeholder de rotas do coletor.
+- Visitante sem sessão: vê apenas o placeholder público de transparência/impacto.
+- Stakeholder de produto (solicitante): responsável por revisar rótulos e fases exibidos; papéis operacionais das fases futuras permanecem a designar.
+
+### 13.4 Escopo da revisão
+
+Incluído:
+
+- Quatro módulos: preferências de e-mail (F7), extrato de pontos (F8), rotas do coletor (F9) e transparência/impacto (F10).
+- API: índice público com o catálogo dos módulos e operações por módulo que respondem `501 Not Implemented` com detalhe estruturado.
+- Frontend: páginas “Em breve” por módulo, com navegação por papel e versões para desktop e celular.
+- Verificação automatizada da API e da interface, incluindo viewports desktop e mobile, e inspeção manual local.
+
+Fora de escopo: implementar e-mail/outbox/worker, ledger de pontos, PWA/offline, rotas reais, impacto calculado ou verificação de organizações; criar dados de demonstração, tabelas ou migrations; alterar papéis, isolamento entre organizações ou regras das fases F1–F4; expor dados pessoais; substituir o conteúdo validado deste PRD.
+
+### 13.5 Jornadas e casos de uso
+
+- **J-07 — Descobrir o roadmap:** o visitante acessa o índice da API sem sessão e obtém a lista de módulos com fase e rota, sem dados pessoais.
+- **J-08 — Abrir um placeholder:** o usuário segue um link da navegação ou uma rota estável, lê o que está planejado e em qual fase, e retorna à origem sem erro nem recurso quebrado.
+- **J-09 — Limite claro da API:** um cliente chama a operação de um módulo e recebe `501` com o identificador do módulo e a fase; nenhum payload semântico de sucesso é devolvido.
+- **J-10 — Acesso indevido:** um usuário sem permissão para um módulo protegido não recebe link para ele e, ao tentar a rota ou a operação diretamente, é negado pelas regras de acesso existentes.
+
+### 13.6 Requisitos funcionais
+
+- **RF-24 — Índice de placeholders na API (P1):** operação pública de leitura que devolve os quatro módulos, cada um com identificador estável, título, fase do roadmap, rota do frontend e situação “em breve”. A resposta não contém dados pessoais nem dados de organizações.
+- **RF-25 — Operações “em breve” na API (P1):** para cada módulo, uma operação documentada no contrato OpenAPI responde `501 Not Implemented` com problema estruturado que identifica módulo, fase e motivo; não há dados fictícios, persistência ou efeito colateral.
+- **RF-26 — Páginas “Em breve” no frontend (P1):** uma rota estável por módulo apresenta título, descrição do que está planejado, fase, aviso de que o recurso ainda não está disponível e ação de retorno. Os textos são em português do Brasil e não prometem data ou disponibilidade.
+- **RF-27 — Navegação por público (P1):** links para os placeholders são exibidos conforme o papel: transparência/impacto para visitantes e usuários autenticados; preferências de e-mail e extrato para cidadãos; rotas do coletor para Administrador e Operador. Nenhum link é oferecido a quem não pode acessar o recurso.
+- **RN-13 — Placeholder não é implementação:** nenhuma resposta `2xx` de operação de módulo, nenhum formulário habilitado e nenhum dado de exemplo que sugira que a funcionalidade está pronta; rótulos e contratos deixam explícito o estado “em breve”.
+
+### 13.7 Requisitos não funcionais
+
+- **RNF-09 — Responsividade e acessibilidade (P1):** as páginas são utilizáveis em desktop (1280×720) e celular (390×844), sem rolagem horizontal, com hierarquia de títulos, foco visível e texto alternativo adequado quando houver ícones; o contraste segue o padrão visual já adotado.
+- **RNF-10 — Privacidade e isolamento (P1):** os catálogos de placeholders são estáticos, sem nome, contato, endereço ou identificador de organização/cidadão; nenhum dado pessoal é registrado em log, resposta ou mensagem de erro. Rotas e operações protegidas continuam sujeitas às regras de autenticação, papel e tenant já vigentes.
+- **RNF-11 — Compatibilidade e entrega (P1):** sem migração de banco, novos segredos ou dependências de negócio; o contrato OpenAPI documenta o índice e o `501`. A publicação permanece manual no MonsterASP.NET, com rollback pelo pacote anterior.
+
+### 13.8 Critérios de aceite
+
+| ID | Requisitos | Cenários verificáveis |
+| --- | --- | --- |
+| CA-13 | RF-24; RNF-10 | Sem sessão, o índice responde `200` com os quatro módulos, fases e rotas; a resposta não contém dados pessoais nem de organizações. |
+| CA-14 | RF-25; RN-13 | Cada operação de módulo responde `501` com módulo, fase e motivo; nenhuma resposta `2xx` ou dado fictício é produzido; o comportamento aparece no OpenAPI. |
+| CA-15 | RF-26; RF-27; RNF-09 | As quatro rotas abrem com o conteúdo “em breve” e retorno funcional; anônimo vê apenas transparência, cidadão vê também e-mail/extrato, e Administrador/Operador vê rotas; acesso direto a rota ou API não autorizada é negado; em 1280×720 e 390×844 não há rolagem horizontal. |
+| CA-16 | RNF-10; RNF-11 | Nenhuma migration, segredo ou dado sensível é introduzido; a interface e a API usam somente o catálogo estático; a documentação e o pacote de publicação refletem as rotas e operações. |
+
+Os cenários acima são critérios de aceitação da revisão, não evidência de execução.
+
+### 13.9 Dados e integrações
+
+Catálogo somente leitura, definido em código/configuração da aplicação, com identificador, título, descrição, fase e rota por módulo. Não há entidades novas, persistência, integração externa, e-mail, SMS ou mensageria. Fases e rótulos devem permanecer coerentes com `docs/prd-desafios.md` e com o roadmap do TDD.
+
+### 13.10 Riscos, premissas e dependências
+
+| Tema | Impacto / ação |
+| --- | --- |
+| Expectativa de funcionalidade pronta | Mitigação: aviso “em breve” no texto e `501` na API, sem dados de demonstração. |
+| Rótulo desatualizado em relação ao roadmap | Revisar fase e descrição a cada entrega de F7–F10; produto é responsável por revisar os textos. |
+| Links órfãos por papel | Verificar navegação para visitante, cidadão, Administrador e Operador nos testes de interface. |
+| Escopo das fases futuras | Os IDs `RF-*`/`CA-*` de v1.1/v2 pertencem ao PRD de desafios e não são transferidos para esta revisão. |
+
+### 13.11 Questões em aberto e handoff para TDD
+
+- Pendências não bloqueantes: métricas de uso dos placeholders e responsável pela revisão periódica dos rótulos permanecem **A definir**.
+- Handoff: escopo validado deve cobrir RF-24 a RF-27, RN-13, RNF-09 a RNF-11 e CA-13 a CA-16; destino padrão `docs/tdd.md`.
+- Decisões técnicas a entrevistar no TDD: formato exato e caminhos do índice e das operações, modelo do problema `501`, estratégia de um componente reutilizável de página “Em breve”, pontos de navegação por papel, estrutura do catálogo estático e estratégia de testes de API e de viewports desktop/mobile.
+- Estado do handoff: **validado em 2026-11-19** por aprovação explícita do solicitante pela ferramenta `question`; handoff liberado para o TDD.
+- Aprovador e método: solicitante do projeto, identidade e papel institucional não presumidos; aprovação registrada pela ferramenta `question` em 2026-11-19, sem entrevista com organização ou cidadão real.
