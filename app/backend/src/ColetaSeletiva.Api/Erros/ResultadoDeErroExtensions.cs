@@ -1,5 +1,6 @@
 using ColetaSeletiva.Application.Acesso.RegistroDeOrganizacao;
 using ColetaSeletiva.Application.Erros;
+using ColetaSeletiva.Application.Roadmap;
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -94,6 +95,54 @@ internal static class ResultadoDeErroExtensions
         return new ObjectResult(interno)
         {
             StatusCode = StatusCodes.Status500InternalServerError,
+        };
+    }
+
+    /// <summary>
+    /// Resposta intencional das operações de roadmap: 501 estruturado, sem dado fictício
+    /// e sem efeito colateral (RF-25; DT-37).
+    /// </summary>
+    public static IActionResult ParaProblemDetailsDeEmBreve(
+        this ControllerBase controlador,
+        ModuloEmBreve modulo)
+    {
+        var problema = new ProblemDetails
+        {
+            Status = StatusCodes.Status501NotImplemented,
+            Title = "Recurso em breve.",
+            Detail = $"O recurso \"{modulo.Titulo}\" ({modulo.Fase}) ainda não está disponível.",
+        };
+
+        problema.Extensions["code"] = CodigosDeErro.EmBreve;
+        problema.Extensions["modulo"] = modulo.Id;
+        problema.Extensions["fase"] = modulo.Fase;
+        problema.Extensions["traceId"] = controlador.HttpContext.TraceIdentifier;
+
+        return new ObjectResult(problema)
+        {
+            StatusCode = StatusCodes.Status501NotImplemented,
+        };
+    }
+
+    /// <summary>
+    /// Identificador fora do catálogo: 404 sem ecoar o valor recebido (DT-36).
+    /// </summary>
+    public static IActionResult ParaProblemDetailsDeModuloNaoEncontrado(
+        this ControllerBase controlador)
+    {
+        var problema = new ProblemDetails
+        {
+            Status = StatusCodes.Status404NotFound,
+            Title = "Módulo não encontrado.",
+            Detail = "O módulo informado não faz parte do catálogo de roadmap.",
+        };
+
+        problema.Extensions["code"] = CodigosDeErro.NaoEncontrado;
+        problema.Extensions["traceId"] = controlador.HttpContext.TraceIdentifier;
+
+        return new ObjectResult(problema)
+        {
+            StatusCode = StatusCodes.Status404NotFound,
         };
     }
 
