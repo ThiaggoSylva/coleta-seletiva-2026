@@ -232,7 +232,7 @@ const TIPOS_DE_ORGANIZACAO: { valor: TipoOrganizacao; rotulo: string }[] = [
                 </select>
               </label>
 
-              <label class="block flex-1 text-sm">
+              <label class="block w-full text-sm sm:w-auto sm:flex-1">
                 <span class="font-medium text-slate-700">Nome do município</span>
                 <input
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"

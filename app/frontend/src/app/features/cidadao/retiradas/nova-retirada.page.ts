@@ -88,7 +88,7 @@ interface SelecaoDeTipo {
               </select>
             </label>
 
-            <label class="campo flex-1">
+            <label class="campo w-full sm:w-auto sm:flex-1">
               <span class="campo-rotulo">Nome do município</span>
               <input
                 class="mt-1 w-full"
