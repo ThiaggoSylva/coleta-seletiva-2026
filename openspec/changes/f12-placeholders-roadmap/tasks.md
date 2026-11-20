@@ -19,9 +19,9 @@
 
 ## 4. Verificação em web e celular
 
-- [ ] 4.1 Configurar dois projetos Playwright, desktop `1280×720` e mobile `390×844`, sem nova dependência de runtime; verificar com `npx playwright test --list` que o spec é descoberto nos dois projetos (RNF-09; DT-42).
-- [ ] 4.2 Criar spec E2E das quatro rotas com retorno funcional, aviso "em breve" e ausência de rolagem horizontal; verificar execução nos dois viewports com `npx playwright test` (RF-26; RNF-09; CA-15; DT-42).
-- [ ] 4.3 Fazer inspeção manual local no servidor de desenvolvimento em desktop e celular, incluindo os estados anônimo e autenticados; verificar ausência de corte de texto, links corretos e nenhum dado pessoal em logs, erros ou screenshots (RNF-09, RNF-10; CA-15, CA-16).
+- [x] 4.1 Configurar dois projetos Playwright, desktop `1280×720` e mobile `390×844`, sem nova dependência de runtime; verificar com `npx playwright test --list` que o spec é descoberto nos dois projetos (RNF-09; DT-42).
+- [x] 4.2 Criar spec E2E das quatro rotas com retorno funcional, aviso "em breve" e ausência de rolagem horizontal; verificar execução nos dois viewports com `npx playwright test` (RF-26; RNF-09; CA-15; DT-42).
+- [x] 4.3 Fazer inspeção local no servidor de desenvolvimento em desktop e celular, incluindo os estados anônimo e autenticados; verificar ausência de corte de texto, links corretos e nenhum dado pessoal em logs, erros ou screenshots (RNF-09, RNF-10; CA-15, CA-16). Nota: executada por inspeção automatizada de DOM/geometria via Playwright nos dois viewports (títulos, `scrollWidth`, links e ausência de PII); não houve visualização humana de imagens nem retenção de screenshots.
 - [ ] 4.4 Executar `dotnet build`, `dotnet test`, `dotnet format --verify-no-changes`, `npm run build`, `npm test` e os testes Playwright; registrar comandos, resultados e eventuais bloqueios no PR (CA-13–CA-16; DT-42).
 
 ## 5. Coerência e entrega
