@@ -1,6 +1,6 @@
 # TDD — Plataforma Web de Coleta Seletiva e Pontos de Descarte
 
-- **Status:** v1 validada para SDD em 2026-11-10; **v1.1 e v2 validadas para SDD em 2026-11-14**, com aprovação explícita do documento completo. **Revisão de 2026-11-16:** acrescenta DT-35 (pontos de fontes públicas), validada pela ferramenta `question`.
+- **Status:** v1 validada para SDD em 2026-11-10; **v1.1 e v2 validadas para SDD em 2026-11-14**, com aprovação explícita do documento completo. **Revisão de 2026-11-16:** acrescenta DT-35 (pontos de fontes públicas), validada pela ferramenta `question`. **Revisão de 2026-11-19:** acrescenta a seção 12 (placeholders de roadmap, DT-36 a DT-42), validada pela mesma ferramenta.
 - **Data:** 2026-11-10 (v1, rascunho original de 2026-11-09); revisão de 2026-11-14 (v1.1 e v2).
 - **Escopo:** desenho da v1, v1.1 e v2 do produto, sem implementação, instalações, provisionamento, commits ou PR.
 - **Fonte de produto:** [docs/prd.md](prd.md) (v1, validado para TDD em 2026-11-10) e [docs/prd-desafios.md](prd-desafios.md) (v1.1 e v2, validado para TDD em 2026-11-14). Na v1: RF-01–RF-22, RNF-01–RNF-08, RN-01–RN-12, J-01–J-06 e CA-01–CA-12. Nos desafios: RF-01–RF-22, RNF-01–RNF-08, RN-01–RN-10, J-01–J-07 e CA-01–CA-12. Como os IDs locais se repetem entre os dois PRDs, este documento qualifica a origem (`docs/prd-desafios.md:RF-01`, por exemplo).
@@ -859,3 +859,105 @@ Revisão desta entrega: coerência entre PRD validado e TDD, decisões `DT-01` a
 - Próximo passo da v1: preparar as especificações SDD com OpenSpec (por exemplo `/opsx-propose`), verificando antes a disponibilidade da CLI conforme o `AGENTS.md`. Nenhum artefato OpenSpec foi criado nesta entrega.
 - Próximo passo das evoluções, após aprovação: abrir o fluxo SDD de F7–F10 em mudanças próprias, começando por e-mail/confirmação (F7), sem antecipar F8–F10.
 - Esta entrega não aprova especificações inexistentes, não resolve gates operacionais e não autoriza implementação, produção, deploy ou merge. Nenhum código, commit ou PR foi produzido por este TDD.
+
+## 12. Placeholders de roadmap — revisão de 2026-11-19
+
+- **Status:** Validado para SDD em 2026-11-19, por aprovação explícita do solicitante pela ferramenta `question`; o conteúdo validado em 2026-11-10, 2026-11-14 e 2026-11-16 permanece inalterado.
+- **Fonte de produto:** `docs/prd.md`, seção 13, validada para TDD em 2026-11-19 pela ferramenta `question`; escopo RF-24–RF-27, RN-13, RNF-09–RNF-11 e CA-13–CA-16. As fases anunciadas são F7–F10 de `docs/prd-desafios.md`, sem transferir os IDs de requisitos dessas fases.
+- **Restrições herdadas:** stack e convenções de DT-01, DT-02, DT-03, DT-05, DT-12, DT-17, DT-18, DT-21 e DT-33; nenhuma alteração de runtime, papéis, bancos ou segredos. Os nomes de papéis de segurança seguem `Papeis` e `PoliticasDeAcesso` já implementados.
+- **Pendências herdadas:** métricas de uso e responsável pela revisão dos rótulos continuam **A definir** no PRD (13.11); não bloqueiam o desenho nem autorizam atribuir prazos às fases F7–F10.
+
+### 12.1 Objetivos e limites técnicos
+
+Oferecer uma única fonte de verdade para o catálogo de módulos “em breve”, consumida pela API e pela SPA, com contrato previsível (`200` no índice, `501` nas operações), sem persistência, sem dados de exemplo e sem modificar fluxos existentes. O desenho reutiliza ProblemDetails, autorização por política, roteamento lazy do Angular e o pipeline de CI já presentes no repositório.
+
+Fora de escopo técnico: migrations, novos pacotes, worker SMTP, filas, PWA, fotos, cálculo de impacto, papel de Coletor/Administrador da plataforma e alteração de `wwwroot` publicado com dados fictícios.
+
+```mermaid
+flowchart LR
+  Visitante --> Indice[GET /api/v1/em-breve]
+  Cidadao --> DetalheCidadao[GET /em-breve/preferencias-email ou /extrato-pontos]
+  Equipe --> DetalheEquipe[GET /em-breve/rotas-coletor]
+  Visitante --> DetalhePublico[GET /em-breve/transparencia-impacto]
+  Indice --> Controller[EmBreveController]
+  DetalheCidadao --> Controller
+  DetalheEquipe --> Controller
+  DetalhePublico --> Controller
+  Controller --> Servico[CatalogoDePlaceholders na Application]
+  Servico --> Catalogo[(Catálogo estático em código)]
+  Controller -->|200 índice / 501 módulo| Clientes[Clientes HTTP]
+  SPA[Rotas /em-breve/*] --> Pagina[EmBrevePage reutilizável]
+  Pagina --> DadosDeRota[route data: título, descrição, fase]
+  Pagina --> Navegacao[links por papel no cabeçalho + rodapé]
+```
+
+O diagrama mostra que não há banco de dados, integração externa nem gravação no fluxo de placeholders.
+
+### 12.2 Decisões técnicas centralizadas
+
+| ID | Tema | Decisão | Estado e origem | Justificativa e alternativas |
+| --- | --- | --- | --- | --- |
+| DT-36 | Superfície da API | Um `EmBreveController` em `ColetaSeletiva.Api` com `GET api/v1/em-breve` (índice) e `GET api/v1/em-breve/{modulo}` (detalhe); política de limite de taxa de consulta pública reutilizada; módulo desconhecido responde `404` com `code=nao_encontrado` | Confirmada em 2026-11-19 pela `question` | Único ponto de manutenção e documentação; alternativa por domínio criaria quatro controladores para contratos idênticos e exigiria mais limpeza quando as fases reais chegassem |
+| DT-37 | Contrato de erro 501 | `ProblemDetails` com `status=501`, `title="Recurso em breve."`, `detail` descritivo e extensions `code="em_breve"`, `modulo`, `fase` e `traceId`; anotado com `ProducesResponseType` no OpenAPI | Confirmada em 2026-11-19 pela `question` | Mantém o padrão de `ResultadoDeErroExtensions` e evita `2xx` enganoso; alternativa com texto simples quebraria a convenção de clientes |
+| DT-38 | Catálogo | Lista imutável em `ColetaSeletiva.Application` (`CatalogoDePlaceholders` e `ModuloEmBreve` com `id`, `titulo`, `descricao`, `fase`, `rota`), exposta por serviço de consulta; sem `appsettings` e sem banco | Confirmada em 2026-11-19 pela `question` | Textos versionados com o código e iguais em todos os ambientes; alternativa por configuração introduziria divergência e nova superfície de teste |
+| DT-39 | Autorização | Índice `[AllowAnonymous]`; detalhe de transparência/impacto público; demais detalhes usam `somente-cidadao` ou `somente-equipe-da-organizacao`; `401`/`403` seguem o comportamento atual da API | Confirmada em 2026-11-19 pela `question` | Evita expor metadados internos e reutiliza policies existentes; alternativa tudo público seria mais simples, mas contrariaria RF-27 e RNF-10 |
+| DT-40 | Frontend | Um `EmBrevePage` standalone com `route data` por módulo; rotas `/em-breve/preferencias-email`, `/em-breve/extrato-pontos`, `/em-breve/rotas-coletor` e `/em-breve/transparencia-impacto`, protegidas pelos guardas já existentes quando aplicável | Confirmada em 2026-11-19 pela `question` | Layout responsivo e texto consistentes em um só componente; alternativa de quatro páginas duplicaria marcação e testes |
+| DT-41 | Navegação | Links no cabeçalho filtrados por `auth.possuiPapel(...)` e `trocaSenhaPendente()`, mais um link público de roadmap no rodapé; sem novo menu expansível | Confirmada em 2026-11-19 pela `question` | Mantém o padrão visual atual e entrega transparência a visitantes; alternativa somente rodapé esconderia links por papel, e somente cabeçalho excluiria anônimos |
+| DT-42 | Verificação | Testes de integração com `WebApplicationFactory` para índice, `501`, `404` e autorização; teste Vitest do componente; novo spec Playwright executado em dois projetos de viewport (1280×720 e 390×844), com inspeção manual local | Confirmada em 2026-11-19 pela `question` | Cobre contrato, papel e responsividade sem novas dependências; alternativa de um único projeto com `test.use` reduziria paralelismo e clareza dos relatórios |
+
+### 12.3 Interfaces e contratos
+
+Caminhos relativos a `/api/v1`. A API continua versionada e o OpenAPI gerado por `AddOpenApi` deve conter as operações e os códigos `200`, `404`, `401`, `403` e `501` aplicáveis.
+
+| Módulo (`id`) | Fase | Rota da SPA | Operação de detalhe | Acesso |
+| --- | --- | --- | --- | --- |
+| `preferencias-email` | F7 | `/em-breve/preferencias-email` | `GET /api/v1/em-breve/preferencias-email` | Cidadão |
+| `extrato-pontos` | F8 | `/em-breve/extrato-pontos` | `GET /api/v1/em-breve/extrato-pontos` | Cidadão |
+| `rotas-coletor` | F9 | `/em-breve/rotas-coletor` | `GET /api/v1/em-breve/rotas-coletor` | Administrador e Operador |
+| `transparencia-impacto` | F10 | `/em-breve/transparencia-impacto` | `GET /api/v1/em-breve/transparencia-impacto` | Público |
+
+O índice devolve uma coleção com `id`, `titulo`, `descricao`, `fase`, `rota` e `situacao="em_breve"`, sem campos opcionais vazios e sem PII. As rotas da SPA são estáveis enquanto o módulo não for implementado; quando uma fase real chegar, o link e o catálogo são substituídos na mesma mudança, sem redirecionamento silencioso para recurso inexistente. Não há retry, idempotência ou efeito colateral a documentar além de leitura.
+
+### 12.4 Dados, segurança e operação
+
+Não há entidades, migrations, índices, transações, retenção nem concorrência: o catálogo é somente leitura e imutável em tempo de execução (DT-38). Nenhum log, resposta ou mensagem de erro conterá nome, e-mail, telefone, endereço, identificador de organização ou credencial. A identificação do módulo nas rotas é um valor fixo do catálogo; entradas fora dele são `404` sem ecoar conteúdo arbitrário.
+
+A publicação continua manual no MonsterASP.NET (DT-21/DT-33), pelo pacote já gerado por `app/scripts/publicar-monsterasp.sh`, sem novas variáveis de ambiente. Rollout: publicar o pacote após o merge na `main` e verificar `/health`, `/api/v1/em-breve` e as rotas da SPA. Rollback: republicar o pacote anterior; não há mudança de schema, então não há rollback de banco.
+
+### 12.5 Qualidade e verificação
+
+- **API:** integração com banco real não é necessária para o catálogo, mas a suíte existente usa `WebApplicationFactory`; reutilizar a infraestrutura e as credenciais de teste para não criar outro caminho de execução. Cenários: índice anônimo com os quatro módulos; `501` com `code`, `modulo` e `fase` para cada módulo; `404` para id desconhecido; `401`/`403` conforme o papel; OpenAPI contém as operações e os respectivos códigos.
+- **Frontend:** Vitest verifica título, descrição, fase e link de retorno do componente com dados de rota. Playwright verifica as quatro rotas, ausência de link indevido por papel e ausência de rolagem horizontal nos dois viewports; a suíte usa dados sintéticos e não registra PII em screenshots.
+- **Critérios técnicos rastreáveis:** CA-13 e CA-14 validam API e contrato; CA-15 valida páginas, papéis e viewports; CA-16 valida ausência de dados sensíveis, migrations e segredos. Nenhum cenário é considerado passado sem execução registrada.
+
+### 12.6 Roadmap: F12 — Sinalização de roadmap
+
+| Fase | Escopo e entregáveis | Pré-requisitos e critério de saída |
+| --- | --- | --- |
+| F12 — Placeholders de roadmap (P1, transversal) | Catálogo na Application, controlador e contrato `200`/`501` documentado, `EmBrevePage` com quatro rotas, links por papel e rodapé, testes de integração/componente/E2E em desktop e mobile, e documentação atualizada. RF-24–RF-27, RN-13, RNF-09–RNF-11; DT-36–DT-42 | F4 e F11 presentes na `main`; PRD seção 13 validada; specs SDD revisadas e aprovadas antes de código. CA-13–CA-16 executados e registrados no PR; nenhuma migration ou segredo novo; pacote de publicação gerado. **Não** substitui nem antecipa os critérios de F7–F10; quando cada fase real for entregue, o placeholder correspondente deve ser removido ou substituído |
+
+### 12.7 Riscos e mapa de rastreabilidade
+
+| Item | Impacto | Ação e responsável proposto |
+| --- | --- | --- |
+| Placeholder parecer recurso pronto | Expectativa errada do usuário | Rótulo “em breve” e `501` sem dados de exemplo; produto revisa os textos |
+| Divergência entre catálogo e navegação | Link quebrado ou módulo inalcançável | Uma única fonte de verdade (DT-38) e testes de navegação por papel; engenharia mantém ambos no mesmo PR |
+| Rótulos desatualizados após F7–F10 | Informação incorreta | Remover/substituir o módulo na fase real; produto e engenharia revisam a cada entrega |
+| Mudança de layout nos viewports | Dificuldade de leitura no celular | Critérios de DT-42 e inspeção manual antes do PR; engenharia corrige antes da publicação |
+
+| Requisitos | Componentes e contratos | Decisões | Verificações | Fase |
+| --- | --- | --- | --- | --- |
+| RF-24, RNF-10 | `GET /api/v1/em-breve` e catálogo estático | DT-36, DT-38 | CA-13, CA-16 | F12 |
+| RF-25, RN-13 | `GET /api/v1/em-breve/{modulo}` e ProblemDetails `501` | DT-36, DT-37 | CA-14 | F12 |
+| RF-26, RNF-09 | `EmBrevePage`, rotas e layout responsivo | DT-40, DT-42 | CA-15 | F12 |
+| RF-27 | Navegação por papel no cabeçalho e link no rodapé; policies da API | DT-39, DT-41 | CA-15 | F12 |
+| RNF-11 | Sem migration/segredo; OpenAPI; pacote e rollback por binário | DT-21, DT-33, DT-36 | CA-14, CA-16 | F12 |
+
+### 12.8 Validação e handoff
+
+- Estado: **validado para SDD em 2026-11-19** por aprovação explícita do solicitante pela ferramenta `question`; handoff liberado para a mudança SDD de F12.
+- Aprovação do PRD de entrada: seção 13 de `docs/prd.md`, validada em 2026-11-19; handoff liberado.
+- Aprovador e método: solicitante, sem designação nominal de papel; nenhuma revisão técnica independente registrada nesta revisão.
+- Decisões entrevistadas nesta revisão: DT-36 a DT-42, todas confirmadas pela ferramenta `question` em 2026-11-19.
+- Próximo passo quando validado: criar a mudança SDD no OpenSpec (por exemplo `/opsx-propose f12-placeholders-roadmap`), revisar e aprovar proposal/specs/design/tasks antes de implementar em `app/`.
+- Este rascunho não autoriza implementação, merge nem deploy; a publicação permanece gate manual após o merge na `main`.

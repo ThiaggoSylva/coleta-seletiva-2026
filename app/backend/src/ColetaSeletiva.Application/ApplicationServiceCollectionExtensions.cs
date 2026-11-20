@@ -7,6 +7,7 @@ using ColetaSeletiva.Application.Catalogo;
 using ColetaSeletiva.Application.ConsultaPublica;
 using ColetaSeletiva.Application.PerfilDaOrganizacao;
 using ColetaSeletiva.Application.Pontos;
+using ColetaSeletiva.Application.Roadmap;
 using ColetaSeletiva.Application.Retiradas;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -77,6 +78,8 @@ public static class ApplicationServiceCollectionExtensions
         services.AddScoped<ListarNotificacoesHandler>();
         services.AddScoped<MarcarNotificacaoLidaHandler>();
         services.AddScoped<MarcarTodasNotificacoesLidasHandler>();
+        services.AddSingleton<ICatalogoDePlaceholders, CatalogoDePlaceholders>();
+        services.AddScoped<ConsultarPlaceholdersHandler>();
         services.AddSingleton<TimeProvider>(TimeProvider.System);
 
         return services;

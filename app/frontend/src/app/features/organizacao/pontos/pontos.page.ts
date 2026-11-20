@@ -60,7 +60,7 @@ const STATUS: { valor: StatusPonto; rotulo: string }[] = [
           Nenhum ponto cadastrado ainda. Use “Novo ponto” para cadastrar o primeiro.
         </p>
       } @else {
-        <div class="mt-6 overflow-x-auto rounded-md bg-white shadow-sm">
+        <div class="relative mt-6 overflow-x-auto rounded-md bg-white shadow-sm">
           <table class="min-w-full divide-y divide-slate-200">
             <caption class="sr-only">
               Pontos de coleta da organização
