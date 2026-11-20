@@ -128,7 +128,7 @@ const TIPOS_DE_ORGANIZACAO: { valor: TipoOrganizacao; rotulo: string }[] = [
                 <input
                   formControlName="contatoEmail"
                   type="email"
-                  placeholder="Ex.: contato@cooperativa.com.br"
+                  placeholder="contato@organizacao.org"
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
                   [class.border-red-500]="invalido('contatoEmail')"
                 />
@@ -139,7 +139,7 @@ const TIPOS_DE_ORGANIZACAO: { valor: TipoOrganizacao; rotulo: string }[] = [
                 <span class="font-medium text-slate-700">Telefone de contato</span>
                 <input
                   formControlName="contatoTelefone"
-                  placeholder="Ex.: (11) 91234-5678"
+                  placeholder="(62) 3222-0000"
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
                   [class.border-red-500]="invalido('contatoTelefone')"
                 />
@@ -236,7 +236,7 @@ const TIPOS_DE_ORGANIZACAO: { valor: TipoOrganizacao; rotulo: string }[] = [
                 <span class="font-medium text-slate-700">Nome do município</span>
                 <input
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
-                  placeholder="Ex.: Campinas"
+                  placeholder="Ex.: Goiânia"
                   [value]="textoMunicipio()"
                   (input)="digitarMunicipio($event)"
                   (keydown.enter)="buscarMunicipios()"
