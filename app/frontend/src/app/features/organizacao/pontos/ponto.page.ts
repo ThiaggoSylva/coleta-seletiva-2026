@@ -181,7 +181,7 @@ const CENTRO_PADRAO: Coordenada = { latitude: -23.5505, longitude: -46.6333 };
                 <textarea
                   formControlName="observacoes"
                   rows="2"
-                  placeholder="Instruções de acesso e referências (opcional)"
+                  placeholder="Ex.: instruções de acesso"
                   class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
                 ></textarea>
               </label>
